@@ -23,3 +23,19 @@ class CustomLogFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
+
+
+logging.basicConfig(filename="output/crawl.log",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+logger = logging.getLogger("Crawler")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomLogFormatter())
+logger.addHandler(ch)
+# Disable propagating urllib3 logs
+logging.getLogger("urllib3").setLevel(logging.ERROR)

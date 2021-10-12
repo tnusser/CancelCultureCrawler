@@ -1,26 +1,10 @@
 import time
-
 import requests
 import os
-import json
 import re
-from helper import CustomLogFormatter
-import logging
 
-logging.basicConfig(filename="crawl.log",
-                    filemode='a',
-                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
-                    level=logging.DEBUG)
+from helper import logger
 
-logger = logging.getLogger("Crawler")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomLogFormatter())
-logger.addHandler(ch)
-# Disable propagating urllib3 logs
-logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 logger.info("-------------------")
 logger.info("Start crawl routine")
