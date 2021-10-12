@@ -323,23 +323,3 @@ class ApiEndpoints:
             # TODO maybe retry
             logger.error("Request returned an error: {} {}".format(response.status_code, response.text))
         return response
-
-
-def main():
-    print("main")
-    a_id_horst = "1229455082"
-    tweet_id = "1278747501642657792"
-    # crawler = ApiEndpoints()
-    # response = crawler.get_replies("1433361036191612930", except_fields=None)
-    # res_json = response.json()
-    # print(json.dumps(res_json, indent=4, sort_keys=True))
-    # remaining = int(response.headers["x-rate-limit-remaining"])
-    # max_remaining = int(response.headers["x-rate-limit-limit"])
-    # limit_reset_time = response.hreaders["x-rate-limit-reset"]
-
-    current_time = int(time.time())
-    # print(json.dumps(response, indent=4, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()
