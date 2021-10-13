@@ -6,26 +6,18 @@ from helper import logger
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
 db = client['twitter_db']
-tweets = db['cc_tweets']
-
-temp_directory = "/home/tobias/Projects/MasterProject/twitter-stream-2021-01-01"
 
 
-def insert_json_to_db():
-    for i, subdir in enumerate(os.listdir(temp_directory)):
-        print("File counter {}".format(i))
-        json_data = []
-        with open(temp_directory + "/" + subdir, "r") as file:
-            for line in file.readlines():
-                json_data.append(json.loads(line))
-        tweets.insert_many(json_data)
-
-
-def insert(json_data):
+def insert(json_data, collection):
+    tweets = db[collection]
     try:
         tweets.insert_many(json_data)
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
+
+
+def read():
+    pass
 
 
 def pretty(d, indent=0):
@@ -35,7 +27,6 @@ def pretty(d, indent=0):
             pretty(value, indent + 1)
         else:
             print('\t' * (indent + 1) + str(value))
-
 
 # print(tweets.estimated_document_count())
 #
