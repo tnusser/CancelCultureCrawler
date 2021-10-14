@@ -240,6 +240,13 @@ class ApiEndpoints:
         return self.exception_handler(response)
 
     def get_replies(self, tweet_id, except_fields=None, next_token=None):
+        """
+        Retrieves conversation tree from tweet id. Per crawl it returns up to 100 replies
+        @param tweet_id: id of tweet whose replies should be retrieved
+        @param except_fields: optional param for fields which should be excluded. 'default' --> id, text
+        @param next_token: token used to retrieve results using pagination
+        @return: json object containing id and text of tweets (and next_token if results > max_results)
+        """
         max_results = "100",
         params = {
             'query': "conversation_id:" + tweet_id,
@@ -263,7 +270,16 @@ class ApiEndpoints:
                                 headers=self.HEADER)
         return self.exception_handler(response)
 
-    def get_quotes(self, username, tweet_id, except_fields=None, max_results="100", next_token=None):
+    def get_quotes(self, username, tweet_id, except_fields=None, next_token=None):
+        """
+        Retrieves all quotes from a tweet id. Per crawl it returns up to 100 replies
+        @param username: the parent tweets authors username
+        @param tweet_id: id of tweet whose quotes should be retrieved
+        @param except_fields: optional param for fields which should be excluded. 'default' --> id, text
+        @param next_token: token used to retrieve results using pagination
+        @return: json object containing id and text of tweets (and next_token if results > max_results)
+        """
+        max_results = "100"
         url = "https://twitter.com/" + username + "/status/" + tweet_id
         params = {
             'query': 'url:' + '"' + url + '" is:quote',
@@ -288,7 +304,17 @@ class ApiEndpoints:
                                 headers=self.HEADER)
         return self.exception_handler(response)
 
-    def get_retweets_archive_search(self, username, tweet_text, except_fields=None, max_results="100", next_token=None):
+    def get_retweets_archive_search(self, username, tweet_text, except_fields=None, next_token=None):
+        """
+        Alternative way of retrieving retweets. It uses full-text search to find tweet and retrieve its retweets.
+        ATTENTION: May not find retweets because full-text search fails due to encoding issues
+        @param username: the parent tweets authors username
+        @param tweet_text: text content of parent tweet
+        @param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
+        @param next_token: token used to retrieve results using pagination
+        @return: json object containing id of retweet (and next_token if results > max_results)
+        """
+        max_results = "100"
         params = {
             'query': '"' + tweet_text + '" retweets_of:' + username,
             'expansions': 'author_id',
