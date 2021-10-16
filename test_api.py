@@ -252,6 +252,8 @@ class ApiEndpoints:
             'query': "conversation_id:" + tweet_id,
             'start_time': self.START_DATE,
             'max_results': max_results,
+            # 'expansions': 'referenced_tweets.id.author_id',
+            # 'user.fields': 'public_metrics'
         }
         if next_token is not None:
             params["next_token"] = next_token

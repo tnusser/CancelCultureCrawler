@@ -1,78 +1,209 @@
-[
-    {
-        "author_id": "19725644",
-        "context_annotations": [
-            {
-                "domain": {
-                    "description": "Named people in the world like Nelson Mandela",
-                    "id": "10",
-                    "name": "Person"
-                },
-                "entity": {
-                    "description": "American astrophysicist and author",
-                    "id": "808713991492993025",
-                    "name": "Neil deGrasse Tyson"
-                }
-            }
-        ],
-        "conversation_id": "1158074774297468928",
-        "created_at": "2019-08-04T17:58:36.000Z",
-        "entities": {
-            "annotations": [
-                {
-                    "end": 25,
-                    "normalized_text": "USA",
-                    "probability": 0.9602,
-                    "start": 23,
-                    "type": "Place"
-                }
-            ]
-        },
-        "id": "1158074774297468928",
-        "lang": "en",
-        "possibly_sensitive": false,
-        "public_metrics": {
-            "like_count": 274843,
-            "quote_count": 44649,
-            "reply_count": 71150,
-            "retweet_count": 71607
-        },
-        "reply_settings": "everyone",
-        "source": "TweetDeck",
-        "text": "In the past 48hrs, the USA horrifically lost 34 people to mass shootings.\n\nOn average, across any 48hrs, we also lose\u2026\n\n500 to Medical errors\n300 to the Flu\n250 to Suicide\n200 to Car Accidents\n40 to Homicide via Handgun\n\nOften our emotions respond more to spectacle than to data."
-    }
-]
-AUTHOR OF TWEET 
-[
-    {
-        "created_at": "2009-01-29T18:40:26.000Z",
-        "description": "Astrophysicist",
-        "entities": {
-            "url": {
-                "urls": [
+REPLIES 
+{
+    "data": [
+        {
+            "author_id": "824549958309257216",
+            "conversation_id": "1433361036191612930",
+            "created_at": "2021-09-02T10:47:14.000Z",
+            "entities": {
+                "mentions": [
                     {
-                        "display_url": "haydenplanetarium.org/tyson/",
-                        "end": 22,
-                        "expanded_url": "http://www.haydenplanetarium.org/tyson/",
+                        "end": 9,
+                        "id": "923897342243278848",
                         "start": 0,
-                        "url": "http://t.co/FRT5oYtwbX"
+                        "username": "toniN0_1"
                     }
                 ]
+            },
+            "id": "1433380995114356738",
+            "in_reply_to_user_id": "923897342243278848",
+            "lang": "en",
+            "possibly_sensitive": false,
+            "public_metrics": {
+                "like_count": 0,
+                "quote_count": 0,
+                "reply_count": 0,
+                "retweet_count": 0
+            },
+            "referenced_tweets": [
+                {
+                    "id": "1433361036191612930",
+                    "type": "replied_to"
+                }
+            ],
+            "reply_settings": "everyone",
+            "source": "Twitter Web App",
+            "text": "@toniN0_1 Reply-4"
+        },
+        {
+            "author_id": "923897342243278848",
+            "conversation_id": "1433361036191612930",
+            "created_at": "2021-09-02T09:37:47.000Z",
+            "id": "1433363517525135360",
+            "in_reply_to_user_id": "923897342243278848",
+            "lang": "en",
+            "possibly_sensitive": false,
+            "public_metrics": {
+                "like_count": 0,
+                "quote_count": 0,
+                "reply_count": 0,
+                "retweet_count": 0
+            },
+            "referenced_tweets": [
+                {
+                    "id": "1433363333688840199",
+                    "type": "replied_to"
+                }
+            ],
+            "reply_settings": "everyone",
+            "source": "Twitter Web App",
+            "text": "Reply-3"
+        },
+        {
+            "author_id": "923897342243278848",
+            "conversation_id": "1433361036191612930",
+            "created_at": "2021-09-02T09:37:04.000Z",
+            "id": "1433363333688840199",
+            "in_reply_to_user_id": "923897342243278848",
+            "lang": "en",
+            "possibly_sensitive": false,
+            "public_metrics": {
+                "like_count": 0,
+                "quote_count": 0,
+                "reply_count": 1,
+                "retweet_count": 0
+            },
+            "referenced_tweets": [
+                {
+                    "id": "1433363311584763904",
+                    "type": "replied_to"
+                }
+            ],
+            "reply_settings": "everyone",
+            "source": "Twitter Web App",
+            "text": "Reply-2"
+        },
+        {
+            "author_id": "923897342243278848",
+            "conversation_id": "1433361036191612930",
+            "created_at": "2021-09-02T09:36:58.000Z",
+            "id": "1433363311584763904",
+            "in_reply_to_user_id": "923897342243278848",
+            "lang": "en",
+            "possibly_sensitive": false,
+            "public_metrics": {
+                "like_count": 0,
+                "quote_count": 0,
+                "reply_count": 1,
+                "retweet_count": 0
+            },
+            "referenced_tweets": [
+                {
+                    "id": "1433361036191612930",
+                    "type": "replied_to"
+                }
+            ],
+            "reply_settings": "everyone",
+            "source": "Twitter Web App",
+            "text": "Reply-1"
+        }
+    ],
+    "includes": {
+        "tweets": [
+            {
+                "author_id": "923897342243278848",
+                "conversation_id": "1433361036191612930",
+                "created_at": "2021-09-02T09:27:56.000Z",
+                "id": "1433361036191612930",
+                "lang": "en",
+                "possibly_sensitive": false,
+                "public_metrics": {
+                    "like_count": 1,
+                    "quote_count": 1,
+                    "reply_count": 2,
+                    "retweet_count": 1
+                },
+                "reply_settings": "everyone",
+                "source": "Twitter Web App",
+                "text": "Seed-Tweet"
+            },
+            {
+                "author_id": "923897342243278848",
+                "conversation_id": "1433361036191612930",
+                "created_at": "2021-09-02T09:37:04.000Z",
+                "id": "1433363333688840199",
+                "in_reply_to_user_id": "923897342243278848",
+                "lang": "en",
+                "possibly_sensitive": false,
+                "public_metrics": {
+                    "like_count": 0,
+                    "quote_count": 0,
+                    "reply_count": 1,
+                    "retweet_count": 0
+                },
+                "referenced_tweets": [
+                    {
+                        "id": "1433363311584763904",
+                        "type": "replied_to"
+                    }
+                ],
+                "reply_settings": "everyone",
+                "source": "Twitter Web App",
+                "text": "Reply-2"
+            },
+            {
+                "author_id": "923897342243278848",
+                "conversation_id": "1433361036191612930",
+                "created_at": "2021-09-02T09:36:58.000Z",
+                "id": "1433363311584763904",
+                "in_reply_to_user_id": "923897342243278848",
+                "lang": "en",
+                "possibly_sensitive": false,
+                "public_metrics": {
+                    "like_count": 0,
+                    "quote_count": 0,
+                    "reply_count": 1,
+                    "retweet_count": 0
+                },
+                "referenced_tweets": [
+                    {
+                        "id": "1433361036191612930",
+                        "type": "replied_to"
+                    }
+                ],
+                "reply_settings": "everyone",
+                "source": "Twitter Web App",
+                "text": "Reply-1"
             }
-        },
-        "id": "19725644",
-        "location": "New York City",
-        "name": "Neil deGrasse Tyson",
-        "profile_image_url": "https://pbs.twimg.com/profile_images/74188698/NeilTysonOriginsA-Crop_normal.jpg",
-        "protected": false,
-        "public_metrics": {
-            "followers_count": 14550265,
-            "following_count": 39,
-            "listed_count": 45376,
-            "tweet_count": 7581
-        },
-        "url": "http://t.co/FRT5oYtwbX",
-        "username": "neiltyson",
-        "verified": true
+        ],
+        "users": [
+            {
+                "id": "824549958309257216",
+                "name": "Felix Lorenz",
+                "public_metrics": {
+                    "followers_count": 10,
+                    "following_count": 179,
+                    "listed_count": 0,
+                    "tweet_count": 11
+                },
+                "username": "Lorenzsohn"
+            },
+            {
+                "id": "923897342243278848",
+                "name": "toni",
+                "public_metrics": {
+                    "followers_count": 2,
+                    "following_count": 13,
+                    "listed_count": 0,
+                    "tweet_count": 10
+                },
+                "username": "toniN0_1"
+            }
+        ]
+    },
+    "meta": {
+        "newest_id": "1433380995114356738",
+        "oldest_id": "1433363311584763904",
+        "result_count": 4
     }
-]QUOTES 
+}
