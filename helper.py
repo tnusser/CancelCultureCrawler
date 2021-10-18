@@ -1,4 +1,5 @@
 import logging
+import time
 
 
 class CustomLogFormatter(logging.Formatter):
@@ -39,3 +40,33 @@ ch.setFormatter(CustomLogFormatter())
 logger.addHandler(ch)
 # Disable propagating urllib3 logs
 logging.getLogger("urllib3").setLevel(logging.ERROR)
+
+
+def timeit(function):
+    """
+    Decorator function to track the time a method takes to run
+    @param function: input function
+    @return: result of input function
+    """
+
+    def timer(*args, **kwargs):
+        start = time.time()
+        result = function(*args, **kwargs)
+        end = time.time()
+        m, s = divmod(int(end - start), 60)
+        logger.info(f"Operation took {m:02d}:{s:02d} m/s")
+        return result
+
+    return timer
+
+
+def batch(iterable, n=1):
+    """
+    Returns batches of data for iterating purposes
+    @param iterable: input data to  iterate over
+    @param n: batch-size
+    @return: iterable which yields batch-sized outputs
+    """
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]

@@ -1,17 +1,16 @@
 import datetime
 import json
-import time
 import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
-from helper import logger
+from helper import *
 
 api = ApiEndpoints()
 
 
 def write_file(response, out_file):
     try:
-        #response = response["data"]
+        # response = response["data"]
         out_file.write(json.dumps(response, indent=4, sort_keys=True))
     except simplejson.errors.JSONDecodeError:
         logger.info("Failed to write response to file")
@@ -21,14 +20,16 @@ def write_db(response, collection="cc_tweets", cache=False):
     response = response["data"]
     if cache:
         for res in response:
-            tweet_cache[res["id"]] = res["public_metrics"]
-            author_cache[res["author_id"]] = {}
-            print(tweet_cache)
-        db.insert(response, collection)
+            if res["id"] not in tweet_cache:
+                tweet_cache[res["id"]] = res["public_metrics"]
+            if res["author_id"] not in author_cache:
+                author_cache[res["author_id"]] = {}
+    db.insert(response, collection)
 
 
 def recursive_crawl(crawl_function, params, collection, cache):
-    time.sleep(0.5)
+    # TODO Figure out min time.sleep needed
+    time.sleep(0.4)
     response = crawl_function(**params)
     remaining = int(response.headers["x-rate-limit-remaining"])
     max_remaining = int(response.headers["x-rate-limit-limit"])
@@ -77,6 +78,10 @@ def crawl(crawl_function, params, collection="cc_tweets", cache=False):
 # TODO Add ids?
 # TODO cache user and timeline (id) crawls here
 
+events = {"1433361036191612930": 0,  # toni test tweet
+          "1158074774297468928": 1,  # neil degrasse tyson
+          } # todo add ids to db
+
 SEED_TWEET_ID = "1433361036191612930"  # toni
 # SEED_TWEET_ID = "1442243266280370177" #vanderhorst
 # SEED_TWEET_ID = "1158074774297468928"  # neildegrasstyson
@@ -84,23 +89,55 @@ SEED_TWEET_ID = "1433361036191612930"  # toni
 out_file = open("output/crawl_tweets.txt", "w")
 tweet_cache, author_cache = {}, {}
 
-## SEED TWEET
-# logger.info("Crawl seed tweet")
-# tweet_response = api.get_tweets_by_id([SEED_TWEET_ID])
-# res_json = tweet_response.json()
-# write_file(res_json, out_file)
-# write_db(res_json, cache=True)
-#
-# #AUTHOR OF TWEET
-# out_file.write("\nAUTHOR OF TWEET \n")
-# logger.info("Crawl author")
-# author_id = res_json["data"][0]["author_id"]
-# tweet_text = res_json["data"][0]["text"]
-# user_response = api.get_users_by_id([author_id])
-# res_json = user_response.json()
-# username = res_json["data"][0]["username"]
-# write_file(res_json, out_file)
-# write_db(res_json, "cc_users")
+
+@timeit
+def seed_tweet(tweet_id):
+    logger.info("Retrieving seed tweet")
+    response = api.get_tweets_by_id([tweet_id]).json()
+    write_file(response, out_file)
+    write_db(response, cache=True)
+    return response
+
+
+@timeit
+def reply_tree(tweet_id):
+    logger.info("Retrieving replies to seed tweet")
+    reply_params = {
+        "tweet_id": tweet_id,
+        "except_fields": None,
+        "next_token": None
+    }
+    crawl(crawl_function=api.get_replies, params=reply_params, cache=True)
+
+
+@timeit
+def get_user():
+    logger.info("Retrieving user information")
+    author_ids = list(author_cache.keys())
+    for author_id_batch in batch(author_ids, 100):
+        user_response = api.get_users_by_id(author_id_batch).json()
+        write_file(user_response, out_file)
+        write_db(user_response, "cc_users")
+
+
+@timeit
+def quotes():
+    logger.info("Retrieve all quotes")
+    for tweet_id, stats in tweet_cache.items():
+        if stats["quote_count"] > 0:
+
+            print(stats["quote_count"])
+            quote_params = {
+                "username": username, # todo
+                "tweet_id": tweet_id,
+                "except_fields": None,
+                "next_token": None
+            }
+            for id in tweet_cache:
+                pass
+            crawl(crawl_function=api.get_quotes, params=quote_params)
+
+
 #
 # # LIKERS OF TWEET
 # out_file.write("\nLIKER OF TWEET \n")
@@ -162,24 +199,10 @@ tweet_cache, author_cache = {}, {}
 # write_file(res_json, out_file)
 # write_db(res_json)
 #
-# # QUOTES OF TWEET
-# out_file.write("QUOTES \n")
-# logger.info("Crawl quotes")
-# quote_params = {
-#     "username": username,
-#     "tweet_id": SEED_TWEET_ID,
-#     "except_fields": None,
-#     "next_token": None
-# }
-# crawl(crawl_function=api.get_quotes, params=quote_params)
 
 
-# CONVERSATION (REPLY) TREE
-out_file.write("REPLIES \n")
-logger.info("Crawl replies")
-reply_params = {
-    "tweet_id": SEED_TWEET_ID,
-    "except_fields": None,
-    "next_token": None
-}
-crawl(crawl_function=api.get_replies, params=reply_params, cache=True)
+if __name__ == "__main__":
+    seed_tweet(SEED_TWEET_ID)
+    reply_tree(SEED_TWEET_ID)
+    get_user()
+    quotes() #todo recursive
