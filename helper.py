@@ -1,5 +1,6 @@
 import logging
 import time
+import inspect
 
 
 class CustomLogFormatter(logging.Formatter):
@@ -54,7 +55,7 @@ def timeit(function):
         result = function(*args, **kwargs)
         end = time.time()
         m, s = divmod(int(end - start), 60)
-        logger.info(f"Operation took {m:02d}:{s:02d} m/s")
+        logger.info(f"{function.__qualname__} took {m:02d}:{s:02d} m/s")
         return result
 
     return timer

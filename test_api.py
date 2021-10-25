@@ -285,7 +285,7 @@ class ApiEndpoints:
         url = "https://twitter.com/" + username + "/status/" + tweet_id
         params = {
             'query': 'url:' + '"' + url + '" is:quote',
-            'expansions': 'author_id',
+            # 'expansions': 'author_id',
             'start_time': self.START_DATE,
             'max_results': max_results,
         }
