@@ -165,7 +165,7 @@ class ApiEndpoints:
 
     def get_liking_users(self, tweet_id, except_fields=None):
         """
-        Retrieves the last 100 users who liked the input tweet
+        Retrieves the last 100 users who liked the input tweet - rate limit 3000 tweets per 15 min
         :param tweet_id: id of tweet whose likes should be retrieved
         :param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
         :return: json object containing id, name and username of users that liked that tweet
@@ -218,7 +218,7 @@ class ApiEndpoints:
 
     def get_retweeting_users(self, tweet_id, except_fields=None):
         """
-        Retrieves the last 100 users who retweeted the input tweet
+        Retrieves the last 100 users who retweeted the input tweet -- rate limit 3000 tweets per 15 min
         :param tweet_id: id of tweet whose retweets should be retrieved
         :param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
         :return: json object containing id, name and username of users that retweeted that tweet

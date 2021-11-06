@@ -9,13 +9,15 @@ api = ApiEndpoints()
 
 
 class Tweet:
-    def __init__(self, tweet_id, public_metrics, quotes_retrieved=False):
+    def __init__(self, tweet_id, public_metrics):
         self.id = tweet_id
         self.reply_count = public_metrics["reply_count"]
         self.retweet_count = public_metrics["retweet_count"]
         self.like_count = public_metrics["like_count"]
         self.quote_count = public_metrics["quote_count"]
-        self.quotes_retrieved = quotes_retrieved
+        self.quotes_retrieved = False
+        self.likes_retrieved = False
+        self.retweets_retrieved = False
 
     def __repr__(self):
         return f"Tweet-ID {self.id} has {self.reply_count} replies, {self.retweet_count} retweet(s), " \
@@ -50,9 +52,10 @@ def write_file(response, out_file):
         logger.info("Failed to write response to file")
 
 
-def write_db(response, collection="cc_tweets", cache=False):
+def write_db(response, collection="cc_tweets", cache=False, reaction=None):
     if "data" not in response:
         logger.warning("Empty response --> skip")
+        logger.warning(response)
         return
     response = response["data"]
     if cache:
@@ -60,20 +63,26 @@ def write_db(response, collection="cc_tweets", cache=False):
             if "author_id" in res:
                 if "referenced_tweets" in res and res["referenced_tweets"][0]["type"] == "quoted" and len(
                         res["referenced_tweets"]) < 2:
-                    # from quote crawl
+                    # quote
                     tweet_cache.append(Tweet(res["id"], res["public_metrics"]))
 
                 elif res["author_id"] not in author_cache:
+                    # regular reply tweet response, user already seen
                     new_user = User(res["author_id"])
                     new_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
                     author_cache[res["author_id"]] = new_user
                 else:
+                    # regular reply tweet response, user new
                     existing_user = author_cache[res["author_id"]]
                     existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
             if "username" in res:
+                # regular user response
                 author_cache[res["id"]].set_username(res["username"])
                 author_cache[res["id"]].retrieved = True
-
+    if reaction is not None:
+        # edit responses such that the tweet id is appended for the reaction liked and retweeted of a user
+        for res in response:
+            res[reaction[0]] = reaction[1]
     db.insert(response, collection)
 
 
@@ -81,7 +90,13 @@ def recursive_crawl(crawl_function, params, collection, cache):
     # TODO Figure out min time.sleep needed
     time.sleep(0.5)
     response = crawl_function(**params)
-    remaining = int(response.headers["x-rate-limit-remaining"])
+    try:
+        remaining = int(response.headers["x-rate-limit-remaining"])
+    except KeyError:
+        logger.error(f'{response}')
+        logger.error(f'{response.json()}')
+        logger.error(f'{params}')
+
     max_remaining = int(response.headers["x-rate-limit-limit"])
     limit_reset_time = int(response.headers["x-rate-limit-reset"])
     try:
@@ -156,7 +171,7 @@ def get_user():
 
 @timeit
 def quotes():
-    logger.info("Retrieve all quotes")
+    logger.info("Retrieve all quotes, likes and retweets")
     for user in list(author_cache.values()):
         for tweet in user.tweets:
             if tweet.quote_count > 0 and not tweet.quotes_retrieved:
@@ -168,6 +183,30 @@ def quotes():
                 }
                 crawl(crawl_function=api.get_quotes, params=quote_params, cache=True)
                 tweet.quotes_retrieved = True
+            #todo separate likes retweets due to bandwith and use crawl function for infinite crawling
+            if tweet.like_count > 0 and not tweet.likes_retrieved:
+                logger.info("Retrieve likes")
+                like_response = api.get_liking_users(tweet.id).json()
+
+                write_file(like_response, out_file)
+                write_db(like_response, "cc_users", cache=False, reaction=("liked", tweet.id))
+                tweet.likes_retrieved = True
+            if tweet.retweet_count > 0 and not tweet.retweets_retrieved:
+                logger.info("Retrieve retweets")
+                retweet_response = api.get_retweeting_users(tweet.id).json()
+                write_file(retweet_response, out_file)
+                write_db(retweet_response, "cc_users", cache=False, reaction=("retweeted", tweet.id))
+                tweet.retweets_retrieved = True
+
+
+@timeit
+def retweets():
+    logger.info("Retrieve up to 100 most recent retweets")
+    retweet_response = api.get_retweeting_users(SEED_TWEET_ID)
+    res_json = retweet_response.json()
+    write_file(res_json, out_file)
+    write_db(res_json)
+
 
 
 #
@@ -223,14 +262,7 @@ def quotes():
 # except KeyError:
 #     logger.info("No retweets found using full-archive search")
 #
-# # 100 MOST RECENT RETWEETER
-# out_file.write("RETWEETER2 \n")
-# logger.info("Crawl 100 most recent retweets")
-# retweet_response = api.get_retweeting_users(SEED_TWEET_ID)
-# res_json = retweet_response.json()
-# write_file(res_json, out_file)
-# write_db(res_json)
-#
+
 
 
 # TODO Add crawling time and cc_event_id/name to db
@@ -241,9 +273,9 @@ events = {"1433361036191612930": 0,  # toni test tweet
           "1158074774297468928": 1,  # neil degrasse tyson
           }  # todo add ids to db
 
-SEED_TWEET_ID = "1433361036191612930"  # toni
+#SEED_TWEET_ID = "1433361036191612930"  # toni
 SEED_TWEET_ID = "1442243266280370177"  # vanderhorst
-SEED_TWEET_ID = "1158074774297468928"  # neildegrasstyson
+#SEED_TWEET_ID = "1158074774297468928"  # neildegrasstyson
 
 out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
@@ -253,8 +285,11 @@ tweet_cache = []
 @timeit
 def rec_pipeline(tweet_id):
     reply_tree(tweet_id)
+    time.sleep(0.5)
     get_user()
+    time.sleep(0.5)
     quotes()
+    time.sleep(0.5)
     while len(tweet_cache) > 0:
         twt_obj = tweet_cache.pop(0)
         if twt_obj.sum_metric_count() > 0:
@@ -265,6 +300,5 @@ if __name__ == "__main__":
     seed_tweet(SEED_TWEET_ID)
     rec_pipeline(SEED_TWEET_ID)
 
-# todo too many requests from user to quotes maybe pause in between pipeline
     # for k, d in author_cache.items():
     #     print(d)
