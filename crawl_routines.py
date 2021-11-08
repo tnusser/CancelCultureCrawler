@@ -79,10 +79,12 @@ def write_db(response, collection="cc_tweets", cache=False, reaction=None):
                 # regular user response
                 author_cache[res["id"]].set_username(res["username"])
                 author_cache[res["id"]].retrieved = True
-    if reaction is not None:
+    for res in response:
         # edit responses such that the tweet id is appended for the reaction liked and retweeted of a user
-        for res in response:
+        if reaction is not None:
             res[reaction[0]] = reaction[1]
+        res["seed"] = SEED_TWEET_ID
+        res["crawl_timestamp"] = crawl_time_stamp
     db.insert(response, collection)
 
 
@@ -183,11 +185,10 @@ def quotes():
                 }
                 crawl(crawl_function=api.get_quotes, params=quote_params, cache=True)
                 tweet.quotes_retrieved = True
-            #todo separate likes retweets due to bandwith and use crawl function for infinite crawling
+            # todo separate likes retweets due to bandwith and use crawl function for infinite crawling
             if tweet.like_count > 0 and not tweet.likes_retrieved:
                 logger.info("Retrieve likes")
                 like_response = api.get_liking_users(tweet.id).json()
-
                 write_file(like_response, out_file)
                 write_db(like_response, "cc_users", cache=False, reaction=("liked", tweet.id))
                 tweet.likes_retrieved = True
@@ -200,25 +201,25 @@ def quotes():
 
 
 @timeit
-def retweets():
-    logger.info("Retrieve up to 100 most recent retweets")
-    retweet_response = api.get_retweeting_users(SEED_TWEET_ID)
-    res_json = retweet_response.json()
-    write_file(res_json, out_file)
-    write_db(res_json)
+def pipeline(tweet_id):
+    """
+    Recursive pipeline which retrieves reply tree, involved users and quotes
+    @param tweet_id: seed tweet id
+    @return: writes results to file and db
+    """
+    reply_tree(tweet_id)
+    time.sleep(0.5)
+    get_user()
+    time.sleep(0.5)
+    quotes()
+    time.sleep(0.5)
+    while len(tweet_cache) > 0:
+        twt_obj = tweet_cache.pop(0)
+        if twt_obj.sum_metric_count() > 0:
+            pipeline(twt_obj.id)
 
 
-
-#
-# # LIKERS OF TWEET
-# out_file.write("\nLIKER OF TWEET \n")
-# logger.info("Crawl liker")
-# like_response = api.get_liking_users(SEED_TWEET_ID)
-# res_json = like_response.json()
-# write_file(res_json, out_file)
-# write_db(res_json)
-#
-# # FOLLOWER OF USER
+# FOLLOWER OF USER
 # out_file.write("FOLLOWER \n")
 # logger.info("Crawl followers")
 # quote_params = {
@@ -261,44 +262,19 @@ def retweets():
 #     write_db(res_json)
 # except KeyError:
 #     logger.info("No retweets found using full-archive search")
-#
 
-
-
-# TODO Add crawling time and cc_event_id/name to db
-# TODO Add ids?
-# TODO cache user and timeline (id) crawls here
-
-events = {"1433361036191612930": 0,  # toni test tweet
-          "1158074774297468928": 1,  # neil degrasse tyson
-          }  # todo add ids to db
-
-#SEED_TWEET_ID = "1433361036191612930"  # toni
-SEED_TWEET_ID = "1442243266280370177"  # vanderhorst
-#SEED_TWEET_ID = "1158074774297468928"  # neildegrasstyson
+events = {
+    -1: "1442243266280370177",  # vanderhorst test tweet
+    0: "1433361036191612930",  # toni test tweet
+    1: "1158074774297468928"  # neil degrasse tyson
+}
 
 out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
 
-
-@timeit
-def rec_pipeline(tweet_id):
-    reply_tree(tweet_id)
-    time.sleep(0.5)
-    get_user()
-    time.sleep(0.5)
-    quotes()
-    time.sleep(0.5)
-    while len(tweet_cache) > 0:
-        twt_obj = tweet_cache.pop(0)
-        if twt_obj.sum_metric_count() > 0:
-            rec_pipeline(twt_obj.id)
-
-
 if __name__ == "__main__":
+    SEED_TWEET_ID = events[0]
+    crawl_time_stamp = time.time()
     seed_tweet(SEED_TWEET_ID)
-    rec_pipeline(SEED_TWEET_ID)
-
-    # for k, d in author_cache.items():
-    #     print(d)
+    pipeline(SEED_TWEET_ID)
