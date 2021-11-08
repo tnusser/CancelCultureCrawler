@@ -1,5 +1,7 @@
 import datetime
 import json
+import time
+
 import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
@@ -89,11 +91,11 @@ def write_db(response, collection="cc_tweets", cache=False, reaction=None):
 
 
 def recursive_crawl(crawl_function, params, collection, cache):
-    # TODO Figure out min time.sleep needed
-    time.sleep(0.5)
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
+        response_time = float(response.headers["x-response-time"]) * 0.001
+        time.sleep(1 - response_time if response_time < 1 else 1)
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
