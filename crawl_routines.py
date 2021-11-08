@@ -188,18 +188,18 @@ def quotes():
                 crawl(crawl_function=api.get_quotes, params=quote_params, cache=True)
                 tweet.quotes_retrieved = True
             # todo separate likes retweets due to bandwith and use crawl function for infinite crawling
-            if tweet.like_count > 0 and not tweet.likes_retrieved:
-                logger.info("Retrieve likes")
-                like_response = api.get_liking_users(tweet.id).json()
-                write_file(like_response, out_file)
-                write_db(like_response, "cc_users", cache=False, reaction=("liked", tweet.id))
-                tweet.likes_retrieved = True
-            if tweet.retweet_count > 0 and not tweet.retweets_retrieved:
-                logger.info("Retrieve retweets")
-                retweet_response = api.get_retweeting_users(tweet.id).json()
-                write_file(retweet_response, out_file)
-                write_db(retweet_response, "cc_users", cache=False, reaction=("retweeted", tweet.id))
-                tweet.retweets_retrieved = True
+            # if tweet.like_count > 0 and not tweet.likes_retrieved:
+            #     logger.info("Retrieve likes")
+            #     like_response = api.get_liking_users(tweet.id).json()
+            #     write_file(like_response, out_file)
+            #     write_db(like_response, "cc_users", cache=False, reaction=("liked", tweet.id))
+            #     tweet.likes_retrieved = True
+            # if tweet.retweet_count > 0 and not tweet.retweets_retrieved:
+            #     logger.info("Retrieve retweets")
+            #     retweet_response = api.get_retweeting_users(tweet.id).json()
+            #     write_file(retweet_response, out_file)
+            #     write_db(retweet_response, "cc_users", cache=False, reaction=("retweeted", tweet.id))
+            #     tweet.retweets_retrieved = True
 
 
 @timeit
@@ -276,7 +276,7 @@ author_cache = {}
 tweet_cache = []
 
 if __name__ == "__main__":
-    SEED_TWEET_ID = events[0]
+    SEED_TWEET_ID = events[1]
     crawl_time_stamp = time.time()
     seed_tweet(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
