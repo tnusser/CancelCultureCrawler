@@ -1,7 +1,8 @@
 import datetime
 import json
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import sys
+import time
 import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
@@ -135,8 +136,7 @@ def crawl(crawl_function, params, collection="cc_tweets", cache=False):
             # Crawl done without exceeding any limits
             break
         logger.info(
-            "Wait until limit reset in " + str(
-                datetime.timedelta(seconds=next_crawl_time - int(time.time()))) + " h/m/s")
+            f"Wait until limit reset in {timedelta(seconds=next_crawl_time - int(time.time()))} h/m/s")
         try:
             time.sleep(next_crawl_time - time.time())
         except ValueError():
@@ -277,6 +277,5 @@ tweet_cache = []
 
 if __name__ == "__main__":
     SEED_TWEET_ID = events[1]
-    crawl_time_stamp = datetime.now()
     seed_tweet(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
