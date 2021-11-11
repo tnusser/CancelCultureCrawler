@@ -95,10 +95,7 @@ def recursive_crawl(crawl_function, params, collection, cache):
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
-        logger.info(f'1 - response time {1 - response_time}')
-        logger.info(f'remaining {remaining}')
-        time.sleep(1 - response_time + 0.2 if response_time < 1 else 1.2)
-        logger.info("slept")
+        time.sleep(1 - response_time if response_time < 1 else 1)
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
@@ -116,7 +113,7 @@ def recursive_crawl(crawl_function, params, collection, cache):
     if "next_token" not in response_json["meta"]:
         logger.info("Successfully crawled ")
         return None
-    elif remaining == 0:
+    elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
         # Next_token available but crawl limit reached
         logger.info(
             "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
