@@ -104,6 +104,8 @@ def recursive_crawl(crawl_function, params, collection, cache):
 
     max_remaining = int(response.headers["x-rate-limit-limit"])
     limit_reset_time = int(response.headers["x-rate-limit-reset"])
+    logger.info(max_remaining)
+    logger.info(remaining)
     try:
         response_json = response.json()
         write_file(response_json, out_file)
