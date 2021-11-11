@@ -1,6 +1,6 @@
 import datetime
 import json
-import time
+from datetime import datetime
 
 import simplejson.errors
 import mongo_db as db
@@ -95,7 +95,9 @@ def recursive_crawl(crawl_function, params, collection, cache):
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
+        logger.info(f'1 - response time {1 - response_time}')
         time.sleep(1 - response_time if response_time < 1 else 1)
+        logger.info("slept")
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
@@ -277,6 +279,6 @@ tweet_cache = []
 
 if __name__ == "__main__":
     SEED_TWEET_ID = events[1]
-    crawl_time_stamp = time.time()
+    crawl_time_stamp = datetime.now()
     seed_tweet(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
