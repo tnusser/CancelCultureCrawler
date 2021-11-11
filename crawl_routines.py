@@ -96,7 +96,7 @@ def recursive_crawl(crawl_function, params, collection, cache):
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
-        time.sleep(1 - response_time if response_time < 1 else 1)
+        time.sleep(1 - response_time + 0.5 if response_time < 1 else 1.5)
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
@@ -212,11 +212,11 @@ def pipeline(tweet_id):
     @return: writes results to file and db
     """
     reply_tree(tweet_id)
-    time.sleep(0.5)
+    time.sleep(1.2)
     get_user()
-    time.sleep(0.5)
+    time.sleep(1.2)
     quotes()
-    time.sleep(0.5)
+    time.sleep(1.2)
     while len(tweet_cache) > 0:
         twt_obj = tweet_cache.pop(0)
         if twt_obj.sum_metric_count() > 0:
