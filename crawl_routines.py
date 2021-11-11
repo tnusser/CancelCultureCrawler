@@ -96,6 +96,7 @@ def recursive_crawl(crawl_function, params, collection, cache):
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
         logger.info(f'1 - response time {1 - response_time}')
+        logger.info(f'remaining {remaining}')
         time.sleep(1 - response_time + 0.2 if response_time < 1 else 1.2)
         logger.info("slept")
     except KeyError:
