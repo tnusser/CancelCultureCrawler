@@ -299,6 +299,6 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = events[-1]
+    SEED_TWEET_ID = events[1]
     get_seed(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
