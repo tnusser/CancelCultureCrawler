@@ -1,7 +1,6 @@
 import logging
 import time
-import inspect
-
+from functools import wraps
 
 class CustomLogFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
@@ -49,7 +48,7 @@ def timeit(function):
     @param function: input function
     @return: result of input function
     """
-
+    @wraps(function)
     def timer(*args, **kwargs):
         start = time.time()
         result = function(*args, **kwargs)
@@ -68,6 +67,6 @@ def batch(iterable, n=1):
     @param n: batch-size
     @return: iterable which yields batch-sized outputs
     """
-    l = len(iterable)
-    for ndx in range(0, l, n):
-        yield iterable[ndx:min(ndx + n, l)]
+    it_length = len(iterable)
+    for ndx in range(0, it_length, n):
+        yield iterable[ndx:min(ndx + n, it_length)]

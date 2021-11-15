@@ -1,8 +1,5 @@
-import datetime
 import json
 from datetime import datetime, timedelta
-import sys
-import time
 import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
@@ -55,46 +52,69 @@ def write_file(response, out_file):
         logger.info("Failed to write response to file")
 
 
-def write_db(response, collection="cc_tweets", cache=False, reaction=None):
-    if "data" not in response:
-        logger.warning("Empty response --> skip")
-        logger.warning(response)
-    response = response["data"]
-    if cache:
-        for res in response:
-            if "author_id" in res:
-                if "referenced_tweets" in res and res["referenced_tweets"][0]["type"] == "quoted" and len(
-                        res["referenced_tweets"]) < 2:
-                    # quote
-                    tweet_cache.append(Tweet(res["id"], res["public_metrics"]))
+def process_result(response, f_name):
+    logger.info(f'Processing results of {f_name}...')
+    tweet_func = {"get_seed", "get_replies", "get_quotes"}
+    user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 
-                elif res["author_id"] not in author_cache:
-                    # regular reply tweet response, user already seen
+    if "data" not in response:
+        logger.warning(f"Empty response returned from {f_name} --> skip")
+        logger.warning(response)
+        return
+    response = response["data"]
+    for res in response:
+        res["seed"] = SEED_TWEET_ID
+        res["crawl_timestamp"] = crawl_time_stamp
+
+        if f_name in tweet_func:
+            # tweet object
+            res["likes_crawled"] = False
+            res["retweets_crawled"] = False
+
+            if f_name == "get_quotes":
+                # quote
+                tweet_cache.append(Tweet(res["id"], res["public_metrics"]))
+            if f_name == "get_seed" or f_name == "get_replies":
+                # seed or reply
+                if res["author_id"] not in author_cache:
+                    # new user --> add to cache
                     new_user = User(res["author_id"])
                     new_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
                     author_cache[res["author_id"]] = new_user
                 else:
-                    # regular reply tweet response, user new
+                    # user existing in cache
                     existing_user = author_cache[res["author_id"]]
                     existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
-            if "username" in res:
-                # regular user response
-                author_cache[res["id"]].set_username(res["username"])
-                author_cache[res["id"]].retrieved = True
-    for res in response:
-        # edit responses such that the tweet id is appended for the reaction liked and retweeted of a user
-        if reaction is not None:
-            res[reaction[0]] = reaction[1]
-        res["seed"] = SEED_TWEET_ID
-        res["crawl_timestamp"] = crawl_time_stamp
+        else:
+            # user object
+            res["followers_crawled"] = False
+            res["following_crawled"] = False
+            res["timeline_crawled"] = False
+            res["liked"] = []
+            res["retweeted"] = []
+
+            # regular user response
+            author_cache[res["id"]].set_username(res["username"])
+            author_cache[res["id"]].retrieved = True
+
+    if f_name in tweet_func:
+        collection = "cc_tweets"
+    elif f_name in user_func:
+        collection = "cc_users"
+    else:
+        logger.warning(f"No suitable collection in db found for {f_name}")
+        collection = "default"
+    # insert to db
     db.insert(response, collection)
 
-def recursive_crawl(crawl_function, params, collection, cache):
+
+def recursive_crawl(crawl_function, params):
+    time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
-        time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
+        #time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
@@ -107,31 +127,37 @@ def recursive_crawl(crawl_function, params, collection, cache):
     response_json = response.json()
     if "data" in response_json:
         write_file(response_json, out_file)
-        write_db(response_json, collection, cache)
+        process_result(response_json, crawl_function.__name__)
     else:
         logger.info("No data in response")
         logger.info("Rate Limit Error on first request --> wait on limit reset")
         return limit_reset_time
-    if "next_token" not in response_json["meta"]:
-        logger.info("Successfully crawled ")
-        return None
-    elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
-        # Next_token available but crawl limit reached
-        logger.info(
-            "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
-        return limit_reset_time
+    if "meta" in response_json:
+        if "next_token" not in response_json["meta"]:
+            logger.info("Successfully crawled tweet")
+            return None
+        elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
+            # Next_token available but crawl limit reached
+            logger.info(
+                "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
+            return limit_reset_time
+        else:
+            # More results available --> use next_token
+            if "meta" in response_json:
+                next_token = response_json["meta"]["next_token"]
+                logger.info("Next crawl --> Pagination token " + next_token)
+                params["next_token"] = next_token
+                return recursive_crawl(crawl_function, params)
     else:
-        # More results available --> use next_token
-        next_token = response_json["meta"]["next_token"]
-        logger.info("Next crawl --> Pagination token " + next_token)
-        params["next_token"] = next_token
-        return recursive_crawl(crawl_function, params, collection, cache)
+        # user crawl and no limit reached --> continue
+        logger.info("Successfully crawled user")
+        return None
 
 
-def crawl(crawl_function, params, collection="cc_tweets", cache=False):
+def crawl(crawl_function, params):
     next_crawl_time = time.time()
     while next_crawl_time is not None:
-        next_crawl_time = recursive_crawl(crawl_function, params, collection, cache)
+        next_crawl_time = recursive_crawl(crawl_function, params)
         logger.info("Next Crawl Time {}".format(next_crawl_time))
         if next_crawl_time is None:
             # Crawl done without exceeding any limits
@@ -145,11 +171,11 @@ def crawl(crawl_function, params, collection="cc_tweets", cache=False):
 
 
 @timeit
-def seed_tweet(tweet_id):
+def get_seed(tweet_id):
     logger.info("Retrieving seed tweet")
     response = api.get_tweets_by_id([tweet_id]).json()
     write_file(response, out_file)
-    write_db(response, cache=True)
+    process_result(response, get_seed.__name__)
     return response
 
 
@@ -161,17 +187,15 @@ def reply_tree(tweet_id):
         "except_fields": None,
         "next_token": None
     }
-    crawl(crawl_function=api.get_replies, params=reply_params, cache=True)
+    crawl(crawl_function=api.get_replies, params=reply_params)
 
 
 @timeit
-def get_user():
+def user():
     logger.info("Retrieving user information")
     author_ids = [author.id for author in author_cache.values() if not author.retrieved]
     for author_id_batch in batch(author_ids, 100):
-        user_response = api.get_users_by_id(author_id_batch).json()
-        write_file(user_response, out_file)
-        write_db(user_response, "cc_users", cache=True)
+        crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
 
 
 @timeit
@@ -186,7 +210,7 @@ def quotes():
                     "except_fields": None,
                     "next_token": None
                 }
-                crawl(crawl_function=api.get_quotes, params=quote_params, cache=True)
+                crawl(crawl_function=api.get_quotes, params=quote_params)
                 tweet.quotes_retrieved = True
             # todo separate likes retweets due to bandwith and use crawl function for infinite crawling
             # if tweet.like_count > 0 and not tweet.likes_retrieved:
@@ -211,11 +235,8 @@ def pipeline(tweet_id):
     @return: writes results to file and db
     """
     reply_tree(tweet_id)
-    time.sleep(1.2)
-    get_user()
-    time.sleep(1.2)
+    user()
     quotes()
-    time.sleep(1.2)
     while len(tweet_cache) > 0:
         twt_obj = tweet_cache.pop(0)
         if twt_obj.sum_metric_count() > 0:
@@ -278,6 +299,6 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = events[1]
-    seed_tweet(SEED_TWEET_ID)
+    SEED_TWEET_ID = events[-1]
+    get_seed(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
