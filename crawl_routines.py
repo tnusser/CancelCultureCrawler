@@ -59,7 +59,6 @@ def write_db(response, collection="cc_tweets", cache=False, reaction=None):
     if "data" not in response:
         logger.warning("Empty response --> skip")
         logger.warning(response)
-        return
     response = response["data"]
     if cache:
         for res in response:
@@ -90,13 +89,12 @@ def write_db(response, collection="cc_tweets", cache=False, reaction=None):
         res["crawl_timestamp"] = crawl_time_stamp
     db.insert(response, collection)
 
-
 def recursive_crawl(crawl_function, params, collection, cache):
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
         response_time = float(response.headers["x-response-time"]) * 0.001
-        time.sleep(1 - response_time + 1.5 if response_time < 1 else 2)
+        time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
     except KeyError:
         logger.error(f'{response}')
         logger.error(f'{response.json()}')
@@ -106,11 +104,12 @@ def recursive_crawl(crawl_function, params, collection, cache):
     limit_reset_time = int(response.headers["x-rate-limit-reset"])
     logger.info(max_remaining)
     logger.info(remaining)
-    try:
-        response_json = response.json()
+    response_json = response.json()
+    if "data" in response_json:
         write_file(response_json, out_file)
         write_db(response_json, collection, cache)
-    except simplejson.errors.JSONDecodeError:
+    else:
+        logger.info("No data in response")
         logger.info("Rate Limit Error on first request --> wait on limit reset")
         return limit_reset_time
     if "next_token" not in response_json["meta"]:

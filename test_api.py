@@ -336,8 +336,7 @@ class ApiEndpoints:
             unwanted_fields = re.split(",", except_fields)
             wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
             params["tweet.fields"] = wanted_fields
-        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params,
-                                headers=self.HEADER)
+        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
     @staticmethod
