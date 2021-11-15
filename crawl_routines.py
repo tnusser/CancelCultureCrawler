@@ -115,7 +115,7 @@ def recursive_crawl(crawl_function, params, collection, cache):
     if "next_token" not in response_json["meta"]:
         logger.info("Successfully crawled ")
         return None
-    elif remaining == 0 or remaining == 2700 or remaining == 2701:  # TODO RATE-LIMIT-BUG BY TWITTER API
+    elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
         # Next_token available but crawl limit reached
         logger.info(
             "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
