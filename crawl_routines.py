@@ -113,46 +113,45 @@ def recursive_crawl(crawl_function, params):
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
+        max_remaining = int(response.headers["x-rate-limit-limit"])
+        limit_reset_time = int(response.headers["x-rate-limit-reset"])
+        logger.info(f"Remaining: {remaining}")
+        logger.info(f"Max requests: {max_remaining}")
         response_time = float(response.headers["x-response-time"]) * 0.001
-        #time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
-    except KeyError:
-        logger.error(f'{response}')
-        logger.error(f'{response.json()}')
-        logger.error(f'{params}')
-
-    max_remaining = int(response.headers["x-rate-limit-limit"])
-    limit_reset_time = int(response.headers["x-rate-limit-reset"])
-    logger.info(max_remaining)
-    logger.info(remaining)
-    response_json = response.json()
-    if "data" in response_json:
-        write_file(response_json, out_file)
-        process_result(response_json, crawl_function.__name__)
-    else:
-        logger.info("No data in response")
-        logger.info("Rate Limit Error on first request --> wait on limit reset")
-        return limit_reset_time
-    if "meta" in response_json:
-        if "next_token" not in response_json["meta"]:
-            logger.info("Successfully crawled tweet")
-            return None
-        elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
-            # Next_token available but crawl limit reached
-            logger.info(
-                "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
-            return limit_reset_time
+        # time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
+        response_json = response.json()
+        if "data" in response_json:
+            write_file(response_json, out_file)
+            process_result(response_json, crawl_function.__name__)
         else:
-            # More results available --> use next_token
-            if "meta" in response_json:
-                next_token = response_json["meta"]["next_token"]
-                logger.info("Next crawl --> Pagination token " + next_token)
-                params["next_token"] = next_token
-                return recursive_crawl(crawl_function, params)
-    else:
-        # user crawl and no limit reached --> continue
-        logger.info("Successfully crawled user")
-        return None
-
+            logger.info(response_json) # TODO ABBRUCH BEDINGUNG WENN QUOTE FERTIG
+            logger.info("No data in response")
+            logger.info("Rate Limit Error on first request --> wait on limit reset")
+            return limit_reset_time
+        if "meta" in response_json:
+            if "next_token" not in response_json["meta"]:
+                logger.info("Successfully crawled tweet")
+                return None
+            elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
+                # Next_token available but crawl limit reached
+                logger.info(
+                    "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
+                return limit_reset_time
+            else:
+                # More results available --> use next_token
+                if "meta" in response_json:
+                    next_token = response_json["meta"]["next_token"]
+                    logger.info("Next crawl --> Pagination token " + next_token)
+                    params["next_token"] = next_token
+                    return recursive_crawl(crawl_function, params)
+        else:
+            # user crawl and no limit reached --> continue
+            logger.info("Successfully crawled user")
+            return None
+    except KeyError:
+        logger.exception("Error in recursive crawl")
+        logger.error(f'{response}')
+        logger.error(f'{params}')
 
 def crawl(crawl_function, params):
     next_crawl_time = time.time()
@@ -234,7 +233,7 @@ def pipeline(tweet_id):
     @param tweet_id: seed tweet id
     @return: writes results to file and db
     """
-    reply_tree(tweet_id)
+    #reply_tree(tweet_id)
     user()
     quotes()
     while len(tweet_cache) > 0:
