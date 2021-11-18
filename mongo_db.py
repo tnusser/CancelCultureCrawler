@@ -4,8 +4,10 @@ import json
 import time
 from helper import logger
 
-client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client['twitter_db']
+
+def create_collection(collection):
+    if collection not in db.collection_names():
+        db.create_collection(collection)
 
 
 def insert(json_data, collection):
@@ -14,6 +16,14 @@ def insert(json_data, collection):
         tweets.insert_many(json_data)
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
+
+
+client = MongoClient('mongodb://127.0.0.1:27017/')
+db = client['twitter_db']
+create_collection("cc_users")
+create_collection("cc_tweets")
+db["cc_users"].create_index("id")
+db["cc_tweets"].create_index("id")
 
 
 def read():
