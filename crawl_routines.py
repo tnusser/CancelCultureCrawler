@@ -4,8 +4,10 @@ import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
 from helper import *
+import sys
 
 api = ApiEndpoints()
+sys.setrecursionlimit(10000)
 
 
 class Tweet:
