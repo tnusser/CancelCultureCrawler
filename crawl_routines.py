@@ -9,6 +9,9 @@ import sys
 api = ApiEndpoints()
 sys.setrecursionlimit(10000)
 
+tweet_func = {"get_seed", "get_replies", "get_quotes"}
+user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
+
 
 class Tweet:
     def __init__(self, tweet_id, public_metrics):
@@ -56,9 +59,6 @@ def write_file(response, out_file):
 
 def process_result(response, f_name):
     logger.info(f'Processing results of {f_name}...')
-    tweet_func = {"get_seed", "get_replies", "get_quotes"}
-    user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
-
     if "data" not in response:
         logger.warning(f"Empty response returned from {f_name} --> skip")
         logger.warning(response)
@@ -111,8 +111,9 @@ def process_result(response, f_name):
 
 
 def recursive_crawl(crawl_function, params):
-    time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
-    logger.info(f"Crawling function {crawl_function} params: {params}")
+    if crawl_function.__name__ in tweet_func: # according to documentation sleep only needed for full archive search
+        time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
+    logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
@@ -127,7 +128,7 @@ def recursive_crawl(crawl_function, params):
             write_file(response_json, out_file)
             process_result(response_json, crawl_function.__name__)
         else:
-            logger.info(response_json) # TODO ABBRUCH BEDINGUNG WENN QUOTE FERTIG
+            logger.info(response_json)  # TODO ABBRUCH BEDINGUNG WENN QUOTE FERTIG
             logger.info("No data in response")
             logger.info("Rate Limit Error on first request --> wait on limit reset")
             return limit_reset_time
@@ -156,6 +157,7 @@ def recursive_crawl(crawl_function, params):
         logger.exception("Error in recursive crawl")
         logger.error(f'{response}')
         logger.error(f'{params}')
+
 
 def crawl(crawl_function, params):
     next_crawl_time = time.time()
@@ -290,11 +292,22 @@ def pipeline(tweet_id):
 # except KeyError:
 #     logger.info("No retweets found using full-archive search")
 
-events = {
-    -1: "1442243266280370177",  # vanderhorst test tweet
-    0: "1433361036191612930",  # toni test tweet
-    1: "1158074774297468928"  # neil degrasse tyson
-}
+class EventSearch:
+    def __init__(self, uid, tweet_id, start_date, hashtag, username, comment):
+        self.uid = uid,
+        self.tweet_id = tweet_id,
+        self.start_date = start_date,
+        self.hashtag = hashtag,
+        self.username = username
+        self.comment = comment
+
+
+event_list = [
+    EventSearch(-1, "1442243266280370177", start_date=None, hashtag=None, username=None, comment="vanderhorst"),
+    EventSearch(0, "1433361036191612930", start_date=None, hashtag=None, username=None, comment="toni test"),
+    EventSearch(1, "1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtag=["neildegrassetyson"],
+                username="neiltyson", comment="neil de grasse tyson"),
+]
 
 out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
@@ -302,6 +315,6 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = events[1]
+    SEED_TWEET_ID = event_list[2].tweet_id
     get_seed(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)

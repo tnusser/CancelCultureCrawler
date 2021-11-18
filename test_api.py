@@ -25,17 +25,21 @@ class ApiEndpoints:
         self.HEADER = {"Authorization": "Bearer {}".format(BEARER_TOKEN)}
         self.START_DATE = "2010-01-20T23:59:59.000Z"
 
-    def get_tweets_by_id(self, ids, except_fields=None):
-        """
-        Retrieves tweet objects
-        :param ids: comma separated list of user ids to be retrieved (max: 100)
-        :param except_fields: optional param for fields which should be excluded. 'default' --> id, text
-        :return: json object containing requested fields of the tweet
-        """
-        if len(ids) > 100:
-            logger.error("get_users_by_id called with more than 100 users")
-            return
-        params = {"ids": ",".join(ids)}
+    def except_user_fields(self, params, except_fields=None):
+        if except_fields is None:
+            wanted_fields = ",".join(self.USER_FIELDS)
+            params["user.fields"] = wanted_fields
+        elif except_fields == "default":
+            # Retrieve default fields
+            pass
+        else:
+            # Remove unwanted fields
+            unwanted_fields = re.split(",", except_fields)
+            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
+            params["user.fields"] = wanted_fields
+        return params
+
+    def except_tweet_fields(self, params, except_fields=None):
         if except_fields is None:
             wanted_fields = ",".join(self.TWEET_FIELDS)
             params["tweet.fields"] = wanted_fields
@@ -47,7 +51,33 @@ class ApiEndpoints:
             unwanted_fields = re.split(",", except_fields)
             wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
             params["tweet.fields"] = wanted_fields
+            return params
+
+    def get_tweets_by_id(self, ids, except_fields=None):
+        """
+        Retrieves tweet objects
+        :param ids: comma separated list of user ids to be retrieved (max: 100)
+        :param except_fields: optional param for fields which should be excluded. 'default' --> id, text
+        :return: json object containing requested fields of the tweet
+        """
+        if len(ids) > 100:
+            logger.error("get_users_by_id called with more than 100 users")
+            return
+        params = {"ids": ",".join(ids)}
+        params = self.except_tweet_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "tweets?", params=params, headers=self.HEADER)
+        return self.exception_handler(response)
+
+    def get_tweets_by_tag(self, username, hashtags, start_date, end_date, except_fields=None, next_token=None):
+        q_string = ""
+        for hashtag in hashtags:
+            q_string += f'#{hashtag} OR'
+        params = {
+            'query': f"{q_string} @{username}",
+            'start_time': start_date,
+            'end_time': end_date
+        }
+        response = self.full_archive_search(next_token, params, except_fields)
         return self.exception_handler(response)
 
     def get_users_by_id(self, ids, except_fields=None):
@@ -61,17 +91,7 @@ class ApiEndpoints:
             logger.error("get_users_by_id called with more than 100 users")
             return
         params = {"ids": ",".join(ids)}
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_user_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
@@ -90,17 +110,7 @@ class ApiEndpoints:
         }
         if next_token is not None:
             params["pagination_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_user_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/tweets?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)
@@ -120,17 +130,7 @@ class ApiEndpoints:
         }
         if next_token is not None:
             params["pagination_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_user_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/followers?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
@@ -149,17 +149,7 @@ class ApiEndpoints:
         }
         if next_token is not None:
             params["pagination_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_user_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/following?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
@@ -171,17 +161,7 @@ class ApiEndpoints:
         :return: json object containing id, name and username of users that liked that tweet
         """
         params = {}
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_user_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "tweets/" + tweet_id + "/liking_users?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)
@@ -201,17 +181,7 @@ class ApiEndpoints:
         }
         if next_token is not None:
             params["pagination_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.TWEET_FIELDS)
-            params["tweet.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
-            params["tweet.fields"] = wanted_fields
+        params = self.except_tweet_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/liked_tweets?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)
@@ -224,17 +194,7 @@ class ApiEndpoints:
         :return: json object containing id, name and username of users that retweeted that tweet
         """
         params = {}
-        if except_fields is None:
-            wanted_fields = ",".join(self.USER_FIELDS)
-            params["user.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.USER_FIELDS if f not in unwanted_fields])
-            params["user.fields"] = wanted_fields
+        params = self.except_tweet_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "tweets/" + tweet_id + "/retweeted_by?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)
@@ -247,7 +207,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id and text of tweets (and next_token if results > max_results)
         """
-        max_results = "100",
+        max_results = "500",
         params = {
             'query': "conversation_id:" + tweet_id,
             'start_time': self.START_DATE,
@@ -255,21 +215,7 @@ class ApiEndpoints:
             # 'expansions': 'referenced_tweets.id.author_id',
             # 'user.fields': 'public_metrics'
         }
-        if next_token is not None:
-            params["next_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.TWEET_FIELDS)
-            params["tweet.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
-            params["tweet.fields"] = wanted_fields
-        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params,
-                                headers=self.HEADER)
+        response = self.full_archive_search(next_token, params, except_fields)
         return self.exception_handler(response)
 
     def get_quotes(self, username, tweet_id, except_fields=None, next_token=None):
@@ -281,7 +227,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id and text of tweets (and next_token if results > max_results)
         """
-        max_results = "100"
+        max_results = "500"
         url = "https://twitter.com/" + username + "/status/" + tweet_id
         params = {
             'query': 'url:' + '"' + url + '" is:quote',
@@ -289,21 +235,7 @@ class ApiEndpoints:
             'start_time': self.START_DATE,
             'max_results': max_results,
         }
-        if next_token is not None:
-            params["next_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.TWEET_FIELDS)
-            params["tweet.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
-            params["tweet.fields"] = wanted_fields
-        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params,
-                                headers=self.HEADER)
+        response = self.full_archive_search(next_token, params, except_fields)
         return self.exception_handler(response)
 
     def get_retweets_archive_search(self, username, tweet_text, except_fields=None, next_token=None):
@@ -316,28 +248,22 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id of retweet (and next_token if results > max_results)
         """
-        max_results = "100"
+        max_results = "500"
         params = {
             'query': '"' + tweet_text + '" retweets_of:' + username,
             'expansions': 'author_id',
             'start_time': self.START_DATE,
             'max_results': max_results,
         }
+        response = self.full_archive_search(next_token, params, except_fields)
+        return self.exception_handler(response)
+
+    def full_archive_search(self, next_token, params, except_fields):
         if next_token is not None:
             params["next_token"] = next_token
-        if except_fields is None:
-            wanted_fields = ",".join(self.TWEET_FIELDS)
-            params["tweet.fields"] = wanted_fields
-        elif except_fields == "default":
-            # Retrieve default fields
-            pass
-        else:
-            # Remove unwanted fields
-            unwanted_fields = re.split(",", except_fields)
-            wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
-            params["tweet.fields"] = wanted_fields
+        params = self.except_tweet_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "tweets/search/all?", params=params, headers=self.HEADER)
-        return self.exception_handler(response)
+        return response
 
     @staticmethod
     def exception_handler(response):
