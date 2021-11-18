@@ -128,6 +128,7 @@ def recursive_crawl(crawl_function, params):
             write_file(response_json, out_file)
             process_result(response_json, crawl_function.__name__)
         else:
+            logger.info(f"No data --> response: {response_json}")
             if "meta" in response_json:
                 if "result_count" in response_json["meta"]:
                     logger.info("No data in response --> result-count = 0")
@@ -138,7 +139,6 @@ def recursive_crawl(crawl_function, params):
                         logger.warning("Tweet or User not found --> Skip")
                         return None
             else:
-                logger.info(response_json)
                 logger.info("Rate Limit Error on first request --> wait on limit reset")
             return limit_reset_time
         if "meta" in response_json:
