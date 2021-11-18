@@ -111,8 +111,6 @@ def process_result(response, f_name):
 
 
 def recursive_crawl(crawl_function, params):
-    if crawl_function.__name__ in tweet_func: # according to documentation sleep only needed for full archive search
-        time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
     logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     response = crawl_function(**params)
     try:
@@ -122,7 +120,9 @@ def recursive_crawl(crawl_function, params):
         logger.info(f"Remaining: {remaining}")
         logger.info(f"Max requests: {max_remaining}")
         response_time = float(response.headers["x-response-time"]) * 0.001
-        # time.sleep(1 - response_time + 1.5 if response_time < 1 else 1.5)
+        if crawl_function.__name__ in tweet_func:  # according to documentation sleep only needed for full archive search
+            # only 1 request per second allowed (response time + sleep > 1)
+            time.sleep(1 - response_time if response_time < 1 else 0.8)
         response_json = response.json()
         if "data" in response_json:
             write_file(response_json, out_file)
@@ -132,6 +132,11 @@ def recursive_crawl(crawl_function, params):
                 if "result_count" in response_json["meta"]:
                     logger.info("No data in response --> result-count = 0")
                     return None
+            elif "errors" in response_json:
+                if "title" in response_json["errors"][0]:
+                    if "Not Found Error" == response_json["errors"][0]["title"]:
+                        logger.warning("Tweet or User not found --> Skip")
+                        return None
             else:
                 logger.info(response_json)
                 logger.info("Rate Limit Error on first request --> wait on limit reset")
