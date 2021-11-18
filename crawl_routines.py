@@ -110,6 +110,7 @@ def process_result(response, f_name):
 
 def recursive_crawl(crawl_function, params):
     time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
+    logging.info(f"Crawling function {crawl_function} params: {params}")
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
@@ -141,7 +142,8 @@ def recursive_crawl(crawl_function, params):
                 # More results available --> use next_token
                 if "meta" in response_json:
                     next_token = response_json["meta"]["next_token"]
-                    logger.info("Next crawl --> Pagination token " + next_token)
+                    logger.info(f"Next crawl --> Next token {next_token}"
+                                f"{params}")
                     params["next_token"] = next_token
                     return recursive_crawl(crawl_function, params)
         else:
@@ -233,7 +235,7 @@ def pipeline(tweet_id):
     @param tweet_id: seed tweet id
     @return: writes results to file and db
     """
-    #reply_tree(tweet_id)
+    reply_tree(tweet_id)
     user()
     quotes()
     while len(tweet_cache) > 0:
