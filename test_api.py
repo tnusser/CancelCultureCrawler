@@ -51,7 +51,7 @@ class ApiEndpoints:
             unwanted_fields = re.split(",", except_fields)
             wanted_fields = ",".join([f for f in self.TWEET_FIELDS if f not in unwanted_fields])
             params["tweet.fields"] = wanted_fields
-            return params
+        return params
 
     def get_tweets_by_id(self, ids, except_fields=None):
         """

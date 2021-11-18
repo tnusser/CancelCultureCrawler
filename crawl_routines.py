@@ -300,18 +300,21 @@ def pipeline(tweet_id):
 
 class EventSearch:
     def __init__(self, uid, tweet_id, start_date, hashtag, username, comment):
-        self.uid = uid,
-        self.tweet_id = tweet_id,
-        self.start_date = start_date,
-        self.hashtag = hashtag,
+        self.uid = uid
+        self.tweet_id = tweet_id
+        self.start_date = start_date
+        self.hashtag = hashtag
         self.username = username
         self.comment = comment
+
+    def __repr__(self):
+        return f"{self.tweet_id} + {self.username} + {self.uid}"
 
 
 event_list = [
     EventSearch(-1, "1442243266280370177", start_date=None, hashtag=None, username=None, comment="vanderhorst"),
     EventSearch(0, "1433361036191612930", start_date=None, hashtag=None, username=None, comment="toni test"),
-    EventSearch(1, "1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtag=["neildegrassetyson"],
+    EventSearch(1, tweet_id="1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtag=["neildegrassetyson"],
                 username="neiltyson", comment="neil de grasse tyson"),
 ]
 
