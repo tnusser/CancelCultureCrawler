@@ -37,7 +37,7 @@ class User:
         self.id = user_id
         self.username = str
         self.tweets = []
-        self.retrieved = False
+        self.user_retrieved = False
 
     def __repr__(self):
         return f"User {self.username} with id {self.id} published the following tweets {self.tweets}"
@@ -97,7 +97,7 @@ def process_result(response, f_name):
 
             # regular user response
             author_cache[res["id"]].set_username(res["username"])
-            author_cache[res["id"]].retrieved = True
+            author_cache[res["id"]].user_retrieved = True
 
     if f_name in tweet_func:
         collection = "cc_tweets"
@@ -128,9 +128,13 @@ def recursive_crawl(crawl_function, params):
             write_file(response_json, out_file)
             process_result(response_json, crawl_function.__name__)
         else:
-            logger.info(response_json)  # TODO ABBRUCH BEDINGUNG WENN QUOTE FERTIG
-            logger.info("No data in response")
-            logger.info("Rate Limit Error on first request --> wait on limit reset")
+            if "meta" in response_json:
+                if "result_count" in response_json["meta"]:
+                    logger.info("No data in response --> result-count = 0")
+                    return None
+            else:
+                logger.info(response_json)
+                logger.info("Rate Limit Error on first request --> wait on limit reset")
             return limit_reset_time
         if "meta" in response_json:
             if "next_token" not in response_json["meta"]:
@@ -198,7 +202,7 @@ def reply_tree(tweet_id):
 @timeit
 def user():
     logger.info("Retrieving user information")
-    author_ids = [author.id for author in author_cache.values() if not author.retrieved]
+    author_ids = [author.id for author in author_cache.values() if not author.user_retrieved]
     for author_id_batch in batch(author_ids, 100):
         crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
 
@@ -216,6 +220,8 @@ def quotes():
                     "next_token": None
                 }
                 crawl(crawl_function=api.get_quotes, params=quote_params)
+                tweet.quotes_retrieved = True
+            else:
                 tweet.quotes_retrieved = True
             # todo separate likes retweets due to bandwith and use crawl function for infinite crawling
             # if tweet.like_count > 0 and not tweet.likes_retrieved:
