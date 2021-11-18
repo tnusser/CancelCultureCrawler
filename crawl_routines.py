@@ -112,7 +112,7 @@ def process_result(response, f_name):
 
 def recursive_crawl(crawl_function, params):
     time.sleep(.8)  # only 1 request per second allowed (response time + sleep > 1)
-    logging.info(f"Crawling function {crawl_function} params: {params}")
+    logger.info(f"Crawling function {crawl_function} params: {params}")
     response = crawl_function(**params)
     try:
         remaining = int(response.headers["x-rate-limit-remaining"])
