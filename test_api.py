@@ -206,7 +206,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id and text of tweets (and next_token if results > max_results)
         """
-        max_results = "100",
+        max_results = "500",
         params = {
             'query': "conversation_id:" + tweet_id,
             'start_time': self.START_DATE,
