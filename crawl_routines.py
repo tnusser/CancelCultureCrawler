@@ -112,60 +112,65 @@ def process_result(response, f_name):
 
 def recursive_crawl(crawl_function, params):
     logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
-    response = crawl_function(**params)
-    try:
-        remaining = int(response.headers["x-rate-limit-remaining"])
-        max_remaining = int(response.headers["x-rate-limit-limit"])
-        limit_reset_time = int(response.headers["x-rate-limit-reset"])
-        logger.info(f"Remaining: {remaining}")
-        logger.info(f"Max requests: {max_remaining}")
-        response_time = float(response.headers["x-response-time"]) * 0.001
-        if crawl_function.__name__ in tweet_func:  # according to documentation sleep only needed for full archive search
-            # only 1 request per second allowed (response time + sleep > 1)
-            time.sleep(1 - response_time if response_time < 1 else 0.8)
-        response_json = response.json()
-        if "data" in response_json:
-            write_file(response_json, out_file)
-            process_result(response_json, crawl_function.__name__)
-        else:
-            logger.info(f"No data --> response: {response_json}")
-            if "meta" in response_json:
-                if "result_count" in response_json["meta"]:
-                    logger.info("No data in response --> result-count = 0")
-                    return None
-            elif "errors" in response_json:
-                if "title" in response_json["errors"][0]:
-                    if "Not Found Error" == response_json["errors"][0]["title"]:
-                        logger.warning("Tweet or User not found --> Skip")
-                        return None
+    stack = [(crawl_function, params)]
+    while len(stack) > 0:
+        func = stack.pop()
+        response = func[0](**func[1])
+    #response = crawl_function(**params)
+        try:
+            remaining = int(response.headers["x-rate-limit-remaining"])
+            max_remaining = int(response.headers["x-rate-limit-limit"])
+            limit_reset_time = int(response.headers["x-rate-limit-reset"])
+            logger.info(f"Remaining: {remaining}")
+            logger.info(f"Max requests: {max_remaining}")
+            response_time = float(response.headers["x-response-time"]) * 0.001
+            if crawl_function.__name__ in tweet_func:  # according to documentation sleep only needed for full archive search
+                # only 1 request per second allowed (response time + sleep > 1)
+                time.sleep(1 - response_time if response_time < 1 else 0.8)
+            response_json = response.json()
+            if "data" in response_json:
+                write_file(response_json, out_file)
+                process_result(response_json, crawl_function.__name__)
             else:
-                logger.info("Rate Limit Error on first request --> wait on limit reset")
-            return limit_reset_time
-        if "meta" in response_json:
-            if "next_token" not in response_json["meta"]:
-                logger.info("Successfully crawled tweet")
-                return None
-            elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
-                # Next_token available but crawl limit reached
-                logger.info(
-                    "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
-                return limit_reset_time
-            else:
-                # More results available --> use next_token
+                logger.info(f"No data --> response: {response_json}")
                 if "meta" in response_json:
-                    next_token = response_json["meta"]["next_token"]
-                    logger.info(f"Next crawl --> Next token {next_token}"
-                                f"{params}")
-                    params["next_token"] = next_token
-                    return recursive_crawl(crawl_function, params)
-        else:
-            # user crawl and no limit reached --> continue
-            logger.info("Successfully crawled user")
-            return None
-    except KeyError:
-        logger.exception("Error in recursive crawl")
-        logger.error(f'{response}')
-        logger.error(f'{params}')
+                    if "result_count" in response_json["meta"]:
+                        logger.info("No data in response --> result-count = 0")
+                        return None
+                elif "errors" in response_json:
+                    if "title" in response_json["errors"][0]:
+                        if "Not Found Error" == response_json["errors"][0]["title"]:
+                            logger.warning("Tweet or User not found --> Skip")
+                            return None
+                else:
+                    logger.info("Rate Limit Error on first request --> wait on limit reset")
+                return limit_reset_time
+            if "meta" in response_json:
+                if "next_token" not in response_json["meta"]:
+                    logger.info("Successfully crawled tweet")
+                    return None
+                elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
+                    # Next_token available but crawl limit reached
+                    logger.info(
+                        "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
+                    return limit_reset_time
+                else:
+                    # More results available --> use next_token
+                    if "meta" in response_json:
+                        next_token = response_json["meta"]["next_token"]
+                        logger.info(f"Next crawl --> Next token {next_token}"
+                                    f"{params}")
+                        params["next_token"] = next_token
+                        stack.append((crawl_function, params))
+                        #return recursive_crawl(crawl_function, params)
+            else:
+                # user crawl and no limit reached --> continue
+                logger.info("Successfully crawled user")
+                return None
+        except KeyError:
+            logger.exception("Error in recursive crawl")
+            logger.error(f'{response}')
+            logger.error(f'{params}')
 
 
 def crawl(crawl_function, params):
