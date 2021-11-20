@@ -177,7 +177,7 @@ def crawl(crawl_function, params):
     next_crawl_time = time.time()
     while next_crawl_time is not None:
         next_crawl_time = recursive_crawl(crawl_function, params)
-        logger.info("Next Crawl Time {}".format(next_crawl_time))
+        logger.info(f"Next Crawl Time {next_crawl_time}")
         if next_crawl_time is None:
             # Crawl done without exceeding any limits
             break
@@ -255,6 +255,7 @@ def pipeline(tweet_id):
     @param tweet_id: seed tweet id
     @return: writes results to file and db
     """
+    time.sleep(0.8)
     reply_tree(tweet_id)
     user()
     quotes()
