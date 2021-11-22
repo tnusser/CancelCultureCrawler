@@ -114,7 +114,7 @@ def recursive_crawl(crawl_function, params):
     logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     stack = [(crawl_function, params)]
     while len(stack) > 0:
-        func = stack.pop()
+        func = stack.pop(0)
         response = func[0](**func[1])
     #response = crawl_function(**params)
         try:
@@ -258,7 +258,7 @@ def pipeline(tweet_id):
     try:
         stack = [tweet_id]
         while len(stack) > 0:
-            curr_tweet_id = stack.pop()
+            curr_tweet_id = stack.pop(0)
             time.sleep(0.8)
             reply_tree(curr_tweet_id)
             user()
