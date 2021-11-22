@@ -255,14 +255,21 @@ def pipeline(tweet_id):
     @param tweet_id: seed tweet id
     @return: writes results to file and db
     """
-    time.sleep(0.8)
-    reply_tree(tweet_id)
-    user()
-    quotes()
-    while len(tweet_cache) > 0:
-        twt_obj = tweet_cache.pop(0)
-        if twt_obj.sum_metric_count() > 0:
-            pipeline(twt_obj.id)
+    try:
+        stack = [tweet_id]
+        while len(stack) > 0:
+            curr_tweet_id = stack.pop()
+            time.sleep(0.8)
+            reply_tree(curr_tweet_id)
+            user()
+            quotes()
+            while len(tweet_cache) > 0:
+                twt_obj = tweet_cache.pop(0)
+                if twt_obj.sum_metric_count() > 0:
+                    stack.append(twt_obj.id)
+    except Exception as e:
+        logger.error("Error in pipeline")
+        logger.exception(e)
 
 
 # FOLLOWER OF USER
