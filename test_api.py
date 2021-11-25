@@ -109,7 +109,7 @@ class ApiEndpoints:
         }
         if next_token is not None:
             params["pagination_token"] = next_token
-        params = self.except_user_fields(params, except_fields)
+        params = self.except_tweet_fields(params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/tweets?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)

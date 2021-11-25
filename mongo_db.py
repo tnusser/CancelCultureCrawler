@@ -10,24 +10,37 @@ def create_collection(collection):
         db.create_collection(collection)
 
 
-def insert(json_data, collection):
-    tweets = db[collection]
+def modify(identifier, attributes, collection_name):
+    collection = db[collection_name]
     try:
-        tweets.insert_many(json_data)
+        response = collection.find_one_and_update({**identifier}, {**attributes}, return_document=False)
+        logger.info(response)
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
+
+def insert(json_data, collection_name):
+    collection = db[collection_name]
+    try:
+        collection.insert_many(json_data)
+    except Exception as e:
+        logger.error("Error writing results to DB: %s", e)
+
+
+def read(query_attr, collection_name, return_attr=None):
+    if return_attr is None:
+        return_attr = {"id": 1}
+    collection = db[collection_name]
+    return collection.find({**query_attr}, {**return_attr})
 
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
 db = client['twitter_db']
 create_collection("cc_users")
 create_collection("cc_tweets")
+create_collection("cc_timelines")
 db["cc_users"].create_index("id")
 db["cc_tweets"].create_index("id")
-
-
-def read():
-    pass
+db["cc_timelines"].create_index("id")
 
 
 def pretty(d, indent=0):

@@ -5,12 +5,16 @@ import mongo_db as db
 from test_api import ApiEndpoints
 from helper import *
 import sys
+import threading
 
 api = ApiEndpoints()
 sys.setrecursionlimit(10000)
 
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
+timeline_func = "get_timeline"
+
+TIMELINE_COLLECTION = "cc_timelines"
 
 
 class Tweet:
@@ -64,10 +68,13 @@ def process_result(response, f_name):
         logger.warning(response)
         return
     response = response["data"]
+    if f_name == timeline_func:
+        logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
+        db.insert(response, TIMELINE_COLLECTION)
+        return
     for res in response:
         res["seed"] = SEED_TWEET_ID
         res["crawl_timestamp"] = crawl_time_stamp
-
         if f_name in tweet_func:
             # tweet object
             res["likes_crawled"] = False
@@ -116,7 +123,7 @@ def recursive_crawl(crawl_function, params):
     while len(stack) > 0:
         func = stack.pop(0)
         response = func[0](**func[1])
-    #response = crawl_function(**params)
+        # response = crawl_function(**params)
         try:
             remaining = int(response.headers["x-rate-limit-remaining"])
             max_remaining = int(response.headers["x-rate-limit-limit"])
@@ -152,7 +159,8 @@ def recursive_crawl(crawl_function, params):
                 elif remaining == 0 or remaining == 2700:  # TODO RATE-LIMIT-BUG BY TWITTER API
                     # Next_token available but crawl limit reached
                     logger.info(
-                        "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining, limit_reset_time))
+                        "Crawl Limit reached max crawls: {} next reset time: {}".format(max_remaining,
+                                                                                        limit_reset_time))
                     return limit_reset_time
                 else:
                     # More results available --> use next_token
@@ -162,7 +170,7 @@ def recursive_crawl(crawl_function, params):
                                     f"{params}")
                         params["next_token"] = next_token
                         stack.append((crawl_function, params))
-                        #return recursive_crawl(crawl_function, params)
+                        # return recursive_crawl(crawl_function, params)
             else:
                 # user crawl and no limit reached --> continue
                 logger.info("Successfully crawled user")
@@ -272,6 +280,26 @@ def pipeline(tweet_id):
         logger.exception(e)
 
 
+@timeit
+def threaded_timelines():
+    result = db.read({"timeline_crawled": False}, "cc_users")
+    threads = list()
+    for index, res in enumerate(result):
+        logging.info("Main    : create and start thread %d.", index)
+        x = threading.Thread(target=timelines, args=(res,))
+        threads.append(x)
+
+
+def timelines(res):
+    params = {
+        "user_id": res["id"],
+        "except_fields": None,
+        "next_token": None
+    }
+    crawl(api.get_timeline, params)
+    db.modify({"id": res["id"]}, {"$set": {"timeline_crawled": True}}, "cc_users")
+
+
 # FOLLOWER OF USER
 # out_file.write("FOLLOWER \n")
 # logger.info("Crawl followers")
@@ -296,11 +324,7 @@ def pipeline(tweet_id):
 # # TIMELINE OF AUTHOR
 # out_file.write("TIMELINE \n")
 # logger.info("Crawl timeline")
-# timeline_params = {
-#     "user_id": author_id,
-#     "except_fields": "default",
-#     "next_token": None
-# }
+
 # crawl(crawl_function=api.get_timeline, params=timeline_params)
 #
 #
@@ -342,6 +366,8 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = event_list[2].tweet_id
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
+    event = event_list[0]
+    SEED_TWEET_ID = event.tweet_id
+    # get_seed(SEED_TWEET_ID)
+    # pipeline(SEED_TWEET_ID)
+    threaded_timelines()
