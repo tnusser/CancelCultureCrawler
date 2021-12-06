@@ -18,6 +18,15 @@ def modify(identifier, attributes, collection_name):
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
 
+
+def update_array(tweet_id, user_id, field, collection_name):
+    try:
+        collection = db[collection_name]
+        collection.update({'id': user_id}, {'$push': {f'{field}': tweet_id}})
+    except Exception as e:
+        logger.error("Error writing results to DB: %s", e)
+
+
 def insert(json_data, collection_name):
     collection = db[collection_name]
     try:
@@ -50,18 +59,3 @@ def pretty(d, indent=0):
             pretty(value, indent + 1)
         else:
             print('\t' * (indent + 1) + str(value))
-
-# print(tweets.estimated_document_count())
-#
-# t = ["a", "blessed", "green", "hello"]
-#
-# for tt in t:
-#     query = {"text": {"$regex": ".*" + tt + ".*"}}
-#     before = time.time()
-#     results = tweets.find(query)
-#     print(len(list(results)))
-#     for res in results:
-#         pass
-#     after = time.time()
-#
-#     print(tt + " took " + str(after - before))

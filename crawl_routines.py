@@ -13,6 +13,7 @@ sys.setrecursionlimit(10000)
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 timeline_func = "get_timeline"
+reaction_func = {"get_liking_users", "get_retweeting_users"}
 
 TIMELINE_COLLECTION = "cc_timelines"
 
@@ -61,7 +62,7 @@ def write_file(response, out_file):
         logger.info("Failed to write response to file")
 
 
-def process_result(response, f_name):
+def process_result(response, f_name, params=None):
     logger.info(f'Processing results of {f_name}...')
     if "data" not in response:
         logger.warning(f"Empty response returned from {f_name} --> skip")
@@ -71,6 +72,21 @@ def process_result(response, f_name):
     if f_name == timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
         db.insert(response, TIMELINE_COLLECTION)
+        return
+    if f_name in reaction_func:
+        logger.info(f"Inserting reaction to tweets ino db")
+        update_field = "liked" if f_name == "get_liking_users" else "retweeted"
+        for res in response:
+            found_user = db.read({"id": res["id"]}, "cc_users")
+            if len(list(found_user)) > 0:
+                logger.info("Found user in DB")
+                db.update_array(params["tweet_id"], res["id"], update_field, "cc_users")
+            else:
+                logger.info(f"New user {res['id']}--> Create and update")
+                res["liked"] = []
+                res["retweeted"] = []
+                db.insert([res], "cc_users")
+                db.update_array(params["tweet_id"], res["id"], update_field, "cc_users")
         return
     for res in response:
         res["seed"] = SEED_TWEET_ID
@@ -137,7 +153,7 @@ def recursive_crawl(crawl_function, params):
             response_json = response.json()
             if "data" in response_json:
                 write_file(response_json, out_file)
-                process_result(response_json, crawl_function.__name__)
+                process_result(response_json, crawl_function.__name__, params=params)
             else:
                 logger.info(f"No data --> response: {response_json}")
                 if "meta" in response_json:
@@ -241,19 +257,6 @@ def quotes():
                 tweet.quotes_retrieved = True
             else:
                 tweet.quotes_retrieved = True
-            # todo separate likes retweets due to bandwith and use crawl function for infinite crawling
-            # if tweet.like_count > 0 and not tweet.likes_retrieved:
-            #     logger.info("Retrieve likes")
-            #     like_response = api.get_liking_users(tweet.id).json()
-            #     write_file(like_response, out_file)
-            #     write_db(like_response, "cc_users", cache=False, reaction=("liked", tweet.id))
-            #     tweet.likes_retrieved = True
-            # if tweet.retweet_count > 0 and not tweet.retweets_retrieved:
-            #     logger.info("Retrieve retweets")
-            #     retweet_response = api.get_retweeting_users(tweet.id).json()
-            #     write_file(retweet_response, out_file)
-            #     write_db(retweet_response, "cc_users", cache=False, reaction=("retweeted", tweet.id))
-            #     tweet.retweets_retrieved = True
 
 
 @timeit
@@ -281,11 +284,34 @@ def pipeline(tweet_id):
 
 
 @timeit
+def threaded_crawl(func, field_name, field_count):
+    result = db.read({field_name: False, f"public_metrics.{field_count}": {"$gt": 0}}, "cc_tweets")
+    remaining = db.read({field_name: False, f"public_metrics.{field_count}": {"$eq": 0}}, "cc_tweets")
+    for remain in remaining:
+        db.modify({"id": remain["id"]}, {"$set": {field_name: True}}, "cc_tweets")
+    threads = list()
+    for index, twt in enumerate(result):
+        logger.info("Main    : create and start thread %d.", index)
+        x = threading.Thread(target=get_reaction, args=(func, twt, field_name))
+        threads.append(x)
+        x.start()
+
+
+def get_reaction(func, db_response, field_name):
+    params = {
+        "tweet_id": db_response["id"],
+        "except_fields": None
+    }
+    crawl(func, params)
+    db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, "cc_tweets")
+
+
+@timeit
 def threaded_timelines():
     result = db.read({"timeline_crawled": False}, "cc_users")
     threads = list()
     for index, res in enumerate(result):
-        logging.info("Main    : create and start thread %d.", index)
+        logger.info("Main    : create and start thread %d.", index)
         x = threading.Thread(target=timelines, args=(res,))
         threads.append(x)
 
@@ -319,26 +345,7 @@ def timelines(res):
 #     "next_token": None
 # }
 # crawl(crawl_function=api.get_following, params=quote_params)
-#
-#
-# # TIMELINE OF AUTHOR
-# out_file.write("TIMELINE \n")
-# logger.info("Crawl timeline")
 
-# crawl(crawl_function=api.get_timeline, params=timeline_params)
-#
-#
-# # ALL RETWEETER BY TEXT ARCHIVE SEARCH
-# out_file.write("RETWEETER \n")
-# logger.info("Crawl retweet")
-# try:
-#     author_name = res_json["data"][0]["username"]
-#     retweet_response = api.get_retweets_archive_search(author_name, tweet_text)
-#     res_json = retweet_response.json()
-#     write_file(res_json, out_file)
-#     write_db(res_json)
-# except KeyError:
-#     logger.info("No retweets found using full-archive search")
 
 class EventSearch:
     def __init__(self, uid, tweet_id, start_date, hashtag, username, comment):
@@ -366,8 +373,11 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    event = event_list[0]
+    event = event_list[2]
     SEED_TWEET_ID = event.tweet_id
-    # get_seed(SEED_TWEET_ID)
-    # pipeline(SEED_TWEET_ID)
-    threaded_timelines()
+    #get_seed(SEED_TWEET_ID)
+    #pipeline(SEED_TWEET_ID)
+    threaded_crawl(api.get_liking_users, "likes_crawled", "like_count")
+    threaded_crawl(api.get_retweeting_users, "retweets_crawled", "retweet_count")
+    # threaded_timelines()
+    # test()
