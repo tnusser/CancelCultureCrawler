@@ -1,11 +1,12 @@
 import json
+import queue
 from datetime import datetime, timedelta
 import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
 from helper import *
 import sys
-import threading
+from threading import Thread
 
 api = ApiEndpoints()
 sys.setrecursionlimit(10000)
@@ -134,7 +135,7 @@ def process_result(response, f_name, params=None):
 
 
 def recursive_crawl(crawl_function, params):
-    logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
+    #logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     stack = [(crawl_function, params)]
     while len(stack) > 0:
         func = stack.pop(0)
@@ -284,17 +285,25 @@ def pipeline(tweet_id):
 
 
 @timeit
-def threaded_crawl(func, field_name, field_count):
+def threaded_crawl(func, field_name, field_count, num_threads=75):
     result = db.read({field_name: False, f"public_metrics.{field_count}": {"$gt": 0}}, "cc_tweets")
     remaining = db.read({field_name: False, f"public_metrics.{field_count}": {"$eq": 0}}, "cc_tweets")
     for remain in remaining:
         db.modify({"id": remain["id"]}, {"$set": {field_name: True}}, "cc_tweets")
-    threads = list()
-    for index, twt in enumerate(result):
-        logger.info("Main    : create and start thread %d.", index)
-        x = threading.Thread(target=get_reaction, args=(func, twt, field_name))
-        threads.append(x)
-        x.start()
+    q = queue.Queue()
+    for elem in result:
+        q.put(elem)
+    for i in range(num_threads):
+        logger.info(f"Main: create and start thread {i}")
+        Thread(target=worker, args=(q, func, field_name,), daemon=True).start()
+    q.join()
+
+
+def worker(q, func, field_name):
+    while True:
+        twt = q.get()
+        get_reaction(func, twt, field_name)
+        q.task_done()
 
 
 def get_reaction(func, db_response, field_name):
@@ -306,14 +315,14 @@ def get_reaction(func, db_response, field_name):
     db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, "cc_tweets")
 
 
-@timeit
-def threaded_timelines():
-    result = db.read({"timeline_crawled": False}, "cc_users")
-    threads = list()
-    for index, res in enumerate(result):
-        logger.info("Main    : create and start thread %d.", index)
-        x = threading.Thread(target=timelines, args=(res,))
-        threads.append(x)
+# @timeit
+# def threaded_timelines():
+#     result = db.read({"timeline_crawled": False}, "cc_users")
+#     threads = list()
+#     for index, res in enumerate(result):
+#         logger.info("Main    : create and start thread %d.", index)
+#         x = threading.Thread(target=timelines, args=(res,))
+#         threads.append(x)
 
 
 def timelines(res):
@@ -373,11 +382,11 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    event = event_list[2]
+    event = event_list[0]
     SEED_TWEET_ID = event.tweet_id
-    #get_seed(SEED_TWEET_ID)
-    #pipeline(SEED_TWEET_ID)
-    threaded_crawl(api.get_liking_users, "likes_crawled", "like_count")
-    threaded_crawl(api.get_retweeting_users, "retweets_crawled", "retweet_count")
+    get_seed(SEED_TWEET_ID)
+    pipeline(SEED_TWEET_ID)
+    threaded_crawl(api.get_liking_users, "likes_crawled", "like_count", num_threads=75)
+    threaded_crawl(api.get_retweeting_users, "retweets_crawled", "retweet_count", num_threads=75)
     # threaded_timelines()
     # test()

@@ -13,8 +13,7 @@ def create_collection(collection):
 def modify(identifier, attributes, collection_name):
     collection = db[collection_name]
     try:
-        response = collection.find_one_and_update({**identifier}, {**attributes}, return_document=False)
-        logger.info(response)
+        collection.find_one_and_update({**identifier}, {**attributes}, return_document=False)
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
 
