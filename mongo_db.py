@@ -18,10 +18,10 @@ def modify(identifier, attributes, collection_name):
         logger.error("Error writing results to DB: %s", e)
 
 
-def update_array(tweet_id, user_id, field, collection_name):
+def update_array(user_id, field, value, collection_name):
     try:
         collection = db[collection_name]
-        collection.update({'id': user_id}, {'$push': {f'{field}': tweet_id}})
+        collection.update({'id': user_id}, {'$push': {f'{field}': value}})
     except Exception as e:
         logger.error("Error writing results to DB: %s", e)
 
@@ -46,9 +46,11 @@ db = client['twitter_db']
 create_collection("cc_users")
 create_collection("cc_tweets")
 create_collection("cc_timelines")
+create_collection("cc_follows")
 db["cc_users"].create_index("id")
 db["cc_tweets"].create_index("id")
 db["cc_timelines"].create_index("id")
+db["cc_follows"].create_index("id")
 
 
 def pretty(d, indent=0):

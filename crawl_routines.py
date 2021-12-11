@@ -5,15 +5,14 @@ import simplejson.errors
 import mongo_db as db
 from test_api import ApiEndpoints
 from helper import *
-import sys
 from threading import Thread
 
 api = ApiEndpoints()
-sys.setrecursionlimit(10000)
 
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 timeline_func = "get_timeline"
+follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
 
 TIMELINE_COLLECTION = "cc_timelines"
@@ -81,13 +80,28 @@ def process_result(response, f_name, params=None):
             found_user = db.read({"id": res["id"]}, "cc_users")
             if len(list(found_user)) > 0:
                 logger.info("Found user in DB")
-                db.update_array(params["tweet_id"], res["id"], update_field, "cc_users")
+                db.update_array(res["id"], update_field, params["tweet_id"], "cc_users")
             else:
                 logger.info(f"New user {res['id']}--> Create and update")
                 res["liked"] = []
                 res["retweeted"] = []
                 db.insert([res], "cc_users")
-                db.update_array(params["tweet_id"], res["id"], update_field, "cc_users")
+                db.update_array(res["id"], update_field, params["tweet_id"], "cc_users")
+        return
+    if f_name in follow_func:
+        logger.info(f"Inserting followers/following of users ino db")
+        update_field = "following" if f_name == "get_followers" else "followed_by"
+        for res in response:
+            found_user = db.read({"id": res["id"]}, "cc_follows")
+            if len(list(found_user)) > 0:
+                logger.info("Found user in DB")
+                db.update_array(res["id"], update_field, params["user_id"], "cc_follows")
+            else:
+                logger.info(f"New user {res['id']}--> Create and update")
+                res["following"] = []
+                res["followed_by"] = []
+                db.insert([res], "cc_follows")
+                db.update_array(res["id"], update_field, params["user_id"], "cc_follows")
         return
     for res in response:
         res["seed"] = SEED_TWEET_ID
@@ -135,12 +149,11 @@ def process_result(response, f_name, params=None):
 
 
 def recursive_crawl(crawl_function, params):
-    #logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
+    # logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     stack = [(crawl_function, params)]
     while len(stack) > 0:
         func = stack.pop(0)
         response = func[0](**func[1])
-        # response = crawl_function(**params)
         try:
             remaining = int(response.headers["x-rate-limit-remaining"])
             max_remaining = int(response.headers["x-rate-limit-limit"])
@@ -182,12 +195,14 @@ def recursive_crawl(crawl_function, params):
                 else:
                     # More results available --> use next_token
                     if "meta" in response_json:
+                        if crawl_function.__name__ in follow_func:
+                            # Follower crawl --> Don't use next_token due to rate-limits --> crawling max 1000 followers
+                            return None
                         next_token = response_json["meta"]["next_token"]
                         logger.info(f"Next crawl --> Next token {next_token}"
                                     f"{params}")
                         params["next_token"] = next_token
                         stack.append((crawl_function, params))
-                        # return recursive_crawl(crawl_function, params)
             else:
                 # user crawl and no limit reached --> continue
                 logger.info("Successfully crawled user")
@@ -285,75 +300,84 @@ def pipeline(tweet_id):
 
 
 @timeit
-def threaded_crawl(func, field_name, field_count, num_threads=75):
-    result = db.read({field_name: False, f"public_metrics.{field_count}": {"$gt": 0}}, "cc_tweets")
-    remaining = db.read({field_name: False, f"public_metrics.{field_count}": {"$eq": 0}}, "cc_tweets")
-    for remain in remaining:
-        db.modify({"id": remain["id"]}, {"$set": {field_name: True}}, "cc_tweets")
-    q = queue.Queue()
-    for elem in result:
-        q.put(elem)
+def threaded_crawl(crawl_function, search_results, target_field_name, num_threads):
+    job_queue = queue.Queue()
+    for elem in search_results:
+        job_queue.put(elem)
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i}")
-        Thread(target=worker, args=(q, func, field_name,), daemon=True).start()
-    q.join()
+        Thread(target=worker, args=(job_queue, crawl_function, target_field_name,), daemon=True).start()
+    job_queue.join()
 
 
-def worker(q, func, field_name):
+def worker(job_queue, crawl_function, field_name):
     while True:
-        twt = q.get()
-        get_reaction(func, twt, field_name)
-        q.task_done()
+        new_job = job_queue.get()
+        execute_and_modify(crawl_function, new_job, field_name)
+        job_queue.task_done()
 
 
-def get_reaction(func, db_response, field_name):
-    params = {
-        "tweet_id": db_response["id"],
-        "except_fields": None
-    }
-    crawl(func, params)
-    db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, "cc_tweets")
+@timeit
+def crawl_retweets():
+    target_field_name = "retweets_crawled"
+    result = db.read({target_field_name: False, "public_metrics.retweet_count": {"$gt": 0}}, "cc_tweets")
+    remaining = db.read({target_field_name: False, f"public_metrics.retweet_count": {"$eq": 0}}, "cc_tweets")
+    for remain in remaining:
+        db.modify({"id": remain["id"]}, {"$set": {target_field_name: True}}, "cc_tweets")
+    threaded_crawl(api.get_retweeting_users, result, target_field_name, num_threads=75)
 
 
-# @timeit
-# def threaded_timelines():
-#     result = db.read({"timeline_crawled": False}, "cc_users")
-#     threads = list()
-#     for index, res in enumerate(result):
-#         logger.info("Main    : create and start thread %d.", index)
-#         x = threading.Thread(target=timelines, args=(res,))
-#         threads.append(x)
+@timeit
+def crawl_likes():
+    target_field_name = "likes_crawled"
+    result = db.read({target_field_name: False, "public_metrics.like_count": {"$gt": 0}}, "cc_tweets")
+    remaining = db.read({target_field_name: False, f"public_metrics.like_count": {"$eq": 0}}, "cc_tweets")
+    for remain in remaining:
+        db.modify({"id": remain["id"]}, {"$set": {target_field_name: True}}, "cc_tweets")
+    threaded_crawl(api.get_liking_users, result, target_field_name, num_threads=75)
 
 
-def timelines(res):
-    params = {
-        "user_id": res["id"],
-        "except_fields": None,
-        "next_token": None
-    }
-    crawl(api.get_timeline, params)
-    db.modify({"id": res["id"]}, {"$set": {"timeline_crawled": True}}, "cc_users")
+@timeit
+def crawl_timelines():
+    target_field_name = "timeline_crawled"
+    result = db.read({target_field_name: False}, "cc_users")
+    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=1500)
 
 
-# FOLLOWER OF USER
-# out_file.write("FOLLOWER \n")
-# logger.info("Crawl followers")
-# quote_params = {
-#     "user_id": author_id,
-#     "except_fields": None,
-#     "next_token": None
-# }
-# crawl(crawl_function=api.get_followers, params=quote_params)
-#
-# # USER IS FOLLOWING
-# out_file.write("FOLLOWER \n")
-# logger.info("Crawl following")
-# quote_params = {
-#     "user_id": author_id,
-#     "except_fields": None,
-#     "next_token": None
-# }
-# crawl(crawl_function=api.get_following, params=quote_params)
+@timeit
+def crawl_follows():
+    target_field_name = "followers_crawled"
+    result = db.read({target_field_name: False}, "cc_users")
+    threaded_crawl(api.get_followers, result, target_field_name, num_threads=15)
+
+
+@timeit
+def crawl_following():
+    target_field_name = "following_crawled"
+    result = db.read({target_field_name: False}, "cc_users")
+    threaded_crawl(api.get_following, result, target_field_name, num_threads=15)
+
+
+def execute_and_modify(crawl_function, db_response, field_name):
+    """
+    Actually executes crawl function and modifies db to write back status on crawling
+    @param crawl_function: to be executed - namely retweet, like or timeline crawl
+    @param db_response: which returned ids to be crawled with @crawl_function
+    @param field_name: of document in db which has to be set to true after successful crawl
+    """
+    params = {"except_fields": None}
+    if field_name in {"retweets_crawled", "likes_crawled"}:
+        params["tweet_id"] = db_response["id"]
+        collection = "cc_tweets"
+    elif field_name in {"timeline_crawled", "followers_crawled", "following_crawled"}:
+        params["user_id"] = db_response["id"]
+        params["next_token"] = None
+        collection = "cc_users"
+    else:
+        logger.error("Field name for db modification unknown")
+        raise Exception
+    crawl(crawl_function, params)
+    db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, collection)
 
 
 class EventSearch:
@@ -382,11 +406,12 @@ tweet_cache = []
 
 if __name__ == "__main__":
     crawl_time_stamp = datetime.now()
-    event = event_list[0]
+    event = event_list[1]
     SEED_TWEET_ID = event.tweet_id
     get_seed(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
-    threaded_crawl(api.get_liking_users, "likes_crawled", "like_count", num_threads=75)
-    threaded_crawl(api.get_retweeting_users, "retweets_crawled", "retweet_count", num_threads=75)
-    # threaded_timelines()
-    # test()
+    crawl_likes()
+    crawl_retweets()
+    crawl_timelines()
+    crawl_following()
+    crawl_follows()

@@ -15,7 +15,7 @@ API_BASE_URL = "https://api.twitter.com/2/"
 
 class ApiEndpoints:
     def __init__(self):
-        self.TWEET_FIELDS = ["attachments", "author_id", "conversation_id", "created_at",  # "context_annotations" TODO
+        self.TWEET_FIELDS = ["attachments", "author_id", "conversation_id", "created_at",  # "context_annotations" TODO PUT INTO CONFIG
                              "entities", "geo", "id", "in_reply_to_user_id", "lang", "possibly_sensitive",
                              "public_metrics", "referenced_tweets", "reply_settings", "source", "text", "withheld"]
         self.USER_FIELDS = ["created_at", "description", "entities", "id", "location", "name", "pinned_tweet_id",
@@ -206,7 +206,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id and text of tweets (and next_token if results > max_results)
         """
-        max_results = "500",
+        max_results = "500" if "context_annotations" not in self.TWEET_FIELDS else "100",
         params = {
             'query': "conversation_id:" + tweet_id,
             'start_time': self.START_DATE,
@@ -226,7 +226,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id and text of tweets (and next_token if results > max_results)
         """
-        max_results = "500"
+        max_results = "500" if "context_annotations" not in self.TWEET_FIELDS else "100",
         url = "https://twitter.com/" + username + "/status/" + tweet_id
         params = {
             'query': 'url:' + '"' + url + '" is:quote',
@@ -247,7 +247,7 @@ class ApiEndpoints:
         @param next_token: token used to retrieve results using pagination
         @return: json object containing id of retweet (and next_token if results > max_results)
         """
-        max_results = "500"
+        max_results = "500" if "context_annotations" not in self.TWEET_FIELDS else "100",
         params = {
             'query': '"' + tweet_text + '" retweets_of:' + username,
             'expansions': 'author_id',
