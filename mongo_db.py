@@ -42,7 +42,7 @@ def read(query_attr, collection_name, return_attr=None):
 
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client['twitter_db']
+db = client['twitter_db_DE']
 create_collection("cc_users")
 create_collection("cc_tweets")
 create_collection("cc_timelines")

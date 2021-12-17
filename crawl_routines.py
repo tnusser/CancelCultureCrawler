@@ -404,14 +404,32 @@ out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
 
+
+def crawl_worker(c_queue):
+    while True:
+        new_job = c_queue.get()
+        print(f"c_queue: {new_job.__name__}")
+        new_job()
+        c_queue.task_done()
+
+# bosetti und maaßen nzz
+temp_event_list = ["1466829037645582341", "1148654208398319622"]
+
 if __name__ == "__main__":
-    crawl_time_stamp = datetime.now()
-    event = event_list[1]
-    SEED_TWEET_ID = event.tweet_id
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
-    crawl_likes()
-    crawl_retweets()
-    crawl_timelines()
-    crawl_following()
-    crawl_follows()
+    for el in temp_event_list:
+        crawl_time_stamp = datetime.now()
+        SEED_TWEET_ID = el
+        get_seed(SEED_TWEET_ID)
+        pipeline(SEED_TWEET_ID)
+
+        crawl_queue = queue.Queue()
+        crawl_queue.put(crawl_likes)
+        crawl_queue.put(crawl_retweets)
+        crawl_queue.put(crawl_timelines)
+        crawl_queue.put(crawl_following)
+        crawl_queue.put(crawl_follows)
+
+        for i in range(crawl_queue.qsize()):
+            logger.info(f"Main: create and start thread for crawl queue {i}")
+            Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
+        crawl_queue.join()
