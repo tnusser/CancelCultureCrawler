@@ -92,6 +92,8 @@ def process_result(response, f_name, params=None):
         logger.info(f"Inserting followers/following of users ino db")
         update_field = "following" if f_name == "get_followers" else "followed_by"
         for res in response:
+            res["seed"] = SEED_TWEET_ID
+            res["crawl_timestamp"] = crawl_time_stamp
             found_user = db.read({"id": res["id"]}, "cc_follows")
             if len(list(found_user)) > 0:
                 logger.info("Found user in DB")
