@@ -47,10 +47,10 @@ create_collection("cc_users")
 create_collection("cc_tweets")
 create_collection("cc_timelines")
 create_collection("cc_follows")
-db["cc_users"].create_index("id")
-db["cc_tweets"].create_index("id")
-db["cc_timelines"].create_index("id")
-db["cc_follows"].create_index("id")
+db["cc_users"].create_index("id", unique=True)
+db["cc_tweets"].create_index("id", unique=True)
+db["cc_timelines"].create_index("id", unique=True)
+db["cc_follows"].create_index("id", unique=True)
 
 
 def pretty(d, indent=0):
