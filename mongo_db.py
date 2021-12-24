@@ -41,16 +41,22 @@ def read(query_attr, collection_name, return_attr=None):
     return collection.find({**query_attr}, {**return_attr})
 
 
+def create_indexes(collection, index_name="id"):
+    if index_name not in collection.index_information():
+        collection.create_index(index_name, unique=True)
+
+
 client = MongoClient('mongodb://127.0.0.1:27017/')
 db = client['twitter_db_DE']
 create_collection("cc_users")
 create_collection("cc_tweets")
 create_collection("cc_timelines")
 create_collection("cc_follows")
-db["cc_users"].create_index("id", unique=True)
-db["cc_tweets"].create_index("id", unique=True)
-db["cc_timelines"].create_index("id", unique=True)
-db["cc_follows"].create_index("id", unique=True)
+
+create_indexes(db["cc_users"])
+create_indexes(db["cc_tweets"])
+create_indexes(db["cc_timelines"])
+create_indexes(db["cc_follows"])
 
 
 def pretty(d, indent=0):
