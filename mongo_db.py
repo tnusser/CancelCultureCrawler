@@ -1,4 +1,6 @@
 import os
+
+import pymongo.errors
 from pymongo import MongoClient
 import json
 import time
@@ -43,7 +45,10 @@ def read(query_attr, collection_name, return_attr=None):
 
 def create_indexes(collection, index_name="id"):
     if index_name not in collection.index_information():
-        collection.create_index(index_name, unique=True)
+        try:
+            collection.create_index(index_name, unique=True)
+        except pymongo.errors.OperationFailure:
+            logger.warning("Index already exists, creation not possible")
 
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
