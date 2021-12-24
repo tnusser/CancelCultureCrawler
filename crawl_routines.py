@@ -424,20 +424,37 @@ def crawl_worker(c_queue):
 temp_event_list = ["1466829037645582341", "1148654208398319622"]
 
 if __name__ == "__main__":
-    for el in temp_event_list:
-        crawl_time_stamp = datetime.now()
-        SEED_TWEET_ID = el
-        get_seed(SEED_TWEET_ID)
-        pipeline(SEED_TWEET_ID)
+    # for el in temp_event_list:
+    crawl_time_stamp = datetime.now()
+    SEED_TWEET_ID = "1466829037645582341"
+    #get_seed(SEED_TWEET_ID)
+    #pipeline(SEED_TWEET_ID)
 
-        crawl_queue = queue.Queue()
-        crawl_queue.put(crawl_likes)
-        crawl_queue.put(crawl_retweets)
-        crawl_queue.put(crawl_timelines)
-        crawl_queue.put(crawl_following)
-        crawl_queue.put(crawl_follows)
+    crawl_queue = queue.Queue()
+    crawl_queue.put(crawl_likes)
+    crawl_queue.put(crawl_retweets)
+    #crawl_queue.put(crawl_timelines)
+    crawl_queue.put(crawl_following)
+    crawl_queue.put(crawl_follows)
 
-        for i in range(crawl_queue.qsize()):
-            logger.info(f"Main: create and start thread for crawl queue {i}")
-            Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
-        crawl_queue.join()
+    for i in range(crawl_queue.qsize()):
+        logger.info(f"Main: create and start thread for crawl queue {i}")
+        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
+    crawl_queue.join()
+
+    crawl_time_stamp = datetime.now()
+    SEED_TWEET_ID = "1148654208398319622"
+    get_seed(SEED_TWEET_ID)
+    pipeline(SEED_TWEET_ID)
+
+    crawl_queue = queue.Queue()
+    crawl_queue.put(crawl_likes)
+    crawl_queue.put(crawl_retweets)
+    #crawl_queue.put(crawl_timelines)
+    crawl_queue.put(crawl_following)
+    crawl_queue.put(crawl_follows)
+
+    for i in range(crawl_queue.qsize()):
+        logger.info(f"Main: create and start thread for crawl queue {i}")
+        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
+    crawl_queue.join()
