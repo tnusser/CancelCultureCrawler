@@ -79,10 +79,10 @@ def process_result(response, f_name, params=None):
         for res in response:
             found_user = db.read({"id": res["id"]}, "cc_users")
             if len(list(found_user)) > 0:
-                logger.info("Found user in DB")
+                # logger.info("Found user in DB")
                 db.update_array(res["id"], update_field, params["tweet_id"], "cc_users")
             else:
-                logger.info(f"New user {res['id']}--> Create and update")
+                # logger.info(f"New user {res['id']}--> Create and update")
                 res["liked"] = []
                 res["retweeted"] = []
                 db.insert([res], "cc_users")
@@ -96,10 +96,10 @@ def process_result(response, f_name, params=None):
             res["crawl_timestamp"] = crawl_time_stamp
             found_user = db.read({"id": res["id"]}, "cc_follows")
             if len(list(found_user)) > 0:
-                logger.info("Found user in DB")
+                # logger.info("Found user in DB")
                 db.update_array(res["id"], update_field, params["user_id"], "cc_follows")
             else:
-                logger.info(f"New user {res['id']}--> Create and update")
+                # logger.info(f"New user {res['id']}--> Create and update")
                 res["following"] = []
                 res["followed_by"] = []
                 db.insert([res], "cc_follows")
@@ -180,6 +180,12 @@ def recursive_crawl(crawl_function, params):
                     if "title" in response_json["errors"][0]:
                         if "Not Found Error" == response_json["errors"][0]["title"]:
                             logger.warning("Tweet or User not found --> Skip")
+                            return None
+                        if "Authorization Error" == response_json["errors"][0]["title"]:
+                            logger.warning("Authorization error --> Skip")
+                            return None
+                        if "Forbidden" == response_json["errors"][0]["title"]:
+                            logger.warning("Suspended account --> Skip")
                             return None
                 else:
                     logger.info("Rate Limit Error on first request --> wait on limit reset")
