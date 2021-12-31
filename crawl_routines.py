@@ -418,7 +418,7 @@ out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
 SEED_TWEET_ID = ""
-crawl_time_stamp =""
+crawl_time_stamp = ""
 
 
 def crawl_worker(c_queue):
@@ -428,11 +428,12 @@ def crawl_worker(c_queue):
         new_job()
         c_queue.task_done()
 
+
 if __name__ == "__main__":
-    bta = []
-    with open('bta_names') as f:
-        lines = f.readlines()
-        for line in lines:
-            bta.append(line[:-1])
-    for author_id_batch in batch(bta, 100):
-        crawl(crawl_function=api.get_users_by_username, params={"usernames": author_id_batch})
+    crawl_queue = queue.Queue()
+    crawl_queue.put(crawl_timelines)
+
+    for i in range(crawl_queue.qsize()):
+        logger.info(f"Main: create and start thread for crawl queue {i}")
+        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
+    crawl_queue.join()
