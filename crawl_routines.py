@@ -69,6 +69,12 @@ def process_result(response, f_name, params=None):
         logger.warning(response)
         return
     response = response["data"]
+    if f_name == "get_users_by_username":
+        for res in response:
+            res["timeline_crawled"] = False
+        logger.info(f"Inserting timeline tweets to db cc_users")
+        db.insert(response, "cc_users")
+        return
     if f_name == timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
         db.insert(response, TIMELINE_COLLECTION)
@@ -411,6 +417,8 @@ event_list = [
 out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
+SEED_TWEET_ID = ""
+crawl_time_stamp =""
 
 
 def crawl_worker(c_queue):
@@ -420,41 +428,11 @@ def crawl_worker(c_queue):
         new_job()
         c_queue.task_done()
 
-# bosetti und maaßen nzz
-temp_event_list = ["1466829037645582341", "1148654208398319622"]
-
 if __name__ == "__main__":
-    # for el in temp_event_list:
-    crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1466829037645582341"
-    #get_seed(SEED_TWEET_ID)
-    #pipeline(SEED_TWEET_ID)
-
-    crawl_queue = queue.Queue()
-    crawl_queue.put(crawl_likes)
-    crawl_queue.put(crawl_retweets)
-    #crawl_queue.put(crawl_timelines)
-    crawl_queue.put(crawl_following)
-    crawl_queue.put(crawl_follows)
-
-    for i in range(crawl_queue.qsize()):
-        logger.info(f"Main: create and start thread for crawl queue {i}")
-        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
-    crawl_queue.join()
-
-    crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1148654208398319622"
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
-
-    crawl_queue = queue.Queue()
-    crawl_queue.put(crawl_likes)
-    crawl_queue.put(crawl_retweets)
-    #crawl_queue.put(crawl_timelines)
-    crawl_queue.put(crawl_following)
-    crawl_queue.put(crawl_follows)
-
-    for i in range(crawl_queue.qsize()):
-        logger.info(f"Main: create and start thread for crawl queue {i}")
-        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
-    crawl_queue.join()
+    bta = []
+    with open('bta_names') as f:
+        lines = f.readlines()
+        for line in lines:
+            bta.append(line[:-1])
+    for author_id_batch in batch(bta, 100):
+        crawl(crawl_function=api.get_users_by_username, params={"usernames": author_id_batch})

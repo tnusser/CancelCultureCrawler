@@ -94,6 +94,21 @@ class ApiEndpoints:
         response = requests.get(API_BASE_URL + "users?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
+    def get_users_by_username(self, usernames, except_fields=None):
+        """
+        Retrieves user profiles
+        :param usernames: comma separated list of user ids to be retrieved (max: 100)
+        :param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
+        :return: json object containing requested fields of the user profile
+        """
+        if len(usernames) > 100:
+            logger.error("get_users_by_id called with more than 100 users")
+            return
+        params = {"usernames": ",".join(usernames)}
+        params = self.except_user_fields(params, except_fields)
+        response = requests.get(API_BASE_URL + "users/by?", params=params, headers=self.HEADER)
+        return self.exception_handler(response)
+
     def get_timeline(self, user_id, except_fields=None, next_token=None):
         """
         Retrieves tweets of a users timeline -- X-RATE-LIMIT 1.500 -> 150.000 tweets

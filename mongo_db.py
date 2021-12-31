@@ -52,16 +52,12 @@ def create_indexes(collection, index_name="id"):
 
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client['twitter_db_DE']
+db = client['twitter_bta']
 create_collection("cc_users")
-create_collection("cc_tweets")
 create_collection("cc_timelines")
-create_collection("cc_follows")
 
 create_indexes(db["cc_users"])
-create_indexes(db["cc_tweets"])
 create_indexes(db["cc_timelines"])
-create_indexes(db["cc_follows"])
 
 
 def pretty(d, indent=0):
