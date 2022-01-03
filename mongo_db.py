@@ -51,13 +51,31 @@ def create_indexes(collection, index_name="id"):
 def del_duplicate_follows(collection_name, attribute):
     collection = db[collection_name]
     response = collection.aggregate(
-        [{'$group': {'_id': '$' + attribute, 'count': {'$sum': 1}}}, {'$match': {'count': {'$gt': 1}}}])
+        [{'$group': {'_id': '$' + attribute, 'count': {'$sum': 1}}}, {'$match': {'count': {'$gt': 1}}}],
+        allowDiskUse=True)
     for el in response:
         res = read({"id": el["_id"]}, "cc_users", {"id": 1, "followers_crawled": 1})
         for re in res:
             if not re["followers_crawled"]:
                 result = collection.delete_one({'_id': ObjectId(re["_id"])})
                 print(result.raw_result)
+
+
+def del_duplicate(collection_name, attribute):
+    collection = db[collection_name]
+    response = collection.aggregate(
+        [{'$group': {'_id': '$' + attribute, 'count': {'$sum': 1}}}, {'$match': {'count': {'$gt': 1}}}],
+        allowDiskUse=True)
+    c = 0
+    for el in response:
+        c += 1
+        if c % 5000 == 0:
+            logger.info(f"Processed {c} entries")
+        res = read({"id": el["_id"]}, collection_name, {"id": 1})
+        for i, re in enumerate(res):
+            if i != 0:
+                # duplicate --> delete
+                collection.delete_one({'_id': ObjectId(re["_id"])})
 
 
 def update_dup(obj_id, arr, dups):
