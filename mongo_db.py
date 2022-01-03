@@ -41,7 +41,6 @@ def read(query_attr, collection_name, return_attr=None):
 
 
 def create_indexes(collection, index_name="id"):
-    # TODO retest index creation --> something failed
     if index_name not in collection.index_information():
         try:
             collection.create_index(index_name, unique=True)
@@ -87,7 +86,7 @@ def del_dup_array(collection_name, attribute):
 
 
 client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client['twitter_db_DE']
+db = client['twitter_db_temp']
 create_collection("cc_users")
 create_collection("cc_tweets")
 create_collection("cc_timelines")
