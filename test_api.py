@@ -67,6 +67,20 @@ class ApiEndpoints:
         response = requests.get(API_BASE_URL + "tweets?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
+    def get_tweets_by_hashtag(self, hashtags, start_date, end_date, except_fields=None, next_token=None):
+        q_string = ""
+        for hashtag in hashtags:
+            q_string += f'#{hashtag} -is:retweet OR '
+        q_string = q_string.strip(" OR ")
+        params = {
+            'query': f"{q_string}",
+            'start_time': start_date,
+            'end_time': end_date,
+            'max_results': 500
+        }
+        response = self.full_archive_search(next_token, params, except_fields)
+        return self.exception_handler(response)
+
     def get_tweets_by_tag(self, username, hashtags, start_date, end_date, except_fields=None, next_token=None):
         q_string = ""
         for hashtag in hashtags:
@@ -74,7 +88,8 @@ class ApiEndpoints:
         params = {
             'query': f"{q_string} @{username}",
             'start_time': start_date,
-            'end_time': end_date
+            'end_time': end_date,
+            'max_results': 500
         }
         response = self.full_archive_search(next_token, params, except_fields)
         return self.exception_handler(response)

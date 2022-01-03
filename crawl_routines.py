@@ -69,6 +69,10 @@ def process_result(response, f_name, params=None):
         logger.warning(response)
         return
     response = response["data"]
+    if f_name == "get_tweets_by_hashtag":
+        logger.info(f"Inserting hashtag tweets to db")
+        db.insert(response, "cc_tweets")
+        return
     if f_name == timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
         db.insert(response, TIMELINE_COLLECTION)
@@ -168,7 +172,6 @@ def recursive_crawl(crawl_function, params):
                 time.sleep(1 - response_time if response_time < 1 else 0.8)
             response_json = response.json()
             if "data" in response_json:
-                write_file(response_json, out_file)
                 process_result(response_json, crawl_function.__name__, params=params)
             else:
                 logger.info(f"No data --> response: {response_json}")
@@ -241,7 +244,6 @@ def crawl(crawl_function, params):
 def get_seed(tweet_id):
     logger.info("Retrieving seed tweet")
     response = api.get_tweets_by_id([tweet_id]).json()
-    write_file(response, out_file)
     process_result(response, get_seed.__name__)
     return response
 
@@ -255,6 +257,19 @@ def reply_tree(tweet_id):
         "next_token": None
     }
     crawl(crawl_function=api.get_replies, params=reply_params)
+
+
+@timeit
+def hashtag(hashtags, start, end):
+    logger.info(f"Retrieving all tweets with the hashtags {hashtags}")
+    hash_params = {
+        "hashtags": hashtags,
+        "start_date": start,
+        "end_date": end,
+        "except_fields": None,
+        "next_token": None
+    }
+    crawl(crawl_function=api.get_tweets_by_hashtag, params=hash_params)
 
 
 @timeit
@@ -351,7 +366,7 @@ def crawl_timelines():
     result = db.read({target_field_name: False}, "cc_users")
     # Beware of ulimit for opening files in os (ubuntu standard is 1024) to open SSL certificates and make https request
     # Thus num_threads needs to be smaller than 1024 to be safe
-    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=1000)
+    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=250)
 
 
 @timeit
@@ -410,7 +425,7 @@ event_list = [
                 username="neiltyson", comment="neil de grasse tyson"),
 ]
 
-out_file = open("output/crawl_tweets.txt", "w")
+# out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
 
@@ -418,9 +433,9 @@ tweet_cache = []
 def crawl_worker(c_queue):
     while True:
         new_job = c_queue.get()
-        print(f"c_queue: {new_job.__name__}")
         new_job()
         c_queue.task_done()
+
 
 # bosetti und maaßen nzz
 temp_event_list = ["1466829037645582341", "1148654208398319622"]
@@ -428,33 +443,20 @@ temp_event_list = ["1466829037645582341", "1148654208398319622"]
 if __name__ == "__main__":
     # for el in temp_event_list:
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1466829037645582341"
-    #get_seed(SEED_TWEET_ID)
-    #pipeline(SEED_TWEET_ID)
+    SEED_TWEET_ID = "1459088702265860098"
 
     crawl_queue = queue.Queue()
-    crawl_queue.put(crawl_likes)
-    crawl_queue.put(crawl_retweets)
-    #crawl_queue.put(crawl_timelines)
-    crawl_queue.put(crawl_following)
-    crawl_queue.put(crawl_follows)
 
-    for i in range(crawl_queue.qsize()):
-        logger.info(f"Main: create and start thread for crawl queue {i}")
-        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
-    crawl_queue.join()
-
-    crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1148654208398319622"
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
-
-    crawl_queue = queue.Queue()
-    crawl_queue.put(crawl_likes)
-    crawl_queue.put(crawl_retweets)
-    #crawl_queue.put(crawl_timelines)
-    crawl_queue.put(crawl_following)
-    crawl_queue.put(crawl_follows)
+    #hashtag({"sarahleeheinrich", "sarahlee"}, start="2021-06-03T23:59:59.000Z", end="2022-01-01T23:59:59.000Z")
+    #
+    # get_seed(SEED_TWEET_ID)
+    # pipeline(SEED_TWEET_ID)
+    #
+    # crawl_queue.put(crawl_likes)
+    # crawl_queue.put(crawl_retweets)
+    crawl_queue.put(crawl_timelines)
+    # crawl_queue.put(crawl_following)
+    # crawl_queue.put(crawl_follows)
 
     for i in range(crawl_queue.qsize()):
         logger.info(f"Main: create and start thread for crawl queue {i}")
