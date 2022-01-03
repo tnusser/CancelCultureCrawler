@@ -349,7 +349,9 @@ def crawl_likes():
 def crawl_timelines():
     target_field_name = "timeline_crawled"
     result = db.read({target_field_name: False}, "cc_users")
-    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=1500)
+    # Beware of ulimit for opening files in os (ubuntu standard is 1024) to open SSL certificates and make https request
+    # Thus num_threads needs to be smaller than 1024 to be safe
+    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=1000)
 
 
 @timeit

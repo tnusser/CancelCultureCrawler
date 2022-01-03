@@ -41,6 +41,7 @@ def read(query_attr, collection_name, return_attr=None):
 
 
 def create_indexes(collection, index_name="id"):
+    # TODO retest index creation --> something failed
     if index_name not in collection.index_information():
         try:
             collection.create_index(index_name, unique=True)
@@ -58,18 +59,11 @@ def del_duplicate_follows(collection_name, attribute):
             if not re["followers_crawled"]:
                 result = collection.delete_one({'_id': ObjectId(re["_id"])})
                 print(result.raw_result)
-    response = read({}, "cc_follows", {"id": 1, "following": 1, "followed_by": 1})
-    for res in response:
-        if "following" in res:
-            print(res["following"])
-        if "followed_by" in res:
-            print(res["followed_by"])
-        break
 
 
-def update_dup(id, arr, dups):
+def update_dup(obj_id, arr, dups):
     collection = db["cc_follows"]
-    collection.update_one({"_id": id}, {"$set": {arr: dups}})
+    collection.update_one({"_id": obj_id}, {"$set": {arr: dups}})
 
 
 def del_dup_array(collection_name, attribute):
