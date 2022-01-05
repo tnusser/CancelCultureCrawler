@@ -190,6 +190,9 @@ def recursive_crawl(crawl_function, params):
                         if "Forbidden" == response_json["errors"][0]["title"]:
                             logger.warning("Suspended account --> Skip")
                             return None
+                elif "title" in response_json and response_json["title"] == "UsageCapExceeded":
+                    logger.warning("Monthly Usage Cap Exceeded")
+                    # TODO Send mail with warning to user
                 else:
                     logger.info("Rate Limit Error on first request --> wait on limit reset")
                 return limit_reset_time
@@ -443,20 +446,20 @@ temp_event_list = ["1466829037645582341", "1148654208398319622"]
 if __name__ == "__main__":
     # for el in temp_event_list:
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1459088702265860098"
+    SEED_TWEET_ID = "1433361036191612930"
 
     crawl_queue = queue.Queue()
 
     #hashtag({"sarahleeheinrich", "sarahlee"}, start="2021-06-03T23:59:59.000Z", end="2022-01-01T23:59:59.000Z")
     #
-    # get_seed(SEED_TWEET_ID)
-    # pipeline(SEED_TWEET_ID)
+    #get_seed(SEED_TWEET_ID)
+    #pipeline(SEED_TWEET_ID)
     #
-    # crawl_queue.put(crawl_likes)
-    # crawl_queue.put(crawl_retweets)
-    crawl_queue.put(crawl_timelines)
-    # crawl_queue.put(crawl_following)
-    # crawl_queue.put(crawl_follows)
+    #crawl_queue.put(crawl_likes)
+    #crawl_queue.put(crawl_retweets)
+    #crawl_queue.put(crawl_timelines)
+    #crawl_queue.put(crawl_following)
+    #crawl_queue.put(crawl_follows)
 
     for i in range(crawl_queue.qsize()):
         logger.info(f"Main: create and start thread for crawl queue {i}")
