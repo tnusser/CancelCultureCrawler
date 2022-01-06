@@ -99,13 +99,13 @@ def process_result(response, f_name, params=None):
             found_user = db.read({"id": res["id"]}, USER_COLLECTION)
             if len(list(found_user)) > 0:
                 # logger.info("Found user in DB")
-                db.update_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
+                db.push_to_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
             else:
                 # logger.info(f"New user {res['id']}--> Create and update")
                 res["liked"] = []
                 res["retweeted"] = []
                 db.insert([res], USER_COLLECTION)
-                db.update_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
+                db.push_to_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
         return
     if f_name in follow_func:
         logger.info(f"Inserting followers/following of users ino db")
@@ -116,13 +116,13 @@ def process_result(response, f_name, params=None):
             found_user = db.read({"id": res["id"]}, FOLLOWER_COLLECTION)
             if len(list(found_user)) > 0:
                 # logger.info("Found user in DB")
-                db.update_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
+                db.push_to_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
             else:
                 # logger.info(f"New user {res['id']}--> Create and update")
                 res["following"] = []
                 res["followed_by"] = []
                 db.insert([res], FOLLOWER_COLLECTION)
-                db.update_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
+                db.push_to_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
         return
     for res in response:
         res["seed"] = SEED_TWEET_ID
