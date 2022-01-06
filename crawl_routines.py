@@ -4,7 +4,7 @@ import queue
 from datetime import datetime, timedelta
 import simplejson.errors
 import mongo_db as db
-from test_api import ApiEndpoints
+from api_endpoints import ApiEndpoints
 from helper import *
 from threading import Thread
 
