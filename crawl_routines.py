@@ -1,3 +1,4 @@
+import configparser
 import json
 import queue
 from datetime import datetime, timedelta
@@ -9,16 +10,20 @@ from threading import Thread
 
 api = ApiEndpoints()
 
+config = configparser.ConfigParser()
+config.read("config.ini")
+mongo_config = config["mongoDB"]
+
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 timeline_func = "get_timeline"
 follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
 
-TIMELINE_COLLECTION = "cc_timelines"
-USER_COLLECTION = "cc_users"
-TWEET_COLLECTION = "cc_tweets"
-FOLLOWER_COLLECTION = "cc_follows"
+TIMELINE_COLLECTION = mongo_config["TimelineCollection"]
+USER_COLLECTION = mongo_config["UserCollection"]
+TWEET_COLLECTION = mongo_config["TweetCollection"]
+FOLLOWER_COLLECTION = mongo_config["FollowerCollection"]
 
 
 class Tweet:
@@ -484,6 +489,17 @@ def execute_and_modify(crawl_function, db_response, field_name):
     db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, collection)
 
 
+def crawl_worker(job_queue):
+    """
+    Thread worker which executes jobs
+    @param job_queue: queue of jobs the worker has to execute
+    """
+    while True:
+        new_job = job_queue.get()
+        new_job()
+        job_queue.task_done()
+
+
 class EventSearch:
     def __init__(self, uid, tweet_id, start_date, hashtag, username, comment):
         self.uid = uid
@@ -507,15 +523,6 @@ event_list = [
 # out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
-
-
-def crawl_worker(c_queue):
-    while True:
-        new_job = c_queue.get()
-        new_job()
-        c_queue.task_done()
-
-
 # bosetti und maaßen nzz
 temp_event_list = ["1466829037645582341", "1148654208398319622"]
 
