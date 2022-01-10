@@ -2,9 +2,9 @@ import logging
 import time
 from functools import wraps
 
+
 class CustomLogFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
-
     grey = "\x1b[38;21m"
     yellow = "\x1b[33;21m"
     red = "\x1b[31;21m"
@@ -48,6 +48,7 @@ def timeit(function):
     @param function: input function
     @return: result of input function
     """
+
     @wraps(function)
     def timer(*args, **kwargs):
         start = time.time()

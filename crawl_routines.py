@@ -501,11 +501,11 @@ def crawl_worker(job_queue):
 
 
 class EventSearch:
-    def __init__(self, uid, tweet_id, start_date, hashtag, username, comment):
+    def __init__(self, uid, tweet_id, start_date, hashtags, username, comment):
         self.uid = uid
         self.tweet_id = tweet_id
         self.start_date = start_date
-        self.hashtag = hashtag
+        self.hashtags = hashtags
         self.username = username
         self.comment = comment
 
@@ -514,9 +514,9 @@ class EventSearch:
 
 
 event_list = [
-    EventSearch(-1, "1442243266280370177", start_date=None, hashtag=None, username=None, comment="vanderhorst"),
-    EventSearch(0, "1433361036191612930", start_date=None, hashtag=None, username=None, comment="toni test"),
-    EventSearch(1, tweet_id="1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtag=["neildegrassetyson"],
+    EventSearch(-1, "1442243266280370177", start_date=None, hashtags=None, username=None, comment="vanderhorst"),
+    EventSearch(0, "1433361036191612930", start_date=None, hashtags=None, username=None, comment="toni test"),
+    EventSearch(1, tweet_id="1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtags=["neildegrassetyson"],
                 username="neiltyson", comment="neil de grasse tyson"),
 ]
 
@@ -544,7 +544,7 @@ if __name__ == "__main__":
     # crawl_queue.put(crawl_following)
     # crawl_queue.put(crawl_follows)
 
-    for i in range(crawl_queue.qsize()):
-        logger.info(f"Main: create and start thread for crawl queue {i}")
+    for j in range(crawl_queue.qsize()):
+        logger.info(f"Main: create and start thread for crawl queue {j}")
         Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
     crawl_queue.join()
