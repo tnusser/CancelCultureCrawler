@@ -17,6 +17,7 @@ mongo_config = config["mongoDB"]
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 timeline_func = "get_timeline"
+hashtag_func = "get_tweets_by_hashtag"
 follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
 
@@ -89,8 +90,14 @@ def process_result(response, f_name, params=None):
         logger.warning(response)
         return
     response = response["data"]
-    if f_name == "get_tweets_by_hashtag":
+    if f_name == hashtag_func:
         logger.info(f"Inserting hashtag tweets to db")
+        for res in response:
+            # res["seed"] = SEED_TWEET_ID or SEED_EVENT_ID
+            res["crawl_timestamp"] = crawl_time_stamp
+            res["likes_crawled"] = False
+            res["retweets_crawled"] = False
+            hashtag_cache.append(res["id"])
         db.insert(response, TWEET_COLLECTION)
         return
     if f_name == timeline_func:
@@ -151,7 +158,7 @@ def process_result(response, f_name, params=None):
                     # user existing in cache
                     existing_user = author_cache[res["author_id"]]
                     existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
-        else:
+        if f_name in user_func:
             # user object
             res["followers_crawled"] = False
             res["following_crawled"] = False
@@ -321,6 +328,9 @@ def hashtag(hashtags, start, end):
         "next_token": None
     }
     crawl(crawl_function=api.get_tweets_by_hashtag, params=hash_params)
+    while len(hashtag_cache) > 0:
+        curr_tweet_id = hashtag_cache.pop(0)
+        pipeline(curr_tweet_id)
 
 
 @timeit
@@ -367,10 +377,16 @@ def pipeline(tweet_id):
         stack = [tweet_id]
         while len(stack) > 0:
             curr_tweet_id = stack.pop(0)
-            time.sleep(0.8)
-            reply_tree(curr_tweet_id)
-            user()
-            quotes()
+            response = db.read({"id": curr_tweet_id}, TWEET_COLLECTION, {"replies_crawled": 1})
+            for document in response:
+                if "replies_crawled" in document and document["replies_crawled"]:
+                    logger.info(f"Tweet with id {curr_tweet_id} already crawled --> Skip")
+                else:
+                    time.sleep(0.8)
+                    reply_tree(curr_tweet_id)
+                    user()
+                    quotes()
+                    db.modify({"id": curr_tweet_id}, {"$set": {"replies_crawled": True}}, TWEET_COLLECTION)
             while len(tweet_cache) > 0:
                 twt_obj = tweet_cache.pop(0)
                 if twt_obj.sum_metric_count() > 0:
@@ -534,24 +550,24 @@ event_list = [
 # out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
+hashtag_cache = []
 # bosetti und maaßen nzz
 temp_event_list = ["1466829037645582341", "1148654208398319622"]
 
 if __name__ == "__main__":
     # for el in temp_event_list:
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1433361036191612930"
+    SEED_TWEET_ID = "1478716260636676096"
 
     crawl_queue = queue.Queue()
 
-    # hashtag({"sarahleeheinrich", "sarahlee"}, start="2021-06-03T23:59:59.000Z", end="2022-01-01T23:59:59.000Z")
-    #
-    #get_seed(SEED_TWEET_ID)
-    # pipeline(SEED_TWEET_ID)
-    #
+    get_seed(SEED_TWEET_ID)
+    pipeline(SEED_TWEET_ID)
+    hashtag({"testCC001", "testCC002"}, start="2021-06-03T23:59:59.000Z", end="2022-01-10T23:59:59.000Z")
+
     # crawl_queue.put(crawl_likes)
     # crawl_queue.put(crawl_retweets)
-    crawl_queue.put(crawl_timelines)
+    # crawl_queue.put(crawl_timelines)
     # crawl_queue.put(crawl_following)
     # crawl_queue.put(crawl_follows)
 

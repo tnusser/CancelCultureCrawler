@@ -84,7 +84,11 @@ def insert(json_data, collection_name):
     """
     collection = db[collection_name]
     try:
-        collection.insert_many(json_data)
+        # ordered=False will skip entries when id already in collection
+        collection.insert_many(json_data, ordered=False)
+    except pymongo.errors.BulkWriteError:
+        # duplicate --> just skip
+        pass
     except Exception as e:
         logger.error(f"Error writing results to DB: {e}")
 
