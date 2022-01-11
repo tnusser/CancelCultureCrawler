@@ -1,6 +1,9 @@
+import configparser
 import logging
+import os
 import time
 from functools import wraps
+import smtplib, ssl
 
 
 class CustomLogFormatter(logging.Formatter):
@@ -71,3 +74,37 @@ def batch(iterable, n=1):
     it_length = len(iterable)
     for ndx in range(0, it_length, n):
         yield iterable[ndx:min(ndx + n, it_length)]
+
+
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+if "TWITTER_CRAWLER_SENDER" in os.environ:
+    sender = os.environ.get("TWITTER_CRAWLER_SENDER")
+else:
+    sender = config["mail"]["Sender"]
+if "TWITTER_CRAWLER_SENDER_PW" in os.environ:
+    password = os.environ.get("TWITTER_CRAWLER_SENDER_PW")
+else:
+    password = config["mail"]["Password"]
+if "TWITTER_CRAWLER_RECEIVER" in os.environ:
+    receiver = os.environ.get("TWITTER_CRAWLER_RECEIVER")
+else:
+    receiver = config["mail"]["Receiver"]
+
+already_warned = False
+
+
+def send_warn_mail():
+    """
+    Sends warning mail to defined receiver stating that the monthly usage cap is exceeded
+    """
+    global already_warned
+    if not already_warned:
+        already_warned = True
+    txt = "Twitter crawler exceeded monthly usage cap"
+    message = 'Subject: {}\n\n{}'.format("Monthly Usage Cap Exceeded", txt)
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(config["mail"]["SMTP"], config["mail"]["Port"], context=context) as server:
+        server.login(sender, password)
+        server.sendmail(sender, receiver, message)

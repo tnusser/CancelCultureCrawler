@@ -219,7 +219,7 @@ def iterative_crawl(crawl_function, params):
                             return None
                 elif "title" in response_json and response_json["title"] == "UsageCapExceeded":
                     logger.warning("Monthly Usage Cap Exceeded")
-                    # TODO Send mail with warning to user
+                    return "USAGE_CAP"
                 else:
                     logger.info("Rate Limit Error on first request --> wait on limit reset")
                 return limit_reset_time
@@ -265,6 +265,8 @@ def crawl(crawl_function, params):
     while next_crawl_time is not None:
         next_crawl_time = iterative_crawl(crawl_function, params)
         logger.info(f"Next Crawl Time {next_crawl_time}")
+        if next_crawl_time == "USAGE_CAP":
+            return "USAGE_CAP"
         if next_crawl_time is None:
             # Crawl done without exceeding any limits
             break
@@ -392,20 +394,26 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
         job_queue.put(elem)
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
-        Thread(target=worker, args=(job_queue, crawl_function, target_field_name,), daemon=True).start()
+        Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
     job_queue.join()
 
 
-def worker(job_queue, crawl_function, field_name):
+def worker(job_queue, crawl_function, field_name, thread_number):
     """
     Thread worker which executes jobs
     @param job_queue: queue of jobs the worker has to execute
     @param crawl_function: function which should be executed
     @param field_name: name of field which should be altered after successful crawl
+    @param thread_number: number of thread that works on task
     """
     while True:
         new_job = job_queue.get()
-        execute_and_modify(crawl_function, new_job, field_name)
+        status = execute_and_modify(crawl_function, new_job, field_name)
+        if status == "USAGE_CAP":
+            if thread_number == 0:
+                # Sends warn mail only for the first thread encountering the usage cap
+                send_warn_mail()
+            return
         job_queue.task_done()
 
 
@@ -485,8 +493,11 @@ def execute_and_modify(crawl_function, db_response, field_name):
     else:
         logger.error("Field name for db modification unknown")
         raise Exception
-    crawl(crawl_function, params)
-    db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, collection)
+    status = crawl(crawl_function, params)
+    if status == "USAGE_CAP":
+        return "USAGE_CAP"
+    else:
+        db.modify({"id": db_response["id"]}, {"$set": {field_name: True}}, collection)
 
 
 def crawl_worker(job_queue):
@@ -535,12 +546,12 @@ if __name__ == "__main__":
 
     # hashtag({"sarahleeheinrich", "sarahlee"}, start="2021-06-03T23:59:59.000Z", end="2022-01-01T23:59:59.000Z")
     #
-    # get_seed(SEED_TWEET_ID)
+    #get_seed(SEED_TWEET_ID)
     # pipeline(SEED_TWEET_ID)
     #
     # crawl_queue.put(crawl_likes)
     # crawl_queue.put(crawl_retweets)
-    # crawl_queue.put(crawl_timelines)
+    crawl_queue.put(crawl_timelines)
     # crawl_queue.put(crawl_following)
     # crawl_queue.put(crawl_follows)
 

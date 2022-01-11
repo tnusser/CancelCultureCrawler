@@ -6,14 +6,19 @@ import os
 import re
 from helper import logger
 
+config = configparser.ConfigParser()
+config.read("config.ini")
+
 logger.info("-------------------")
 logger.info("Start crawl routine")
 logger.info("-------------------")
 
-BEARER_TOKEN = os.environ.get("TWITTER_BEARER_TOKEN")
 API_BASE_URL = "https://api.twitter.com/2/"
-config = configparser.ConfigParser()
-config.read("config.ini")
+
+if "TWITTER_BEARER_TOKEN" in os.environ:
+    BEARER_TOKEN = os.environ.get("TWITTER_BEARER_TOKEN")
+else:
+    BEARER_TOKEN = config["twitter"]["BearerToken"]
 
 
 class ApiEndpoints:
