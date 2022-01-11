@@ -92,16 +92,11 @@ if "TWITTER_CRAWLER_RECEIVER" in os.environ:
 else:
     receiver = config["mail"]["Receiver"]
 
-already_warned = False
-
 
 def send_warn_mail():
     """
     Sends warning mail to defined receiver stating that the monthly usage cap is exceeded
     """
-    global already_warned
-    if not already_warned:
-        already_warned = True
     txt = "Twitter crawler exceeded monthly usage cap"
     message = 'Subject: {}\n\n{}'.format("Monthly Usage Cap Exceeded", txt)
     context = ssl.create_default_context()
