@@ -1,4 +1,3 @@
-import configparser
 import json
 import queue
 from datetime import datetime, timedelta
@@ -17,7 +16,7 @@ mongo_config = config["mongoDB"]
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
 timeline_func = "get_timeline"
-hashtag_func = "get_tweets_by_hashtag"
+hashtag_func = "get_tweets_by_hashtag_or_mention"
 follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
 
@@ -91,14 +90,9 @@ def process_result(response, f_name, params=None):
         return
     response = response["data"]
     if f_name == hashtag_func:
-        logger.info(f"Inserting hashtag tweets to db")
         for res in response:
-            # res["seed"] = SEED_TWEET_ID or SEED_EVENT_ID
-            res["crawl_timestamp"] = crawl_time_stamp
-            res["likes_crawled"] = False
-            res["retweets_crawled"] = False
-            hashtag_cache.append(res["id"])
-        db.insert(response, TWEET_COLLECTION)
+            hashtag_cache.add(res["conversation_id"])
+            logger.info(f"Added new conversation_id {res['conversation_id']} to local cache for pipeline crawl")
         return
     if f_name == timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
@@ -189,7 +183,7 @@ def iterative_crawl(crawl_function, params):
     @param params: parameters for the api request
     @return: either none if crawl finished successful or the time to wait until next request can be issued
     """
-    # logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
+    # DEBUG logger.info(f"Crawling function {crawl_function.__name__} params: {params}")
     stack = [(crawl_function, params)]
     while len(stack) > 0:
         func = stack.pop(0)
@@ -205,6 +199,7 @@ def iterative_crawl(crawl_function, params):
                 # only 1 request per second allowed (response time + sleep > 1)
                 time.sleep(1 - response_time if response_time < 1 else 0.8)
             response_json = response.json()
+            # DEBUG logger.info(response_json)
             if "data" in response_json:
                 process_result(response_json, crawl_function.__name__, params=params)
             else:
@@ -312,25 +307,31 @@ def reply_tree(tweet_id):
 
 
 @timeit
-def hashtag(hashtags, start, end):
+def hashtag_or_mention(hashtags_or_mentions, start, end):
     """
     Wrapper function to retrieve tweets containing one or more of the hashtags specified
-    @param hashtags: set of hashtag strings
+    @param hashtags_or_mentions: set of hashtag strings
     @param start: start date from which tweets are crawled in the format yyyy-mm-ddT23:59:59.000Z
     @param end: end date from which tweets are crawled in the format yyyy-mm-ddT23:59:59.000Z
     """
-    logger.info(f"Retrieving all tweets with the hashtags {hashtags}")
-    hash_params = {
-        "hashtags": hashtags,
+    logger.info(f"Retrieving all tweets with the hashtags {hashtags_or_mentions}")
+    params = {
+        "hashtags_or_mentions": hashtags_or_mentions,
         "start_date": start,
         "end_date": end,
         "except_fields": None,
         "next_token": None
     }
-    crawl(crawl_function=api.get_tweets_by_hashtag, params=hash_params)
+    crawl(crawl_function=api.get_tweets_by_hashtag_or_mention, params=params)
+    print(len(hashtag_cache))
+    for conversation_id in list(hashtag_cache):
+        if len(list(db.read({"id": conversation_id}, TWEET_COLLECTION))) > 0:
+            hashtag_cache.remove(conversation_id)
+    print(len(hashtag_cache))
     while len(hashtag_cache) > 0:
-        curr_tweet_id = hashtag_cache.pop(0)
-        pipeline(curr_tweet_id)
+        curr_conversation_id = hashtag_cache.pop()
+        get_seed(curr_conversation_id)
+        pipeline(curr_conversation_id)
 
 
 @timeit
@@ -377,16 +378,11 @@ def pipeline(tweet_id):
         stack = [tweet_id]
         while len(stack) > 0:
             curr_tweet_id = stack.pop(0)
-            response = db.read({"id": curr_tweet_id}, TWEET_COLLECTION, {"replies_crawled": 1})
-            for document in response:
-                if "replies_crawled" in document and document["replies_crawled"]:
-                    logger.info(f"Tweet with id {curr_tweet_id} already crawled --> Skip")
-                else:
-                    time.sleep(0.8)
-                    reply_tree(curr_tweet_id)
-                    user()
-                    quotes()
-                    db.modify({"id": curr_tweet_id}, {"$set": {"replies_crawled": True}}, TWEET_COLLECTION)
+            time.sleep(0.8)
+            reply_tree(curr_tweet_id)
+            user()
+            quotes()
+            # db.modify({"id": curr_tweet_id}, {"$set": {"replies_crawled": True}}, TWEET_COLLECTION)
             while len(tweet_cache) > 0:
                 twt_obj = tweet_cache.pop(0)
                 if twt_obj.sum_metric_count() > 0:
@@ -550,21 +546,21 @@ event_list = [
 # out_file = open("output/crawl_tweets.txt", "w")
 author_cache = {}
 tweet_cache = []
-hashtag_cache = []
+hashtag_cache = set()
 # bosetti und maaßen nzz
 temp_event_list = ["1466829037645582341", "1148654208398319622"]
 
 if __name__ == "__main__":
     # for el in temp_event_list:
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1478716260636676096"
+    SEED_TWEET_ID = "1442243266280370177"
 
     crawl_queue = queue.Queue()
 
     get_seed(SEED_TWEET_ID)
     pipeline(SEED_TWEET_ID)
-    hashtag({"testCC001", "testCC002"}, start="2021-06-03T23:59:59.000Z", end="2022-01-10T23:59:59.000Z")
-
+    hashtag_or_mention({"@LutzvanderHorst"}, start="2021-09-26T10:59:59.000Z", end="2021-09-27T23:59:59.000Z")
+    #hashtag_or_mention({"#testCC001", "@toniN0_1", "#testCC002"}, start="2020-09-26T10:59:59.000Z", end="2022-01-11T13:11:59.000Z")
     # crawl_queue.put(crawl_likes)
     # crawl_queue.put(crawl_retweets)
     # crawl_queue.put(crawl_timelines)

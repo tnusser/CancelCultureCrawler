@@ -74,26 +74,23 @@ class ApiEndpoints:
         response = requests.get(API_BASE_URL + "tweets?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
-    def get_tweets_by_hashtag(self, hashtags, start_date, end_date, except_fields=None, next_token=None):
+    def get_tweets_by_hashtag_or_mention(self, hashtags_or_mentions, start_date, end_date, except_fields=None,
+                                         next_token=None):
+        """
+        Retrieves all tweets containing certain hashtags or user mentions
+        @param hashtags_or_mentions: set of hashtags in the following format hashtags: #myhashtag mentions: @myuser
+        @param start_date: start date from which tweets are crawled in the format yyyy-mm-ddT23:59:59.000Z
+        @param end_date: end date from which tweets are crawled in the format yyyy-mm-ddT23:59:59.000Z
+        @param except_fields: optional param for fields which should be excluded. 'default' --> id, text
+        @param next_token: token used to retrieve results using pagination
+        @return: json object containing requested fields of the tweet
+        """
         q_string = ""
-        for hashtag in hashtags:
-            q_string += f'#{hashtag} -is:retweet OR '
+        for h_or_m in hashtags_or_mentions:
+            q_string += f'{h_or_m} -is:retweet OR '
         q_string = q_string.strip(" OR ")
         params = {
             'query': f"{q_string}",
-            'start_time': start_date,
-            'end_time': end_date,
-            'max_results': 500
-        }
-        response = self.full_archive_search(next_token, params, except_fields)
-        return self.exception_handler(response)
-
-    def get_tweets_by_tag(self, username, hashtags, start_date, end_date, except_fields=None, next_token=None):
-        q_string = ""
-        for hashtag in hashtags:
-            q_string += f'#{hashtag} OR'
-        params = {
-            'query': f"{q_string} @{username}",
             'start_time': start_date,
             'end_time': end_date,
             'max_results': 500
