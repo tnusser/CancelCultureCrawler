@@ -90,9 +90,15 @@ def process_result(response, f_name, params=None):
         return
     response = response["data"]
     if f_name == hashtag_func:
-        for res in response:
-            hashtag_cache.add(res["conversation_id"])
-            logger.info(f"Added new conversation_id {res['conversation_id']} to local cache for pipeline crawl")
+        if config["twitter"]["CompleteTree"]:
+            for res in response:
+                hashtag_cache.add(res["conversation_id"])
+                logger.info(f"Added new conversation_id {res['conversation_id']} to local cache for complete "
+                            f"conversation tree crawl")
+        else:
+            for res in response:
+                hashtag_cache.add(res["id"])
+                logger.info(f"Added new id {res['id']} to local cache for crawling all children of this tweet")
         return
     if f_name == timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
@@ -323,11 +329,9 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
         "next_token": None
     }
     crawl(crawl_function=api.get_tweets_by_hashtag_or_mention, params=params)
-    print(len(hashtag_cache))
-    for conversation_id in list(hashtag_cache):
-        if len(list(db.read({"id": conversation_id}, TWEET_COLLECTION))) > 0:
-            hashtag_cache.remove(conversation_id)
-    print(len(hashtag_cache))
+    for tweet_id in list(hashtag_cache):
+        if len(list(db.read({"id": tweet_id}, TWEET_COLLECTION))) > 0:
+            hashtag_cache.remove(tweet_id)
     while len(hashtag_cache) > 0:
         curr_conversation_id = hashtag_cache.pop()
         get_seed(curr_conversation_id)
@@ -539,7 +543,8 @@ class EventSearch:
 event_list = [
     EventSearch(-1, "1442243266280370177", start_date=None, hashtags=None, username=None, comment="vanderhorst"),
     EventSearch(0, "1433361036191612930", start_date=None, hashtags=None, username=None, comment="toni test"),
-    EventSearch(1, tweet_id="1158074774297468928", start_date="2019-08-03T23:59:59.000Z", hashtags=["neildegrassetyson"],
+    EventSearch(1, tweet_id="1158074774297468928", start_date="2019-08-03T23:59:59.000Z",
+                hashtags=["neildegrassetyson"],
                 username="neiltyson", comment="neil de grasse tyson"),
 ]
 
@@ -553,14 +558,14 @@ temp_event_list = ["1466829037645582341", "1148654208398319622"]
 if __name__ == "__main__":
     # for el in temp_event_list:
     crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1442243266280370177"
+    SEED_TWEET_ID = "1433361036191612930"
 
     crawl_queue = queue.Queue()
 
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
-    hashtag_or_mention({"@LutzvanderHorst"}, start="2021-09-26T10:59:59.000Z", end="2021-09-27T23:59:59.000Z")
-    #hashtag_or_mention({"#testCC001", "@toniN0_1", "#testCC002"}, start="2020-09-26T10:59:59.000Z", end="2022-01-11T13:11:59.000Z")
+    # get_seed(SEED_TWEET_ID)
+    # pipeline(SEED_TWEET_ID)
+    # hashtag_or_mention({"@LutzvanderHorst"}, start="2021-09-26T10:59:59.000Z", end="2021-09-27T23:59:59.000Z")
+    # hashtag_or_mention({"#testCC001", "@toniN0_1", "#testCC002"}, start="2020-09-26T10:59:59.000Z", end="2022-01-11T13:11:59.000Z")
     # crawl_queue.put(crawl_likes)
     # crawl_queue.put(crawl_retweets)
     # crawl_queue.put(crawl_timelines)
