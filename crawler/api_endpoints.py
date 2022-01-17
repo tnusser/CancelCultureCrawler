@@ -276,6 +276,13 @@ class ApiEndpoints:
         return self.exception_handler(response)
 
     def full_archive_search(self, next_token, params, except_fields):
+        """
+        Generic full archive search method that executes reply, quote or retweet crawl
+        @param next_token: token used to retrieve results using pagination
+        @param params: parameter dictionary for the search
+        @param except_fields: optional param for fields which should be excluded. 'default' --> id, text
+        @return: json object containing the response by the twitter api
+        """
         if next_token is not None:
             params["next_token"] = next_token
         params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)

@@ -561,12 +561,11 @@ event_list = [
                 username="ginacarano", comment="gina carano")
 ]
 
-# out_file = open("output/crawl_tweets.txt", "w")
+if not mongo_config["UseMongo"]:
+    out_file = open("output/example.json", "w")
 author_cache = {}
 tweet_cache = []
 hashtag_cache = set()
-# bosetti und maaßen nzz
-temp_event_list = ["1466829037645582341", "1148654208398319622"]
 
 if __name__ == "__main__":
     # for el in temp_event_list:
@@ -575,15 +574,16 @@ if __name__ == "__main__":
 
     crawl_queue = queue.Queue()
 
-    # get_seed(SEED_TWEET_ID)
-    # pipeline(SEED_TWEET_ID)
+    get_seed(SEED_TWEET_ID)
+    pipeline(SEED_TWEET_ID)
     # hashtag_or_mention({"@LutzvanderHorst"}, start="2021-09-26T10:59:59.000Z", end="2021-09-27T23:59:59.000Z")
     # hashtag_or_mention({"#testCC001", "@toniN0_1", "#testCC002"}, start="2020-09-26T10:59:59.000Z", end="2022-01-11T13:11:59.000Z")
-    # crawl_queue.put(crawl_likes)
-    # crawl_queue.put(crawl_retweets)
-    # crawl_queue.put(crawl_timelines)
-    # crawl_queue.put(crawl_following)
-    # crawl_queue.put(crawl_follows)
+
+    crawl_queue.put(crawl_likes)
+    crawl_queue.put(crawl_retweets)
+    crawl_queue.put(crawl_timelines)
+    crawl_queue.put(crawl_following)
+    crawl_queue.put(crawl_follows)
 
     for j in range(crawl_queue.qsize()):
         logger.info(f"Main: create and start thread for crawl queue {j}")

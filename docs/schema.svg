@@ -1,0 +1,1302 @@
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'   width='2016' height='1358' viewBox='0 0 2016 1358' >
+  <script type='text/ecmascript'>
+  <![CDATA[
+  function hghl(el) { for ( var i in el ){ var elem = document.getElementById(el[i]); if ( elem != null ) elem.setAttribute('class','highlight');  }  }
+  function uhghl(el) { for ( var i in el ){ var elem = document.getElementById(el[i]); if ( elem != null ) elem.setAttribute('class','unhighlight'); }  } 
+  ]]>
+  </script> 
+
+<style type='text/css'>
+  text                { fill:#000000; font-family: System, 'Trebuchet MS', Dialog; font-size:14.083333015441895px; }
+  a text:hover        { fill:#0d196f; text-shadow: 0px 0px 6px #d0ce00; font-size:13px; font-weight: bold;}
+  text.highlight      { fill:#0d196f; text-shadow: 0px 0px 4px #eac533; font-size:13px; font-weight: bold;}
+  text.white          { fill:#ffffff; }
+  text.colType        { fill:#b3b3b3; }
+  text.relName        { fill:#9c9a9a; }
+  text.legendTitle    { fill:#d65c68; font-weight:bold; }
+  text.legendSubTitle { fill:#717171; font-size:11px; }
+  path                { stroke:#928c7e; stroke-width:1.25; fill:none; }
+  path.virtual        { stroke:#a364b5; }
+  path.logo           { fill:#fbeac0;fill-opacity:1;stroke-width:0.3;stroke:#222222; }
+  path.dotted         { stroke-dasharray:4,2; }
+  path.unhighlight    { stroke-width:10; opacity:0; }
+  path.highlight      { stroke-width:3; stroke:#0054c5; opacity:0.8; }
+  path.line           { stroke-width:10; stroke-linecap:round; stroke-linejoin:round; }
+  rect.entity         { fill:#ffffff; stroke:#777; stroke-width:0;shape-rendering:crispEdges; filter:url(#shadow); }
+  line.delim          { stroke-width:1px; shape-rendering:crispEdges; }
+  line.topLine        { stroke-width:3px; shape-rendering:crispEdges; }
+  text.callout        { fill:#000000; font-family: System, 'Trebuchet MS', Dialog; font-size:14.625px; }
+  rect.callout        { fill:url(#calloutGradient); filter:url(#shadow); }
+  rect.shape          { stroke:#bebdbd; stroke-width:0.5; }
+  rect.grp            { stroke:#a1a1a1; stroke-width:3; opacity:0.35; }
+  path.bgPattern      { fill:none;stroke-width:0.6;stroke:#e5e9ee; }
+  rect.palpable       { fill:#fffbe5; }
+</style>
+<defs>
+  <radialGradient id='layoutBgB' cx='100%' cy='100%' r='100%'  >
+    <stop offset='0%' stop-color='#dfdfdf' />
+    <stop offset='100%' stop-color='#f2f2f2' />
+  </radialGradient>
+  <pattern id="layoutBgA" width="60" height="34.64" patternUnits="userSpaceOnUse">
+    <rect x="0" y="0"  width="60" height="34.64" fill="#f5f5f5" />
+    <path class='bgPattern' d='M 0 17.32 L 10 0 L 30 0 L 40 17.326 L 30 34.64 L 10 34.64 Z' />
+    <path class='bgPattern' d='M 40 17.32 L 60 17.32 Z' />
+  </pattern>
+  <!-- https://norbat.de/svg-pattern-3d-webmuster/ -->
+  <linearGradient id='groupUnderTitleLine' x1='0%' y1='0%' x2='100%' y2='0%' >
+    <stop offset='0%' stop-color='#999999' stop-opacity='0.7'/>
+    <stop offset='100%' stop-color='#999999' stop-opacity='0' />
+  </linearGradient>
+  <radialGradient id='calloutGradient' cx='25%' cy='20%' r='80%' fx='10%' fy='10%'>
+    <stop offset='0%' stop-color='#ffffff' />
+    <stop offset='100%' stop-color='#f8f6d1' />
+  </radialGradient>
+  <filter id="shadow" width="120%" height="120%">
+    <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#333" flood-opacity="0.2" />
+  </filter>
+  <!--
+  <filter id='shadow2' width='120%' height='120%'>
+    <feOffset result='offOut' in='SourceGraphic' dx='0' dy='0' />
+    <feColorMatrix result='matrixOut' in='offOut'
+                   values='0.5 0 0 0 0 0 0.5 0 0 0 0 0 0.5 0 0 0 0 0 0.5 0' />
+    <feGaussianBlur result='blurOut' in='matrixOut' stdDeviation='3' />
+    <feBlend in='SourceGraphic' in2='blurOut' />
+  </filter>
+  -->
+  <filter id='fkShadow' height='130%'>
+    <feGaussianBlur in='SourceAlpha' stdDeviation='1.5'/> <!-- stdDeviation is how much to blur -->
+    <feOffset dx='1.2' dy='1.2' result='offsetblur'/> <!-- how much to offset -->
+    <feMerge>
+      <feMergeNode/> <!-- this contains the offset blurred image -->
+      <feMergeNode in='SourceGraphic'/> <!-- this contains the element that the filter is applied to -->
+    </feMerge>
+  </filter>
+  <radialGradient id='legendGradient' cx='5%' cy='5%' r='100%' >
+    <stop offset='0%' stop-color='#fdfeff' stop-opacity='1'/>
+    <stop offset='100%' stop-color='#e1eafa' stop-opacity='1' />
+  </radialGradient>
+  <symbol id='calloutArrowDown' >
+    <path d='M 0,0 L 8,12 L 16,0 z' style='fill:#f8f6d1;stroke:none; filter: url(#shadow);' />
+    <path d='M 0,0 L 8,12 L 16,0' style='stroke:#bebdbd; stroke-width:0.5;' />
+  </symbol>
+  <symbol id='calloutArrowUp' >
+    <path d='M 0,16 L 8,4 L 16,16 z' style='fill:#ffffff; stroke:none; filter: url(#shadow);' />
+    <path d='M 0,16 L 8,4 L 16,16' style='stroke:#bebdbd; stroke-width:0.5;' />
+  </symbol>
+  <symbol id='pk' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <path style='fill:#f0d938;stroke:#906b25;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;'
+            d='M 9.3678877,3.5695485 C 9.1030218,3.2729386 9.0796382,2.7628519 9.3396185,2.4517097 9.5449651,2.1956495 9.9040386,2.0980533 10.199638,2.2169415 10.533525,2.3415459 10.775153,2.706942 10.750675,3.0842709 10.737029,3.3980003 10.541153,3.699122 10.258248,3.8066067 9.966649,3.9250429 9.6169668,3.8418805 9.4008073,3.6062324 9.3894892,3.5943518 9.3785264,3.582104 9.3678886,3.5695487 z M 11.226617,6.9916004 C 11.888137,6.3548946 12.293488,5.4172188 12.311087,4.442353 12.378144,2.7379364 11.248678,1.0541269 9.7322318,0.44767357 8.3887112,-0.1280313 6.7865012,0.26822889 5.8918395,1.4007929 5.080823,2.3839145 4.9336815,3.8452096 5.3635544,5.101615 L 4.3670905,5.315913 C 4.0664984,5.3682645 4.0967703,5.6316724 4.2574957,5.8208829 L 4.9124,6.5655244 4.1543436,7.2512357 3.2136002,7.2163506 3.1674775,8.5586827 2.0406832,8.5086512 1.5965306,8.9299953 1.5471661,10.179833 0.75616674,10.195223 0.2112857,10.758575 0.15354288,11.735988 0.07199052,12.765553 c 0.36440953,0.238225 0.79006967,0.195492 1.44938278,-0.02675 L 6.3033562,8.1282037 6.8217102,8.6765688 C 6.9985465,8.8799427 7.3003699,8.7497574 7.358381,8.5016252 L 7.4938877,7.5084164 c 0.8537488,0.3985387 1.8303125,0.4711541 2.6851793,0.1427713 0.393927,-0.1407258 0.746858,-0.3701772 1.04755,-0.6595873 z'/>
+      <path d='M 6.8014948,6.3102123 0.15369063,13.024481 0.21560535,12.141962 6.0062342,6.2683782 z'
+            style='fill:#ffe5a5;fill-opacity:1;stroke:#906b25;stroke-width:0.06912433;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:3.00300009'/>
+    </g>
+  </symbol>
+  <symbol id='idx1' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <rect width='4' height='4' x='7' y='1' style='fill:#ffff3f;stroke:#b48333;stroke-width:0.6;' ry='0.83'/>
+      <rect width='4' height='4' x='1' y='7' style='fill:#ffff3f;stroke:#b48333;stroke-width:0.6;' ry='0.832'/>
+      <rect width='4' height='4' x='7' y='7' style='fill:#ffff3f;stroke:#b48333;stroke-width:0.6;' ry='0.832'/>
+    </g>
+  </symbol>
+  <symbol id='idx2' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <rect width='4' height='3' x='6' y='1' style='fill:#7fc8e9;stroke:#2f6f8c;stroke-width:0.6;' ry='0.83'/>
+      <rect width='7' height='3' x='3' y='6' style='fill:#7fc8e9;stroke:#2f6f8c;stroke-width:0.6;' ry='0.832'/>
+    </g>
+  </symbol>
+  <symbol id='unq' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <rect style='fill:none;stroke:#7e4d31;stroke-width:0.71934468;stroke-linecap:round;stroke-linejoin:round;'
+            width='2.29' height='8.43' x='7.48' y='-0.76' ry='1.14' transform='matrix(0.701,0.713,-0.727,0.685,0,0)' />
+      <path style='fill:white;stroke:#858585;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='m 26.04,8.64 a 4.13,4.13 0 1 1 -8.26,0 4.13,4.13 0 1 1 8.26,0 z'
+            transform='matrix(1.025,0,0,0.987,-14.690,-3.862)' />
+      <text x='5.8' y='7.4' style='font-size:7px;fill:#8a8a8a;'>U</text>
+    </g>
+  </symbol>
+  <symbol id='idx' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <rect style='fill:none;stroke:#7e4d31;stroke-width:0.71934468;stroke-linecap:round;stroke-linejoin:round;'
+            width='2.29' height='8.43' x='7.48' y='-0.76' ry='1.14' transform='matrix(0.701,0.713,-0.727,0.685,0,0)' />
+      <path style='fill:white;stroke:#858585;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='m 26.04,8.64 a 4.13,4.13 0 1 1 -8.26,0 4.13,4.13 0 1 1 8.26,0 z'
+            transform='matrix(1.025,0,0,0.987,-14.690,-3.862)' />
+    </g>
+  </symbol>
+  <symbol id='fk' width="13" height="13">
+    <g transform='scale(0.87)'>
+      <path style='fill:#6a88cd;stroke:#5a72a8;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='M 12.48,0.33 7.07,0.89 9.067,2.974 0.329,11.731 1.073,12.597 9.811,3.841 11.77,5.78 z' />
+    </g>
+  </symbol>
+  <symbol id='ref' width="13" height="13">
+    <g transform='scale(0.87)'>
+      <path style='fill:#f0d938;stroke:#906b25;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='M 0.10,12.70 5.31,12.15 3.40,10.06 11.82,1.32 11.11,0.45 2.68,9.19 0.80,7.24 z'/>
+    </g>
+  </symbol>
+  <symbol id='flag0' width="13" height="13">
+    <g transform='scale(0.92)'>
+      <path style='fill:#b7d0f6;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='M 0.12,12.67 0.16,7.22 C 2.59,7.22 4.13,8.78 9.22,4.22 5.68,4.98 2.53,4.50 0.09,1.80 z'/>
+    </g>
+  </symbol>
+  <symbol id='flag1' width="13" height="13">
+    <g transform='scale(0.92)'>
+      <path style='fill:#f4a393;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='M 0.12,12.67 0.16,7.22 C 2.59,7.22 4.13,8.78 9.22,4.22 5.68,4.98 2.53,4.50 0.09,1.80 z'/>
+    </g>
+  </symbol>
+  <symbol id='flag2' width="13" height="13">
+    <g transform='scale(0.92)'>
+      <path style='fill:#77ec8b;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+            d='M 0.12,12.67 0.16,7.22 C 2.59,7.22 4.13,8.78 9.22,4.22 5.68,4.98 2.53,4.50 0.09,1.80 z'/>
+    </g>
+  </symbol>
+  <symbol id='nn' width="3" height="3">
+    <path style='stroke:#9b3e50;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+          d='M 0,0 3,3 M 0,3 3,0 z'/>
+  </symbol>
+  <symbol id='virtual' width="13" height="13">
+    <circle cx='6' cy='6.5' r='5.5' fill='#a3dda3' stroke='#4c6a4c' stroke-width='0.5'/>
+    <path style='stroke:#ffffff;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+          d='M 3,4 6,10 9,4'/>
+  </symbol>
+  <symbol id='view' width="13" height="13">
+    <g transform='scale(0.99)'>
+      <line x1='12' y1='6' x2='19' y2='0' stroke='black' stroke-width='0.5' />
+      <line x1='0' y1='6' x2='7' y2='0' stroke='black' stroke-width='0.5' />
+      <circle cx='3' cy='6' r='3' fill='#f9ebbc' stroke='black' stroke-width='0.5'/>
+      <circle cx='10' cy='6' r='3' fill='#f9ebbc' stroke='black' stroke-width='0.5'/>
+    </g>
+  </symbol>
+
+</defs>
+
+<defs>  <marker id='arrow0u' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+  </marker>
+  <marker id='arrow1u' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+  </marker>
+  <marker id='arrow0' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+    <path d='M 16.00,0.00 L 8.00,4.00 L 16.00,8.00' />
+  </marker>
+  <marker id='arrow1' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+    <path d='M 16.00,0.00 L 8.00,4.00 L 16.00,8.00' />
+  </marker>
+  <marker id='foot0u' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 1.60,4.00 L 3.20,4.00 L 4.80,4.00 L 6.40,4.00 z' />
+  </marker>
+  <marker id='foot0' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 1.60,4.00 L 3.20,4.00 L 4.80,4.00 L 6.40,4.00 z' />
+    <path d='M 0.00,0.00 L 8.00,4.00 L 0.00,8.00' />
+  </marker>
+  <marker id='foot1u' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+  </marker>
+  <marker id='foot1' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+    <path d='M 0.00,0.00 L 8.00,4.00 L 0.00,8.00' />
+  </marker>
+  <marker id='line_arrow' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 8.000,4.000 L 16.000,4.000 L 8.000,0.000 L 16.000,4.000 L 8.000,8.000' />
+  </marker>
+  <marker id='line_straight' viewBox='0 0 16.00 8.00' refX='8.00' refY='4.00' markerWidth='16.00' markerHeight='8.00' orient='auto'>
+    <path d='M 0.00,4.00 L 16.00,4.00 z' />
+  </marker>
+  <linearGradient id='tbg_F4DDBE' x1='0%' y1='0%' x2='0%' y2='100%' >
+     <stop offset='0%' stop-color='#FFFCF8' /> 
+     <stop offset='40%' stop-color='#FFF6EA' /> 
+     <stop offset='100%' stop-color='#DDC7AA' /> 
+  </linearGradient>
+  <linearGradient id='tbg_BED3F4' x1='0%' y1='0%' x2='0%' y2='100%' >
+     <stop offset='0%' stop-color='#F8FAFF' /> 
+     <stop offset='40%' stop-color='#EAF2FF' /> 
+     <stop offset='100%' stop-color='#AABDDD' /> 
+  </linearGradient>
+  <linearGradient id='tbg_C7F4BE' x1='0%' y1='0%' x2='0%' y2='100%' >
+     <stop offset='0%' stop-color='#F9FFF8' /> 
+     <stop offset='40%' stop-color='#EDFFEA' /> 
+     <stop offset='100%' stop-color='#B2DDAA' /> 
+  </linearGradient>
+  <linearGradient id='tbg_BEBEF4' x1='0%' y1='0%' x2='0%' y2='100%' >
+     <stop offset='0%' stop-color='#F8F8FF' /> 
+     <stop offset='40%' stop-color='#EAEAFF' /> 
+     <stop offset='100%' stop-color='#AAAADD' /> 
+  </linearGradient>
+</defs>
+
+<!-- == Shape Colors == -->
+<!-- == Desktop == -->
+<rect x='1' y='1' width='2014' height='1356' rx='8' ry='8' style='fill:url(#layoutBgA); stroke:#aaa; stroke-width:1px;' />
+<rect x='1' y='1' width='2014' height='1356' rx='8' ry='8' style='fill:url(#layoutBgTr);' />
+
+<!-- == Legend == -->
+<g transform='translate(10,10)'>
+  <rect x='10' y='10' width='420' height='70' rx='6' ry='6' style='fill:url(#legendGradient);filter:url(#shadow);'/> 
+  <text x='20' y='25' class='legendTitle' >MongoDb</text> 
+  <a xlink:href='https://dbschema.com'><text x='20' y='39' class='legendSubTitle'><tspan>@ DbSchema</tspan></text></a> 
+  <text x='20' y='53' class='legendSubTitle'><tspan>Read the schema comments as mouse-over tooltips.</tspan></text> 
+  <text x='20' y='67' class='legendSubTitle'><tspan>Zoom using CTRL with mouse wheel, pan diagram using drag with right-mouse button.</tspan></text> 
+</g>
+
+<g transform='translate(0,110)'>
+<!-- == Group 'Collection 'cc_tweets'' == -->
+<rect class='grp' style='fill:#FCEFE1;stroke:#C7B49E' x='32' y='45' width='784' height='546' />
+<text x='44' y='61'>Collection 'cc_tweets'</text>
+<rect style='fill:url(#groupUnderTitleLine); stroke-width:2;' x='44' y='65' width='760' height='2' />
+
+<!-- == Group 'Collection 'cc_follows'' == -->
+<rect class='grp' style='fill:#E5FCE1;stroke:#A5C79E' x='1024' y='621' width='960' height='562' />
+<text x='1036' y='637'>Collection 'cc_follows'</text>
+<rect style='fill:url(#groupUnderTitleLine); stroke-width:2;' x='1036' y='641' width='936' height='2' />
+
+<!-- == Group 'Collection 'cc_users'' == -->
+<rect class='grp' style='fill:#E1E1FC;stroke:#9E9EC7' x='1024' y='45' width='960' height='546' />
+<text x='1036' y='61'>Collection 'cc_users'</text>
+<rect style='fill:url(#groupUnderTitleLine); stroke-width:2;' x='1036' y='65' width='936' height='2' />
+
+<!-- == Group 'Collection 'cc_timelines'' == -->
+<rect class='grp' style='fill:#E1EAFC;stroke:#9EACC7' x='32' y='621' width='960' height='530' />
+<text x='44' y='637'>Collection 'cc_timelines'</text>
+<rect style='fill:url(#groupUnderTitleLine); stroke-width:2;' x='44' y='641' width='936' height='2' />
+
+<!-- == Fk 'attachments_JSon' == -->
+<path id='attachments_JSon'  onmouseover="hghl(['attachments_JSon','twitter_db.cc_tweets.attachments'])" onmouseout="uhghl(['attachments_JSon','twitter_db.cc_tweets.attachments'])" transform='translate(8,0)' class='unhighlight' d='M 352,320L 320,320' >
+	<title>Fk JSon
+attachments ref cc_tweets (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,320L 320,320' ><title>Fk JSon
+attachments ref cc_tweets (  )</title></path>
+<text x='339' y='315' transform='rotate(0 339,315)' class='relName'>Obj</text>
+<!-- == Fk 'attachments_JSon' == -->
+<path id='attachments_JSon'  onmouseover="hghl(['attachments_JSon','twitter_db.cc_timelines.attachments'])" onmouseout="uhghl(['attachments_JSon','twitter_db.cc_timelines.attachments'])" transform='translate(8,0)' class='unhighlight' d='M 352,896L 320,896' >
+	<title>Fk JSon
+attachments ref cc_timelines (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,896L 320,896' ><title>Fk JSon
+attachments ref cc_timelines (  )</title></path>
+<text x='339' y='891' transform='rotate(0 339,891)' class='relName'>Obj</text>
+<!-- == Fk 'description_JSon' == -->
+<path id='description_JSon'  onmouseover="hghl(['description_JSon','twitter_db.cc_users.description'])" onmouseout="uhghl(['description_JSon','twitter_db.cc_users.description'])" transform='translate(8,0)' class='unhighlight' d='M 1520,160L 1512,160Q 1504,160 1504,152L 1504,152Q 1504,144 1496,144L 1488,144' >
+	<title>Fk JSon
+description ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1520,160L 1512,160Q 1504,160 1504,152L 1504,152Q 1504,144 1496,144L 1488,144' ><title>Fk JSon
+description ref entities (  )</title></path>
+<text x='1507' y='155' transform='rotate(0 1507,155)' class='relName'>Obj</text>
+<!-- == Fk 'description_JSon' == -->
+<path id='description_JSon'  onmouseover="hghl(['description_JSon','twitter_db.cc_follows.description'])" onmouseout="uhghl(['description_JSon','twitter_db.cc_follows.description'])" transform='translate(8,0)' class='unhighlight' d='M 1520,672L 1488,672' >
+	<title>Fk JSon
+description ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1520,672L 1488,672' ><title>Fk JSon
+description ref entities (  )</title></path>
+<text x='1507' y='667' transform='rotate(0 1507,667)' class='relName'>Obj</text>
+<!-- == Fk 'entities_JSon' == -->
+<path id='entities_JSon'  onmouseover="hghl(['entities_JSon','twitter_db.cc_tweets.entities'])" onmouseout="uhghl(['entities_JSon','twitter_db.cc_tweets.entities'])" transform='translate(8,0)' class='unhighlight' d='M 352,208L 320,208' >
+	<title>Fk JSon
+entities ref cc_tweets (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1u)' marker-end='url(#arrow1)'    d='M 352,208L 320,208' ><title>Fk JSon
+entities ref cc_tweets (  )</title></path>
+<text x='339' y='203' transform='rotate(0 339,203)' class='relName'>Obj</text>
+<!-- == Fk 'entities_JSon' == -->
+<path id='entities_JSon'  onmouseover="hghl(['entities_JSon','twitter_db.cc_timelines.entities'])" onmouseout="uhghl(['entities_JSon','twitter_db.cc_timelines.entities'])" transform='translate(8,0)' class='unhighlight' d='M 352,672L 320,672' >
+	<title>Fk JSon
+entities ref cc_timelines (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,672L 320,672' ><title>Fk JSon
+entities ref cc_timelines (  )</title></path>
+<text x='339' y='667' transform='rotate(0 339,667)' class='relName'>Obj</text>
+<!-- == Fk 'entities_JSon' == -->
+<path id='entities_JSon'  onmouseover="hghl(['entities_JSon','twitter_db.cc_users.entities'])" onmouseout="uhghl(['entities_JSon','twitter_db.cc_users.entities'])" transform='translate(8,0)' class='unhighlight' d='M 1296,96L 1264,96' >
+	<title>Fk JSon
+entities ref cc_users (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1296,96L 1264,96' ><title>Fk JSon
+entities ref cc_users (  )</title></path>
+<text x='1283' y='91' transform='rotate(0 1283,91)' class='relName'>Obj</text>
+<!-- == Fk 'entities_JSon' == -->
+<path id='entities_JSon'  onmouseover="hghl(['entities_JSon','twitter_db.cc_follows.entities'])" onmouseout="uhghl(['entities_JSon','twitter_db.cc_follows.entities'])" transform='translate(8,0)' class='unhighlight' d='M 1296,672L 1264,672' >
+	<title>Fk JSon
+entities ref cc_follows (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1296,672L 1264,672' ><title>Fk JSon
+entities ref cc_follows (  )</title></path>
+<text x='1283' y='667' transform='rotate(0 1283,667)' class='relName'>Obj</text>
+<!-- == Fk 'geo_JSon' == -->
+<path id='geo_JSon'  onmouseover="hghl(['geo_JSon','twitter_db.cc_timelines.geo'])" onmouseout="uhghl(['geo_JSon','twitter_db.cc_timelines.geo'])" transform='translate(8,0)' class='unhighlight' d='M 352,1072L 312,1072Q 304,1072 304,1064L 304,960' >
+	<title>Fk JSon
+geo ref cc_timelines (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,1072L 312,1072Q 304,1072 304,1064L 304,960' ><title>Fk JSon
+geo ref cc_timelines (  )</title></path>
+<text x='339' y='1067' transform='rotate(0 339,1067)' class='relName'>Obj</text>
+<!-- == Fk 'hashtags_JSon' == -->
+<path id='hashtags_JSon'  onmouseover="hghl(['hashtags_JSon','twitter_db.cc_tweets.hashtags'])" onmouseout="uhghl(['hashtags_JSon','twitter_db.cc_tweets.hashtags'])" transform='translate(8,0)' class='unhighlight' d='M 608,352L 568,352Q 560,352 560,344L 560,304' >
+	<title>Fk JSon
+hashtags ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,352L 568,352Q 560,352 560,344L 560,304' ><title>Fk JSon
+hashtags ref entities (  )</title></path>
+<text x='595' y='347' transform='rotate(0 595,347)' class='relName'>Ary</text>
+<!-- == Fk 'hashtags_JSon' == -->
+<path id='hashtags_JSon'  onmouseover="hghl(['hashtags_JSon','twitter_db.cc_timelines.hashtags'])" onmouseout="uhghl(['hashtags_JSon','twitter_db.cc_timelines.hashtags'])" transform='translate(8,0)' class='unhighlight' d='M 608,880L 568,880Q 560,880 560,872L 560,752' >
+	<title>Fk JSon
+hashtags ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,880L 568,880Q 560,880 560,872L 560,752' ><title>Fk JSon
+hashtags ref entities (  )</title></path>
+<text x='595' y='875' transform='rotate(0 595,875)' class='relName'>Ary</text>
+<!-- == Fk 'hashtags_JSon' == -->
+<path id='hashtags_JSon'  onmouseover="hghl(['hashtags_JSon','twitter_db.cc_users.hashtags'])" onmouseout="uhghl(['hashtags_JSon','twitter_db.cc_users.hashtags'])" transform='translate(8,0)' class='unhighlight' d='M 1776,368L 1736,368Q 1728,368 1728,360L 1728,256' >
+	<title>Fk JSon
+hashtags ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,368L 1736,368Q 1728,368 1728,360L 1728,256' ><title>Fk JSon
+hashtags ref description (  )</title></path>
+<text x='1763' y='363' transform='rotate(0 1763,363)' class='relName'>Ary</text>
+<!-- == Fk 'hashtags_JSon' == -->
+<path id='hashtags_JSon'  onmouseover="hghl(['hashtags_JSon','twitter_db.cc_follows.hashtags'])" onmouseout="uhghl(['hashtags_JSon','twitter_db.cc_follows.hashtags'])" transform='translate(8,0)' class='unhighlight' d='M 1776,672L 1744,672' >
+	<title>Fk JSon
+hashtags ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,672L 1744,672' ><title>Fk JSon
+hashtags ref description (  )</title></path>
+<text x='1763' y='667' transform='rotate(0 1763,667)' class='relName'>Ary</text>
+<!-- == Fk 'images_JSon' == -->
+<path id='images_JSon'  onmouseover="hghl(['images_JSon','twitter_db.cc_timelines.images'])" onmouseout="uhghl(['images_JSon','twitter_db.cc_timelines.images'])" transform='translate(8,0)' class='unhighlight' d='M 848,672L 816,672' >
+	<title>Fk JSon
+images ref urls (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 848,672L 816,672' ><title>Fk JSon
+images ref urls (  )</title></path>
+<text x='835' y='667' transform='rotate(0 835,667)' class='relName'>Ary</text>
+<!-- == Fk 'mentions_JSon' == -->
+<path id='mentions_JSon'  onmouseover="hghl(['mentions_JSon','twitter_db.cc_timelines.mentions'])" onmouseout="uhghl(['mentions_JSon','twitter_db.cc_timelines.mentions'])" transform='translate(8,0)' class='unhighlight' d='M 608,992L 552,992Q 544,992 544,984L 544,752' >
+	<title>Fk JSon
+mentions ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,992L 552,992Q 544,992 544,984L 544,752' ><title>Fk JSon
+mentions ref entities (  )</title></path>
+<text x='595' y='987' transform='rotate(0 595,987)' class='relName'>Ary</text>
+<!-- == Fk 'mentions_JSon' == -->
+<path id='mentions_JSon'  onmouseover="hghl(['mentions_JSon','twitter_db.cc_tweets.mentions'])" onmouseout="uhghl(['mentions_JSon','twitter_db.cc_tweets.mentions'])" transform='translate(8,0)' class='unhighlight' d='M 608,464L 552,464Q 544,464 544,456L 544,304' >
+	<title>Fk JSon
+mentions ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,464L 552,464Q 544,464 544,456L 544,304' ><title>Fk JSon
+mentions ref entities (  )</title></path>
+<text x='595' y='459' transform='rotate(0 595,459)' class='relName'>Ary</text>
+<!-- == Fk 'mentions_JSon' == -->
+<path id='mentions_JSon'  onmouseover="hghl(['mentions_JSon','twitter_db.cc_users.mentions'])" onmouseout="uhghl(['mentions_JSon','twitter_db.cc_users.mentions'])" transform='translate(8,0)' class='unhighlight' d='M 1776,480L 1720,480Q 1712,480 1712,472L 1712,256' >
+	<title>Fk JSon
+mentions ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,480L 1720,480Q 1712,480 1712,472L 1712,256' ><title>Fk JSon
+mentions ref description (  )</title></path>
+<text x='1763' y='475' transform='rotate(0 1763,475)' class='relName'>Ary</text>
+<!-- == Fk 'mentions_JSon' == -->
+<path id='mentions_JSon'  onmouseover="hghl(['mentions_JSon','twitter_db.cc_follows.mentions'])" onmouseout="uhghl(['mentions_JSon','twitter_db.cc_follows.mentions'])" transform='translate(8,0)' class='unhighlight' d='M 1776,784L 1736,784Q 1728,784 1728,776L 1728,752' >
+	<title>Fk JSon
+mentions ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,784L 1736,784Q 1728,784 1728,776L 1728,752' ><title>Fk JSon
+mentions ref description (  )</title></path>
+<text x='1763' y='779' transform='rotate(0 1763,779)' class='relName'>Ary</text>
+<!-- == Fk 'public_metrics_JSon' == -->
+<path id='public_metrics_JSon'  onmouseover="hghl(['public_metrics_JSon','twitter_db.cc_tweets.public_metrics'])" onmouseout="uhghl(['public_metrics_JSon','twitter_db.cc_tweets.public_metrics'])" transform='translate(8,0)' class='unhighlight' d='M 352,96L 320,96' >
+	<title>Fk JSon
+public_metrics ref cc_tweets (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1u)' marker-end='url(#arrow1)'    d='M 352,96L 320,96' ><title>Fk JSon
+public_metrics ref cc_tweets (  )</title></path>
+<text x='339' y='91' transform='rotate(0 339,91)' class='relName'>Obj</text>
+<!-- == Fk 'public_metrics_JSon' == -->
+<path id='public_metrics_JSon'  onmouseover="hghl(['public_metrics_JSon','twitter_db.cc_timelines.public_metrics'])" onmouseout="uhghl(['public_metrics_JSon','twitter_db.cc_timelines.public_metrics'])" transform='translate(8,0)' class='unhighlight' d='M 352,768L 320,768' >
+	<title>Fk JSon
+public_metrics ref cc_timelines (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1u)' marker-end='url(#arrow1)'    d='M 352,768L 320,768' ><title>Fk JSon
+public_metrics ref cc_timelines (  )</title></path>
+<text x='339' y='763' transform='rotate(0 339,763)' class='relName'>Obj</text>
+<!-- == Fk 'public_metrics_JSon' == -->
+<path id='public_metrics_JSon'  onmouseover="hghl(['public_metrics_JSon','twitter_db.cc_follows.public_metrics'])" onmouseout="uhghl(['public_metrics_JSon','twitter_db.cc_follows.public_metrics'])" transform='translate(8,0)' class='unhighlight' d='M 1296,752L 1264,752' >
+	<title>Fk JSon
+public_metrics ref cc_follows (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1u)' marker-end='url(#arrow1)'    d='M 1296,752L 1264,752' ><title>Fk JSon
+public_metrics ref cc_follows (  )</title></path>
+<text x='1283' y='747' transform='rotate(0 1283,747)' class='relName'>Obj</text>
+<!-- == Fk 'public_metrics_JSon' == -->
+<path id='public_metrics_JSon'  onmouseover="hghl(['public_metrics_JSon','twitter_db.cc_users.public_metrics'])" onmouseout="uhghl(['public_metrics_JSon','twitter_db.cc_users.public_metrics'])" transform='translate(8,0)' class='unhighlight' d='M 1296,176L 1264,176' >
+	<title>Fk JSon
+public_metrics ref cc_users (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1u)' marker-end='url(#arrow1)'    d='M 1296,176L 1264,176' ><title>Fk JSon
+public_metrics ref cc_users (  )</title></path>
+<text x='1283' y='171' transform='rotate(0 1283,171)' class='relName'>Obj</text>
+<!-- == Fk 'referenced_tweets_JSon' == -->
+<path id='referenced_tweets_JSon'  onmouseover="hghl(['referenced_tweets_JSon','twitter_db.cc_tweets.referenced_tweets'])" onmouseout="uhghl(['referenced_tweets_JSon','twitter_db.cc_tweets.referenced_tweets'])" transform='translate(8,0)' class='unhighlight' d='M 352,400L 320,400' >
+	<title>Fk JSon
+referenced_tweets ref cc_tweets (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,400L 320,400' ><title>Fk JSon
+referenced_tweets ref cc_tweets (  )</title></path>
+<text x='339' y='395' transform='rotate(0 339,395)' class='relName'>Ary</text>
+<!-- == Fk 'referenced_tweets_JSon' == -->
+<path id='referenced_tweets_JSon'  onmouseover="hghl(['referenced_tweets_JSon','twitter_db.cc_timelines.referenced_tweets'])" onmouseout="uhghl(['referenced_tweets_JSon','twitter_db.cc_timelines.referenced_tweets'])" transform='translate(8,0)' class='unhighlight' d='M 352,976L 296,976Q 288,976 288,968L 288,960' >
+	<title>Fk JSon
+referenced_tweets ref cc_timelines (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 352,976L 296,976Q 288,976 288,968L 288,960' ><title>Fk JSon
+referenced_tweets ref cc_timelines (  )</title></path>
+<text x='339' y='971' transform='rotate(0 339,971)' class='relName'>Ary</text>
+<!-- == Fk 'url_JSon' == -->
+<path id='url_JSon'  onmouseover="hghl(['url_JSon','twitter_db.cc_users.url'])" onmouseout="uhghl(['url_JSon','twitter_db.cc_users.url'])" transform='translate(8,0)' class='unhighlight' d='M 1520,96L 1488,96' >
+	<title>Fk JSon
+url ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1520,96L 1488,96' ><title>Fk JSon
+url ref entities (  )</title></path>
+<text x='1507' y='91' transform='rotate(0 1507,91)' class='relName'>Obj</text>
+<!-- == Fk 'url_JSon' == -->
+<path id='url_JSon'  onmouseover="hghl(['url_JSon','twitter_db.cc_follows.url'])" onmouseout="uhghl(['url_JSon','twitter_db.cc_follows.url'])" transform='translate(8,0)' class='unhighlight' d='M 1520,784L 1512,784Q 1504,784 1504,776L 1504,728Q 1504,720 1496,720L 1488,720' >
+	<title>Fk JSon
+url ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0u)' marker-end='url(#arrow0)'  class='dotted '  d='M 1520,784L 1512,784Q 1504,784 1504,776L 1504,728Q 1504,720 1496,720L 1488,720' ><title>Fk JSon
+url ref entities (  )</title></path>
+<text x='1507' y='779' transform='rotate(0 1507,779)' class='relName'>Obj</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_tweets.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_tweets.urls'])" transform='translate(8,0)' class='unhighlight' d='M 608,224L 576,224' >
+	<title>Fk JSon
+urls ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,224L 576,224' ><title>Fk JSon
+urls ref entities (  )</title></path>
+<text x='595' y='219' transform='rotate(0 595,219)' class='relName'>Ary</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_timelines.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_timelines.urls'])" transform='translate(8,0)' class='unhighlight' d='M 608,672L 576,672' >
+	<title>Fk JSon
+urls ref entities (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 608,672L 576,672' ><title>Fk JSon
+urls ref entities (  )</title></path>
+<text x='595' y='667' transform='rotate(0 595,667)' class='relName'>Ary</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_users.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_users.urls'])" transform='translate(8,0)' class='unhighlight' d='M 1776,224L 1744,224' >
+	<title>Fk JSon
+urls ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,224L 1744,224' ><title>Fk JSon
+urls ref description (  )</title></path>
+<text x='1763' y='219' transform='rotate(0 1763,219)' class='relName'>Ary</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_users.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_users.urls'])" transform='translate(8,0)' class='unhighlight' d='M 1776,96L 1696,96' >
+	<title>Fk JSon
+urls ref url (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1)' marker-end='url(#arrow1)'    d='M 1776,96L 1696,96' ><title>Fk JSon
+urls ref url (  )</title></path>
+<text x='1763' y='91' transform='rotate(0 1763,91)' class='relName'>Ary</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_follows.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_follows.urls'])" transform='translate(8,0)' class='unhighlight' d='M 1776,880L 1720,880Q 1712,880 1712,872L 1712,752' >
+	<title>Fk JSon
+urls ref description (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot0)' marker-end='url(#arrow0)'  class='dotted '  d='M 1776,880L 1720,880Q 1712,880 1712,872L 1712,752' ><title>Fk JSon
+urls ref description (  )</title></path>
+<text x='1763' y='875' transform='rotate(0 1763,875)' class='relName'>Ary</text>
+<!-- == Fk 'urls_JSon' == -->
+<path id='urls_JSon'  onmouseover="hghl(['urls_JSon','twitter_db.cc_follows.urls'])" onmouseout="uhghl(['urls_JSon','twitter_db.cc_follows.urls'])" transform='translate(8,0)' class='unhighlight' d='M 1776,1040L 1688,1040Q 1680,1040 1680,1032L 1680,848' >
+	<title>Fk JSon
+urls ref url (  )</title>
+</path>
+<path transform='translate(8,0)' marker-start='url(#foot1)' marker-end='url(#arrow1)'    d='M 1776,1040L 1688,1040Q 1680,1040 1680,1032L 1680,848' ><title>Fk JSon
+urls ref url (  )</title></path>
+<text x='1763' y='1035' transform='rotate(0 1763,1035)' class='relName'>Ary</text>
+<!-- == Table 'attachments' == -->
+<rect id='depict_attachments' class='entity' style='stroke:#B99C76' x='368' y='312' width='160' height='64' />
+<rect class='entity' x='368' y='312' width='160' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='368' y1='312' x2='528' y2='312'/>
+<a xlink:href='#attachments'><text x='399' y='331' >attachments</text><title>Sub-document attachments
+Specifies the type of attachments (if any) present in this Tweet.</title></a>
+  <use id='nn' x='370' y='349' xlink:href='#nn'/><a xlink:href='#attachments_media_keys'><text id='attachments.media_keys' x='387' y='359'>media_keys</text><title>media_keys
+* array
+List of unique identifiers of media attached to this Tweet.</title></a>
+<text x='512' y='360' text-anchor='end' style='fill:#A69A8B'>array</text>
+<!-- == Table 'attachments' == -->
+<rect id='depict_attachments' class='entity' style='stroke:#7690B9' x='368' y='888' width='160' height='64' />
+<rect class='entity' x='368' y='888' width='160' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='368' y1='888' x2='528' y2='888'/>
+<a xlink:href='#attachments'><text x='399' y='907' >attachments</text><title>Sub-document attachments
+Specifies the type of attachments (if any) present in this Tweet.</title></a>
+  <use id='nn' x='370' y='925' xlink:href='#nn'/><a xlink:href='#attachments_media_keys'><text id='attachments.media_keys' x='387' y='935'>media_keys</text><title>media_keys
+* array
+List of unique identifiers of media attached to this Tweet.</title></a>
+<text x='512' y='936' text-anchor='end' style='fill:#8B95A6'>array</text>
+<!-- == Table 'cc_follows' == -->
+<rect id='depict_twitter_db.cc_follows' class='entity' style='stroke:#81B976' x='1040' y='648' width='224' height='304' />
+<rect class='entity' x='1040' y='648' width='224' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1040' y1='648' x2='1264' y2='648'/>
+<a xlink:href='#twitter_db.cc_follows'><text x='1112' y='667' >cc_follows</text><title>Collection twitter_db.cc_follows</title></a>
+  <use id='nn' x='1042' y='685' xlink:href='#nn'/><use id='pk' x='1042' y='684' xlink:href='#pk'><title>Pk _id_ ( _id ) </title></use><a xlink:href='#twitter_db.cc_follows__id'><text id='twitter_db.cc_follows._id' x='1059' y='695'>_id</text><title>_id
+* oid
+Unique object id generated by mongoDB</title></a>
+<text x='1248' y='696' text-anchor='end' style='fill:#8FA68B'>oid</text>  <use id='nn' x='1042' y='701' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_created_at'><text id='twitter_db.cc_follows.created_at' x='1059' y='711'>created_at</text><title>created_at
+* string
+Creation time of this account.</title></a>
+<text x='1248' y='712' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='717' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_description'><text id='twitter_db.cc_follows.description' x='1059' y='727'>description</text><title>description
+* string
+The text of this user&apos;s profile description (also known as bio), if the user provided one.</title></a>
+<text x='1248' y='728' text-anchor='end' style='fill:#8FA68B'>string</text>  <a xlink:href='#twitter_db.cc_follows_entities'><text id='twitter_db.cc_follows.entities' x='1059' y='743' onmouseover="hghl(['entities_JSon'])" onmouseout="uhghl(['entities_JSon'])">entities</text><title>entities
+object
+This object and its children fields contain details about text that has a special meaning in the user&apos;s description.</title></a>
+<text x='1248' y='744' text-anchor='end' style='fill:#8FA68B'>object</text>  <a xlink:href='#twitter_db.cc_follows_followed_by'><text id='twitter_db.cc_follows.followed_by' x='1059' y='759'>followed_by</text><title>followed_by
+array[object]
+Array of user ids this user is followed by</title></a>
+<text x='1248' y='760' text-anchor='end' style='fill:#8FA68B'>array[object]</text>  <use id='nn' x='1042' y='765' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_following'><text id='twitter_db.cc_follows.following' x='1059' y='775'>following</text><title>following
+* array
+Array of user ids this user is following</title></a>
+<text x='1248' y='776' text-anchor='end' style='fill:#8FA68B'>array</text>  <use id='nn' x='1042' y='781' xlink:href='#nn'/><use id='unq' x='1042' y='780' xlink:href='#unq'><title>Unq id_1 ( id ) </title></use><use id='unq' x='1248' y='780' xlink:href='#flag2'/><a xlink:href='#twitter_db.cc_follows_id'><text id='twitter_db.cc_follows.id' x='1059' y='791'>id</text><title>id
+* string
+Unique identifier of this user.</title></a>
+<text x='1248' y='792' text-anchor='end' style='fill:#8FA68B'>string</text>  <a xlink:href='#twitter_db.cc_follows_location'><text id='twitter_db.cc_follows.location' x='1059' y='807'>location</text><title>location
+string
+The location specified in the user&apos;s profile, if the user provided one. As this is a freeform value, it may not indicate a valid location, but it may be fuzzily evaluated when performing searches with location queries.</title></a>
+<text x='1248' y='808' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='813' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_name'><text id='twitter_db.cc_follows.name' x='1059' y='823'>name</text><title>name
+* string
+The friendly name of this user, as shown on their profile.</title></a>
+<text x='1248' y='824' text-anchor='end' style='fill:#8FA68B'>string</text>  <a xlink:href='#twitter_db.cc_follows_pinned_tweet_id'><text id='twitter_db.cc_follows.pinned_tweet_id' x='1059' y='839'>pinned_tweet_id</text><title>pinned_tweet_id
+string
+Unique identifier of this user&apos;s pinned Tweet.</title></a>
+<text x='1248' y='840' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='845' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_profile_image_url'><text id='twitter_db.cc_follows.profile_image_url' x='1059' y='855'>profile_image_url</text><title>profile_image_url
+* string
+The URL to the profile image for this user, as shown on the user&apos;s profile.</title></a>
+<text x='1248' y='856' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='861' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_protected'><text id='twitter_db.cc_follows.protected' x='1059' y='871'>protected</text><title>protected
+* boolean
+Indicates if this user has chosen to protect their Tweets (in other words, if this user&apos;s Tweets are private).</title></a>
+<text x='1248' y='872' text-anchor='end' style='fill:#8FA68B'>boolean</text>  <use id='nn' x='1042' y='877' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_public_metrics'><text id='twitter_db.cc_follows.public_metrics' x='1059' y='887' onmouseover="hghl(['public_metrics_JSon'])" onmouseout="uhghl(['public_metrics_JSon'])">public_metrics</text><title>public_metrics
+* object
+Contains details about activity for this user.</title></a>
+<text x='1248' y='888' text-anchor='end' style='fill:#8FA68B'>object</text>  <use id='nn' x='1042' y='893' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_url'><text id='twitter_db.cc_follows.url' x='1059' y='903'>url</text><title>url
+* string
+The URL specified in the user&apos;s profile, if present.</title></a>
+<text x='1248' y='904' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='909' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_username'><text id='twitter_db.cc_follows.username' x='1059' y='919'>username</text><title>username
+* string
+The Twitter handle (screen name) of this user.</title></a>
+<text x='1248' y='920' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1042' y='925' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_follows_verified'><text id='twitter_db.cc_follows.verified' x='1059' y='935'>verified</text><title>verified
+* boolean
+Indicate if this user is a verified Twitter user.</title></a>
+<text x='1248' y='936' text-anchor='end' style='fill:#8FA68B'>boolean</text>
+<!-- == Table 'cc_timelines' == -->
+<rect id='depict_twitter_db.cc_timelines' class='entity' style='stroke:#7690B9' x='48' y='648' width='272' height='304' />
+<rect class='entity' x='48' y='648' width='272' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='48' y1='648' x2='320' y2='648'/>
+<a xlink:href='#twitter_db.cc_timelines'><text x='136' y='667' >cc_timelines</text><title>Collection twitter_db.cc_timelines</title></a>
+  <use id='nn' x='50' y='685' xlink:href='#nn'/><use id='pk' x='50' y='684' xlink:href='#pk'><title>Pk _id_ ( _id ) </title></use><a xlink:href='#twitter_db.cc_timelines__id'><text id='twitter_db.cc_timelines._id' x='67' y='695'>_id</text><title>_id
+* oid
+Unique object id generated by mongoDB</title></a>
+<text x='304' y='696' text-anchor='end' style='fill:#8B95A6'>oid</text>  <a xlink:href='#twitter_db.cc_timelines_attachments'><text id='twitter_db.cc_timelines.attachments' x='67' y='711' onmouseover="hghl(['attachments_JSon'])" onmouseout="uhghl(['attachments_JSon'])">attachments</text><title>attachments
+object
+Specifies the type of attachments (if any) present in this Tweet.</title></a>
+<text x='304' y='712' text-anchor='end' style='fill:#8B95A6'>object</text>  <use id='nn' x='50' y='717' xlink:href='#nn'/><use id='null' x='304' y='716' xlink:href='#flag2'/><a xlink:href='#twitter_db.cc_timelines_author_id'><text id='twitter_db.cc_timelines.author_id' x='67' y='727'>author_id</text><title>author_id
+* string
+Unique identifier of this user. Foreign key corresponding to unique id in cc_users</title></a>
+<text x='304' y='728' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='733' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_conversation_id'><text id='twitter_db.cc_timelines.conversation_id' x='67' y='743'>conversation_id</text><title>conversation_id
+* string
+The Tweet ID of the original Tweet of the conversation (which includes direct replies, replies of replies) i.e. root of conversation</title></a>
+<text x='304' y='744' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='749' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_created_at'><text id='twitter_db.cc_timelines.created_at' x='67' y='759'>created_at</text><title>created_at
+* string
+Creation time of the Tweet. For example: 2020-12-10T20:00:10Z</title></a>
+<text x='304' y='760' text-anchor='end' style='fill:#8B95A6'>string</text>  <a xlink:href='#twitter_db.cc_timelines_entities'><text id='twitter_db.cc_timelines.entities' x='67' y='775' onmouseover="hghl(['entities_JSon'])" onmouseout="uhghl(['entities_JSon'])">entities</text><title>entities
+object
+Contains details about text that has a special meaning in a Tweet.</title></a>
+<text x='304' y='776' text-anchor='end' style='fill:#8B95A6'>object</text>  <a xlink:href='#twitter_db.cc_timelines_geo'><text id='twitter_db.cc_timelines.geo' x='67' y='791' onmouseover="hghl(['geo_JSon'])" onmouseout="uhghl(['geo_JSon'])">geo</text><title>geo
+object
+Contains details about the location tagged by the user in this Tweet, if they specified one.</title></a>
+<text x='304' y='792' text-anchor='end' style='fill:#8B95A6'>object</text>  <use id='nn' x='50' y='797' xlink:href='#nn'/><use id='unq' x='50' y='796' xlink:href='#unq'><title>Unq id_1 ( id ) </title></use><use id='unq' x='304' y='796' xlink:href='#flag0'/><a xlink:href='#twitter_db.cc_timelines_id'><text id='twitter_db.cc_timelines.id' x='67' y='807'>id</text><title>id
+* string
+Unique identifier of this Tweet.</title></a>
+<text x='304' y='808' text-anchor='end' style='fill:#8B95A6'>string</text>  <a xlink:href='#twitter_db.cc_timelines_in_reply_to_user_id'><text id='twitter_db.cc_timelines.in_reply_to_user_id' x='67' y='823'>in_reply_to_user_id</text><title>in_reply_to_user_id
+string
+If this Tweet is a Reply, indicates the user ID of the parent Tweet&apos;s author.</title></a>
+<text x='304' y='824' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='829' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_lang'><text id='twitter_db.cc_timelines.lang' x='67' y='839'>lang</text><title>lang
+* string
+Language of the Tweet, if detected by Twitter. Returned as a BCP47 language tag.</title></a>
+<text x='304' y='840' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='845' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_possibly_sensitive'><text id='twitter_db.cc_timelines.possibly_sensitive' x='67' y='855'>possibly_sensitive</text><title>possibly_sensitive
+* boolean
+Indicates if this Tweet contains URLs marked as sensitive, for example content suitable for mature audiences.</title></a>
+<text x='304' y='856' text-anchor='end' style='fill:#8B95A6'>boolean</text>  <use id='nn' x='50' y='861' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_public_metrics'><text id='twitter_db.cc_timelines.public_metrics' x='67' y='871' onmouseover="hghl(['public_metrics_JSon'])" onmouseout="uhghl(['public_metrics_JSon'])">public_metrics</text><title>public_metrics
+* object
+Engagement metrics for the Tweet at the time of the request.</title></a>
+<text x='304' y='872' text-anchor='end' style='fill:#8B95A6'>object</text>  <a xlink:href='#twitter_db.cc_timelines_referenced_tweets'><text id='twitter_db.cc_timelines.referenced_tweets' x='67' y='887' onmouseover="hghl(['referenced_tweets_JSon'])" onmouseout="uhghl(['referenced_tweets_JSon'])">referenced_tweets</text><title>referenced_tweets
+array[object]
+A list of Tweets this Tweet refers to. For example, if the parent Tweet is a Retweet, a Retweet with comment (also known as Quoted Tweet) or a Reply, it will include the related Tweet referenced to by its parent.</title></a>
+<text x='304' y='888' text-anchor='end' style='fill:#8B95A6'>array[object]</text>  <use id='nn' x='50' y='893' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_reply_settings'><text id='twitter_db.cc_timelines.reply_settings' x='67' y='903'>reply_settings</text><title>reply_settings
+* string
+Shows who can reply to this Tweet. Fields returned are everyone, mentionedUsers, and following.</title></a>
+<text x='304' y='904' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='909' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_source'><text id='twitter_db.cc_timelines.source' x='67' y='919'>source</text><title>source
+* string
+The name of the app the user Tweeted from.</title></a>
+<text x='304' y='920' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='50' y='925' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_timelines_text'><text id='twitter_db.cc_timelines.text' x='67' y='935'>text</text><title>text
+* string
+The content of the Tweet.</title></a>
+<text x='304' y='936' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'cc_tweets' == -->
+<rect id='depict_twitter_db.cc_tweets' class='entity' style='stroke:#B99C76' x='48' y='72' width='272' height='352' />
+<rect class='entity' x='48' y='72' width='272' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='48' y1='72' x2='320' y2='72'/>
+<a xlink:href='#twitter_db.cc_tweets'><text x='145' y='91' >cc_tweets</text><title>Collection twitter_db.cc_tweets</title></a>
+  <use id='nn' x='50' y='109' xlink:href='#nn'/><use id='pk' x='50' y='108' xlink:href='#pk'><title>Pk _id_ ( _id ) </title></use><a xlink:href='#twitter_db.cc_tweets__id'><text id='twitter_db.cc_tweets._id' x='67' y='119'>_id</text><title>_id
+* oid
+Unique object id generated by mongoDB</title></a>
+<text x='304' y='120' text-anchor='end' style='fill:#A69A8B'>oid</text>  <a xlink:href='#twitter_db.cc_tweets_attachments'><text id='twitter_db.cc_tweets.attachments' x='67' y='135' onmouseover="hghl(['attachments_JSon'])" onmouseout="uhghl(['attachments_JSon'])">attachments</text><title>attachments
+object
+Specifies the type of attachments (if any) present in this Tweet.</title></a>
+<text x='304' y='136' text-anchor='end' style='fill:#A69A8B'>object</text>  <use id='nn' x='50' y='141' xlink:href='#nn'/><use id='null' x='304' y='140' xlink:href='#flag2'/><a xlink:href='#twitter_db.cc_tweets_author_id'><text id='twitter_db.cc_tweets.author_id' x='67' y='151'>author_id</text><title>author_id
+* string
+Unique identifier of this user. Foreign key corresponding to unique id in cc_users</title></a>
+<text x='304' y='152' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='157' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_conversation_id'><text id='twitter_db.cc_tweets.conversation_id' x='67' y='167'>conversation_id</text><title>conversation_id
+* string
+The Tweet ID of the original Tweet of the conversation (which includes direct replies, replies of replies)  i.e. root of conversation</title></a>
+<text x='304' y='168' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='173' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_crawl_timestamp'><text id='twitter_db.cc_tweets.crawl_timestamp' x='67' y='183'>crawl_timestamp</text><title>crawl_timestamp
+* date
+Timestamp of the crawling. Format: yyyy-mm-ddThh:mm:ss.000+00:00</title></a>
+<text x='304' y='184' text-anchor='end' style='fill:#A69A8B'>date</text>  <use id='nn' x='50' y='189' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_created_at'><text id='twitter_db.cc_tweets.created_at' x='67' y='199'>created_at</text><title>created_at
+* string
+Creation time of the Tweet. For example: 2020-12-10T20:00:10Z</title></a>
+<text x='304' y='200' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='205' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_entities'><text id='twitter_db.cc_tweets.entities' x='67' y='215' onmouseover="hghl(['entities_JSon'])" onmouseout="uhghl(['entities_JSon'])">entities</text><title>entities
+* object
+Contains details about text that has a special meaning in a Tweet.</title></a>
+<text x='304' y='216' text-anchor='end' style='fill:#A69A8B'>object</text>  <use id='nn' x='50' y='221' xlink:href='#nn'/><use id='unq' x='50' y='220' xlink:href='#unq'><title>Unq id_1 ( id ) </title></use><use id='unq' x='304' y='220' xlink:href='#flag0'/><a xlink:href='#twitter_db.cc_tweets_id'><text id='twitter_db.cc_tweets.id' x='67' y='231'>id</text><title>id
+* string
+Unique identifier of this Tweet.</title></a>
+<text x='304' y='232' text-anchor='end' style='fill:#A69A8B'>string</text>  <a xlink:href='#twitter_db.cc_tweets_in_reply_to_user_id'><text id='twitter_db.cc_tweets.in_reply_to_user_id' x='67' y='247'>in_reply_to_user_id</text><title>in_reply_to_user_id
+string
+If this Tweet is a Reply, indicates the user ID of the parent Tweet&apos;s author.</title></a>
+<text x='304' y='248' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='253' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_lang'><text id='twitter_db.cc_tweets.lang' x='67' y='263'>lang</text><title>lang
+* string
+Language of the Tweet, if detected by Twitter. Returned as a BCP47 language tag.</title></a>
+<text x='304' y='264' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='269' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_likes_crawled'><text id='twitter_db.cc_tweets.likes_crawled' x='67' y='279'>likes_crawled</text><title>likes_crawled
+* boolean
+Indicates if liker of this tweet have been crawled</title></a>
+<text x='304' y='280' text-anchor='end' style='fill:#A69A8B'>boolean</text>  <use id='nn' x='50' y='285' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_possibly_sensitive'><text id='twitter_db.cc_tweets.possibly_sensitive' x='67' y='295'>possibly_sensitive</text><title>possibly_sensitive
+* boolean
+Indicates if this Tweet contains URLs marked as sensitive, for example content suitable for mature audiences.</title></a>
+<text x='304' y='296' text-anchor='end' style='fill:#A69A8B'>boolean</text>  <use id='nn' x='50' y='301' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_public_metrics'><text id='twitter_db.cc_tweets.public_metrics' x='67' y='311' onmouseover="hghl(['public_metrics_JSon'])" onmouseout="uhghl(['public_metrics_JSon'])">public_metrics</text><title>public_metrics
+* object
+Engagement metrics for the Tweet at the time of the request.</title></a>
+<text x='304' y='312' text-anchor='end' style='fill:#A69A8B'>object</text>  <a xlink:href='#twitter_db.cc_tweets_referenced_tweets'><text id='twitter_db.cc_tweets.referenced_tweets' x='67' y='327' onmouseover="hghl(['referenced_tweets_JSon'])" onmouseout="uhghl(['referenced_tweets_JSon'])">referenced_tweets</text><title>referenced_tweets
+array[object]
+A list of Tweets this Tweet refers to. For example, if the parent Tweet is a Retweet, a Retweet with comment (also known as Quoted Tweet) or a Reply, it will include the related Tweet referenced to by its parent.</title></a>
+<text x='304' y='328' text-anchor='end' style='fill:#A69A8B'>array[object]</text>  <use id='nn' x='50' y='333' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_reply_settings'><text id='twitter_db.cc_tweets.reply_settings' x='67' y='343'>reply_settings</text><title>reply_settings
+* string
+Shows who can reply to this Tweet. Fields returned are everyone, mentionedUsers, and following.</title></a>
+<text x='304' y='344' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='349' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_retweets_crawled'><text id='twitter_db.cc_tweets.retweets_crawled' x='67' y='359'>retweets_crawled</text><title>retweets_crawled
+* boolean
+Indicates if retweeter of this tweet have been crawled</title></a>
+<text x='304' y='360' text-anchor='end' style='fill:#A69A8B'>boolean</text>  <use id='nn' x='50' y='365' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_seed'><text id='twitter_db.cc_tweets.seed' x='67' y='375'>seed</text><title>seed
+* string
+Seed tweet id of the event that was used to crawl tweets. (Corresponds to conversation_id if hashtags or mentions are not crawled)</title></a>
+<text x='304' y='376' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='381' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_source'><text id='twitter_db.cc_tweets.source' x='67' y='391'>source</text><title>source
+* string
+The name of the app the user Tweeted from.</title></a>
+<text x='304' y='392' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='50' y='397' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_tweets_text'><text id='twitter_db.cc_tweets.text' x='67' y='407'>text</text><title>text
+* string
+The content of the Tweet.</title></a>
+<text x='304' y='408' text-anchor='end' style='fill:#A69A8B'>string</text>
+<!-- == Table 'cc_users' == -->
+<rect id='depict_twitter_db.cc_users' class='entity' style='stroke:#7676B9' x='1040' y='72' width='224' height='384' />
+<rect class='entity' x='1040' y='72' width='224' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1040' y1='72' x2='1264' y2='72'/>
+<a xlink:href='#twitter_db.cc_users'><text x='1118' y='91' >cc_users</text><title>Collection twitter_db.cc_users</title></a>
+  <use id='nn' x='1042' y='109' xlink:href='#nn'/><use id='pk' x='1042' y='108' xlink:href='#pk'><title>Pk _id_ ( _id ) </title></use><a xlink:href='#twitter_db.cc_users__id'><text id='twitter_db.cc_users._id' x='1059' y='119'>_id</text><title>_id
+* oid
+Unique object id generated by mongoDB</title></a>
+<text x='1248' y='120' text-anchor='end' style='fill:#8B8BA6'>oid</text>  <use id='nn' x='1042' y='125' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_crawl_timestamp'><text id='twitter_db.cc_users.crawl_timestamp' x='1059' y='135'>crawl_timestamp</text><title>crawl_timestamp
+* date
+Timestamp of the crawling. Format: yyyy-mm-ddThh:mm:ss.000+00:00</title></a>
+<text x='1248' y='136' text-anchor='end' style='fill:#8B8BA6'>date</text>  <use id='nn' x='1042' y='141' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_created_at'><text id='twitter_db.cc_users.created_at' x='1059' y='151'>created_at</text><title>created_at
+* string
+Creation time of this account.</title></a>
+<text x='1248' y='152' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='157' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_description'><text id='twitter_db.cc_users.description' x='1059' y='167'>description</text><title>description
+* string
+The text of this user&apos;s profile description (also known as bio), if the user provided one.</title></a>
+<text x='1248' y='168' text-anchor='end' style='fill:#8B8BA6'>string</text>  <a xlink:href='#twitter_db.cc_users_entities'><text id='twitter_db.cc_users.entities' x='1059' y='183' onmouseover="hghl(['entities_JSon'])" onmouseout="uhghl(['entities_JSon'])">entities</text><title>entities
+object
+This object and its children fields contain details about text that has a special meaning in the user&apos;s description.</title></a>
+<text x='1248' y='184' text-anchor='end' style='fill:#8B8BA6'>object</text>  <use id='nn' x='1042' y='189' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_followers_crawled'><text id='twitter_db.cc_users.followers_crawled' x='1059' y='199'>followers_crawled</text><title>followers_crawled
+* boolean
+Indicates if followers of this user have been crawled</title></a>
+<text x='1248' y='200' text-anchor='end' style='fill:#8B8BA6'>boolean</text>  <use id='nn' x='1042' y='205' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_following_crawled'><text id='twitter_db.cc_users.following_crawled' x='1059' y='215'>following_crawled</text><title>following_crawled
+* boolean
+Indicates if following users of this user have been crawled</title></a>
+<text x='1248' y='216' text-anchor='end' style='fill:#8B8BA6'>boolean</text>  <use id='nn' x='1042' y='221' xlink:href='#nn'/><use id='unq' x='1042' y='220' xlink:href='#unq'><title>Unq id_1 ( id ) </title></use><use id='unq' x='1248' y='220' xlink:href='#flag2'/><a xlink:href='#twitter_db.cc_users_id'><text id='twitter_db.cc_users.id' x='1059' y='231'>id</text><title>id
+* string
+Unique identifier of this user.</title></a>
+<text x='1248' y='232' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='237' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_liked'><text id='twitter_db.cc_users.liked' x='1059' y='247'>liked</text><title>liked
+* array[object]
+Array of tweets this user liked</title></a>
+<text x='1248' y='248' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>  <a xlink:href='#twitter_db.cc_users_location'><text id='twitter_db.cc_users.location' x='1059' y='263'>location</text><title>location
+string
+The location specified in the user&apos;s profile, if the user provided one. As this is a freeform value, it may not indicate a valid location, but it may be fuzzily evaluated when performing searches with location queries.</title></a>
+<text x='1248' y='264' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='269' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_name'><text id='twitter_db.cc_users.name' x='1059' y='279'>name</text><title>name
+* string
+The friendly name of this user, as shown on their profile.</title></a>
+<text x='1248' y='280' text-anchor='end' style='fill:#8B8BA6'>string</text>  <a xlink:href='#twitter_db.cc_users_pinned_tweet_id'><text id='twitter_db.cc_users.pinned_tweet_id' x='1059' y='295'>pinned_tweet_id</text><title>pinned_tweet_id
+string
+Unique identifier of this user&apos;s pinned Tweet.</title></a>
+<text x='1248' y='296' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='301' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_profile_image_url'><text id='twitter_db.cc_users.profile_image_url' x='1059' y='311'>profile_image_url</text><title>profile_image_url
+* string
+The URL to the profile image for this user, as shown on the user&apos;s profile.</title></a>
+<text x='1248' y='312' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='317' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_protected'><text id='twitter_db.cc_users.protected' x='1059' y='327'>protected</text><title>protected
+* boolean
+Indicates if this user has chosen to protect their Tweets (in other words, if this user&apos;s Tweets are private).</title></a>
+<text x='1248' y='328' text-anchor='end' style='fill:#8B8BA6'>boolean</text>  <use id='nn' x='1042' y='333' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_public_metrics'><text id='twitter_db.cc_users.public_metrics' x='1059' y='343' onmouseover="hghl(['public_metrics_JSon'])" onmouseout="uhghl(['public_metrics_JSon'])">public_metrics</text><title>public_metrics
+* object
+Contains details about activity for this user.</title></a>
+<text x='1248' y='344' text-anchor='end' style='fill:#8B8BA6'>object</text>  <use id='nn' x='1042' y='349' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_retweeted'><text id='twitter_db.cc_users.retweeted' x='1059' y='359'>retweeted</text><title>retweeted
+* array[object]
+Array of tweets this user retweeted</title></a>
+<text x='1248' y='360' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>  <use id='nn' x='1042' y='365' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_seed'><text id='twitter_db.cc_users.seed' x='1059' y='375'>seed</text><title>seed
+* string
+Seed tweet id of the event that was used to crawl tweets. (Corresponds to conversation_id if hashtags or mentions are not crawled)</title></a>
+<text x='1248' y='376' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='381' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_timeline_crawled'><text id='twitter_db.cc_users.timeline_crawled' x='1059' y='391'>timeline_crawled</text><title>timeline_crawled
+* boolean
+Indicates if the timeline of this user have been crawled</title></a>
+<text x='1248' y='392' text-anchor='end' style='fill:#8B8BA6'>boolean</text>  <use id='nn' x='1042' y='397' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_url'><text id='twitter_db.cc_users.url' x='1059' y='407'>url</text><title>url
+* string
+The URL specified in the user&apos;s profile, if present.</title></a>
+<text x='1248' y='408' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='413' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_username'><text id='twitter_db.cc_users.username' x='1059' y='423'>username</text><title>username
+* string
+The Twitter handle (screen name) of this user.</title></a>
+<text x='1248' y='424' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1042' y='429' xlink:href='#nn'/><a xlink:href='#twitter_db.cc_users_verified'><text id='twitter_db.cc_users.verified' x='1059' y='439'>verified</text><title>verified
+* boolean
+Indicate if this user is a verified Twitter user.</title></a>
+<text x='1248' y='440' text-anchor='end' style='fill:#8B8BA6'>boolean</text>
+<!-- == Table 'description' == -->
+<rect id='depict_description' class='entity' style='stroke:#7676B9' x='1536' y='152' width='208' height='96' />
+<rect class='entity' x='1536' y='152' width='208' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1536' y1='152' x2='1744' y2='152'/>
+<a xlink:href='#description'><text x='1597' y='171' >description</text><title>Sub-document description
+Contains details about URLs, Hashtags, Cashtags, or mentions located within a user&apos;s description.</title></a>
+  <a xlink:href='#description_urls'><text id='description.urls' x='1555' y='199'>urls</text><title>urls
+array[object]
+Contains details about any URLs included in the user&apos;s descri</title></a>
+<text x='1728' y='200' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>  <a xlink:href='#description_hashtags'><text id='description.hashtags' x='1555' y='215'>hashtags</text><title>hashtags
+array[object]
+Contains details about text recognized as a Hashtag.</title></a>
+<text x='1728' y='216' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>  <a xlink:href='#description_mentions'><text id='description.mentions' x='1555' y='231'>mentions</text><title>mentions
+array[object]
+Contains details about text recognized as a user mention.</title></a>
+<text x='1728' y='232' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>
+<!-- == Table 'description' == -->
+<rect id='depict_description' class='entity' style='stroke:#81B976' x='1536' y='648' width='208' height='96' />
+<rect class='entity' x='1536' y='648' width='208' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1536' y1='648' x2='1744' y2='648'/>
+<a xlink:href='#description'><text x='1597' y='667' >description</text><title>Sub-document description
+Contains details about URLs, Hashtags, Cashtags, or mentions located within a user&apos;s description.</title></a>
+  <a xlink:href='#description_hashtags'><text id='description.hashtags' x='1555' y='695'>hashtags</text><title>hashtags
+array[object]
+Contains details about text recognized as a Hashtag.</title></a>
+<text x='1728' y='696' text-anchor='end' style='fill:#8FA68B'>array[object]</text>  <a xlink:href='#description_mentions'><text id='description.mentions' x='1555' y='711'>mentions</text><title>mentions
+array[object]
+Contains details about text recognized as a user mention.</title></a>
+<text x='1728' y='712' text-anchor='end' style='fill:#8FA68B'>array[object]</text>  <a xlink:href='#description_urls'><text id='description.urls' x='1555' y='727'>urls</text><title>urls
+array[object]
+Contains details about any URLs included in the user&apos;s descri</title></a>
+<text x='1728' y='728' text-anchor='end' style='fill:#8FA68B'>array[object]</text>
+<!-- == Table 'entities' == -->
+<rect id='depict_entities' class='entity' style='stroke:#B99C76' x='368' y='200' width='208' height='96' />
+<rect class='entity' x='368' y='200' width='208' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='368' y1='200' x2='576' y2='200'/>
+<a xlink:href='#entities'><text x='442' y='219' >entities</text><title>Sub-document entities
+Contains details about text that has a special meaning in a Tweet.</title></a>
+  <a xlink:href='#entities_urls'><text id='entities.urls' x='387' y='247'>urls</text><title>urls
+array[object]
+Contains details about text recognized as a URL.</title></a>
+<text x='560' y='248' text-anchor='end' style='fill:#A69A8B'>array[object]</text>  <a xlink:href='#entities_hashtags'><text id='entities.hashtags' x='387' y='263'>hashtags</text><title>hashtags
+array[object]
+Contains details about text recognized as a Hashtag.</title></a>
+<text x='560' y='264' text-anchor='end' style='fill:#A69A8B'>array[object]</text>  <a xlink:href='#entities_mentions'><text id='entities.mentions' x='387' y='279'>mentions</text><title>mentions
+array[object]
+Contains details about text recognized as a user mention.</title></a>
+<text x='560' y='280' text-anchor='end' style='fill:#A69A8B'>array[object]</text>
+<!-- == Table 'entities' == -->
+<rect id='depict_entities' class='entity' style='stroke:#7690B9' x='368' y='648' width='208' height='96' />
+<rect class='entity' x='368' y='648' width='208' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='368' y1='648' x2='576' y2='648'/>
+<a xlink:href='#entities'><text x='442' y='667' >entities</text><title>Sub-document entities
+Contains details about text that has a special meaning in a Tweet.</title></a>
+  <a xlink:href='#entities_urls'><text id='entities.urls' x='387' y='695'>urls</text><title>urls
+array[object]
+Contains details about text recognized as a URL.</title></a>
+<text x='560' y='696' text-anchor='end' style='fill:#8B95A6'>array[object]</text>  <a xlink:href='#entities_hashtags'><text id='entities.hashtags' x='387' y='711'>hashtags</text><title>hashtags
+array[object]
+Contains details about text recognized as a Hashtag.</title></a>
+<text x='560' y='712' text-anchor='end' style='fill:#8B95A6'>array[object]</text>  <a xlink:href='#entities_mentions'><text id='entities.mentions' x='387' y='727'>mentions</text><title>mentions
+array[object]
+Contains details about text recognized as a user mention.</title></a>
+<text x='560' y='728' text-anchor='end' style='fill:#8B95A6'>array[object]</text>
+<!-- == Table 'entities' == -->
+<rect id='depict_entities' class='entity' style='stroke:#7676B9' x='1312' y='72' width='176' height='80' />
+<rect class='entity' x='1312' y='72' width='176' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1312' y1='72' x2='1488' y2='72'/>
+<a xlink:href='#entities'><text x='1370' y='91' >entities</text><title>Sub-document entities
+This object and its children fields contain details about text that has a special meaning in the user&apos;s description.</title></a>
+  <a xlink:href='#entities_url'><text id='entities.url' x='1331' y='119'>url</text><title>url
+object
+Contains details about the user&apos;s profile website.</title></a>
+<text x='1472' y='120' text-anchor='end' style='fill:#8B8BA6'>object</text>  <a xlink:href='#entities_description'><text id='entities.description' x='1331' y='135'>description</text><title>description
+object
+Contains details about URLs, Hashtags, Cashtags, or mentions located within a user&apos;s description.</title></a>
+<text x='1472' y='136' text-anchor='end' style='fill:#8B8BA6'>object</text>
+<!-- == Table 'entities' == -->
+<rect id='depict_entities' class='entity' style='stroke:#81B976' x='1312' y='648' width='176' height='80' />
+<rect class='entity' x='1312' y='648' width='176' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1312' y1='648' x2='1488' y2='648'/>
+<a xlink:href='#entities'><text x='1370' y='667' >entities</text><title>Sub-document entities
+This object and its children fields contain details about text that has a special meaning in the user&apos;s description.</title></a>
+  <a xlink:href='#entities_description'><text id='entities.description' x='1331' y='695'>description</text><title>description
+object
+Contains details about URLs, Hashtags, Cashtags, or mentions located within a user&apos;s description.</title></a>
+<text x='1472' y='696' text-anchor='end' style='fill:#8FA68B'>object</text>  <a xlink:href='#entities_url'><text id='entities.url' x='1331' y='711'>url</text><title>url
+object
+Contains details about the user&apos;s profile website.</title></a>
+<text x='1472' y='712' text-anchor='end' style='fill:#8FA68B'>object</text>
+<!-- == Table 'geo' == -->
+<rect id='depict_geo' class='entity' style='stroke:#7690B9' x='368' y='1064' width='144' height='64' />
+<rect class='entity' x='368' y='1064' width='144' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='368' y1='1064' x2='512' y2='1064'/>
+<a xlink:href='#geo'><text x='423' y='1083' >geo</text><title>Sub-document geo
+Contains details about the location tagged by the user in this Tweet, if they specified one.</title></a>
+  <use id='nn' x='370' y='1101' xlink:href='#nn'/><a xlink:href='#geo_place_id'><text id='geo.place_id' x='387' y='1111'>place_id</text><title>place_id
+* string
+The unique identifier of the place, if this is a point of interest tagged in the Tweet.</title></a>
+<text x='496' y='1112' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'hashtags' == -->
+<rect id='depict_hashtags' class='entity' style='stroke:#B99C76' x='624' y='344' width='112' height='96' />
+<rect class='entity' x='624' y='344' width='112' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='624' y1='344' x2='736' y2='344'/>
+<a xlink:href='#hashtags'><text x='644' y='363' >hashtags</text><title>Sub-document hashtags
+Contains details about text recognized as a Hashtag.</title></a>
+  <use id='nn' x='626' y='381' xlink:href='#nn'/><a xlink:href='#hashtags_start'><text id='hashtags.start' x='643' y='391'>start</text><title>start
+* int
+The start position (zero-based) of the recognized Hashtag within the Tweet. All start indices are inclusive.</title></a>
+<text x='720' y='392' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='397' xlink:href='#nn'/><a xlink:href='#hashtags_end'><text id='hashtags.end' x='643' y='407'>end</text><title>end
+* int
+The end position (zero-based) of the recognized Hashtag within the Tweet. This end index is exclusive.</title></a>
+<text x='720' y='408' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='413' xlink:href='#nn'/><a xlink:href='#hashtags_tag'><text id='hashtags.tag' x='643' y='423'>tag</text><title>tag
+* string
+The text of the Hashtag.</title></a>
+<text x='720' y='424' text-anchor='end' style='fill:#A69A8B'>string</text>
+<!-- == Table 'hashtags' == -->
+<rect id='depict_hashtags' class='entity' style='stroke:#7690B9' x='624' y='872' width='112' height='96' />
+<rect class='entity' x='624' y='872' width='112' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='624' y1='872' x2='736' y2='872'/>
+<a xlink:href='#hashtags'><text x='644' y='891' >hashtags</text><title>Sub-document hashtags
+Contains details about text recognized as a Hashtag.</title></a>
+  <use id='nn' x='626' y='909' xlink:href='#nn'/><a xlink:href='#hashtags_start'><text id='hashtags.start' x='643' y='919'>start</text><title>start
+* int
+The start position (zero-based) of the recognized Hashtag within the Tweet. All start indices are inclusive.</title></a>
+<text x='720' y='920' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='925' xlink:href='#nn'/><a xlink:href='#hashtags_end'><text id='hashtags.end' x='643' y='935'>end</text><title>end
+* int
+The end position (zero-based) of the recognized Hashtag within the Tweet. This end index is exclusive.</title></a>
+<text x='720' y='936' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='941' xlink:href='#nn'/><a xlink:href='#hashtags_tag'><text id='hashtags.tag' x='643' y='951'>tag</text><title>tag
+* string
+The text of the Hashtag.</title></a>
+<text x='720' y='952' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'hashtags' == -->
+<rect id='depict_hashtags' class='entity' style='stroke:#7676B9' x='1792' y='360' width='112' height='96' />
+<rect class='entity' x='1792' y='360' width='112' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1792' y1='360' x2='1904' y2='360'/>
+<a xlink:href='#hashtags'><text x='1812' y='379' >hashtags</text><title>Sub-document hashtags
+Contains details about text recognized as a Hashtag.</title></a>
+  <use id='nn' x='1794' y='397' xlink:href='#nn'/><a xlink:href='#hashtags_start'><text id='hashtags.start' x='1811' y='407'>start</text><title>start
+* int
+The start position (zero-based) of the recognized Hashtag within the Tweet. All start indices are inclusive.</title></a>
+<text x='1888' y='408' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='413' xlink:href='#nn'/><a xlink:href='#hashtags_end'><text id='hashtags.end' x='1811' y='423'>end</text><title>end
+* int
+The end position (zero-based) of the recognized Hashtag within the Tweet. This end index is exclusive.</title></a>
+<text x='1888' y='424' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='429' xlink:href='#nn'/><a xlink:href='#hashtags_tag'><text id='hashtags.tag' x='1811' y='439'>tag</text><title>tag
+* string
+The text of the Hashtag.</title></a>
+<text x='1888' y='440' text-anchor='end' style='fill:#8B8BA6'>string</text>
+<!-- == Table 'hashtags' == -->
+<rect id='depict_hashtags' class='entity' style='stroke:#81B976' x='1792' y='648' width='112' height='96' />
+<rect class='entity' x='1792' y='648' width='112' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1792' y1='648' x2='1904' y2='648'/>
+<a xlink:href='#hashtags'><text x='1812' y='667' >hashtags</text><title>Sub-document hashtags
+Contains details about text recognized as a Hashtag.</title></a>
+  <use id='nn' x='1794' y='685' xlink:href='#nn'/><a xlink:href='#hashtags_start'><text id='hashtags.start' x='1811' y='695'>start</text><title>start
+* int
+The start position (zero-based) of the recognized Hashtag within the Tweet. All start indices are inclusive.</title></a>
+<text x='1888' y='696' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='701' xlink:href='#nn'/><a xlink:href='#hashtags_end'><text id='hashtags.end' x='1811' y='711'>end</text><title>end
+* int
+The end position (zero-based) of the recognized Hashtag within the Tweet. This end index is exclusive.</title></a>
+<text x='1888' y='712' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='717' xlink:href='#nn'/><a xlink:href='#hashtags_tag'><text id='hashtags.tag' x='1811' y='727'>tag</text><title>tag
+* string
+The text of the Hashtag.</title></a>
+<text x='1888' y='728' text-anchor='end' style='fill:#8FA68B'>string</text>
+<!-- == Table 'images' == -->
+<rect id='depict_images' class='entity' style='stroke:#7690B9' x='864' y='648' width='112' height='96' />
+<rect class='entity' x='864' y='648' width='112' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='864' y1='648' x2='976' y2='648'/>
+<a xlink:href='#images'><text x='890' y='667' >images</text><title>Sub-document images
+Array of images associated with the URL contained in that tweet</title></a>
+  <use id='nn' x='866' y='685' xlink:href='#nn'/><a xlink:href='#images_url'><text id='images.url' x='883' y='695'>url</text><title>url
+* string
+URL to twitters image-hosting domain for thumbnails</title></a>
+<text x='960' y='696' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='866' y='701' xlink:href='#nn'/><a xlink:href='#images_width'><text id='images.width' x='883' y='711'>width</text><title>width
+* int
+Width of this content in pixels.</title></a>
+<text x='960' y='712' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='866' y='717' xlink:href='#nn'/><a xlink:href='#images_height'><text id='images.height' x='883' y='727'>height</text><title>height
+* int
+Height of this content in pixels.</title></a>
+<text x='960' y='728' text-anchor='end' style='fill:#8B95A6'>int</text>
+<!-- == Table 'mentions' == -->
+<rect id='depict_mentions' class='entity' style='stroke:#7690B9' x='624' y='984' width='160' height='112' />
+<rect class='entity' x='624' y='984' width='160' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='624' y1='984' x2='784' y2='984'/>
+<a xlink:href='#mentions'><text x='667' y='1003' >mentions</text><title>Sub-document mentions
+Contains details about text recognized as a user mention.</title></a>
+  <use id='nn' x='626' y='1021' xlink:href='#nn'/><a xlink:href='#mentions_start'><text id='mentions.start' x='643' y='1031'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user mention within the Tweet. All start indices are inclusive.</title></a>
+<text x='768' y='1032' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='1037' xlink:href='#nn'/><a xlink:href='#mentions_end'><text id='mentions.end' x='643' y='1047'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user mention within the Tweet. This end index is exclusive.</title></a>
+<text x='768' y='1048' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='1053' xlink:href='#nn'/><a xlink:href='#mentions_username'><text id='mentions.username' x='643' y='1063'>username</text><title>username
+* string
+The part of text recognized as a user mention.</title></a>
+<text x='768' y='1064' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='626' y='1069' xlink:href='#nn'/><a xlink:href='#mentions_id '><text id='mentions.id ' x='643' y='1079'>id </text><title>id 
+* string
+Unique identifier of this user.</title></a>
+<text x='768' y='1080' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'mentions' == -->
+<rect id='depict_mentions' class='entity' style='stroke:#B99C76' x='624' y='456' width='160' height='112' />
+<rect class='entity' x='624' y='456' width='160' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='624' y1='456' x2='784' y2='456'/>
+<a xlink:href='#mentions'><text x='667' y='475' >mentions</text><title>Sub-document mentions
+Contains details about text recognized as a user mention.</title></a>
+  <use id='nn' x='626' y='493' xlink:href='#nn'/><a xlink:href='#mentions_start'><text id='mentions.start' x='643' y='503'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user mention within the Tweet. All start indices are inclusive.</title></a>
+<text x='768' y='504' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='509' xlink:href='#nn'/><a xlink:href='#mentions_end'><text id='mentions.end' x='643' y='519'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user mention within the Tweet. This end index is exclusive.</title></a>
+<text x='768' y='520' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='525' xlink:href='#nn'/><a xlink:href='#mentions_username'><text id='mentions.username' x='643' y='535'>username</text><title>username
+* string
+The part of text recognized as a user mention.</title></a>
+<text x='768' y='536' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='626' y='541' xlink:href='#nn'/><a xlink:href='#mentions_id '><text id='mentions.id ' x='643' y='551'>id </text><title>id 
+* string
+Unique identifier of this user.</title></a>
+<text x='768' y='552' text-anchor='end' style='fill:#A69A8B'>string</text>
+<!-- == Table 'mentions' == -->
+<rect id='depict_mentions' class='entity' style='stroke:#7676B9' x='1792' y='472' width='160' height='96' />
+<rect class='entity' x='1792' y='472' width='160' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1792' y1='472' x2='1952' y2='472'/>
+<a xlink:href='#mentions'><text x='1835' y='491' >mentions</text><title>Sub-document mentions
+Contains details about text recognized as a user mention.</title></a>
+  <use id='nn' x='1794' y='509' xlink:href='#nn'/><a xlink:href='#mentions_start'><text id='mentions.start' x='1811' y='519'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user mention within the Tweet. All start indices are inclusive.</title></a>
+<text x='1936' y='520' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='525' xlink:href='#nn'/><a xlink:href='#mentions_end'><text id='mentions.end' x='1811' y='535'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user mention within the Tweet. This end index is exclusive.</title></a>
+<text x='1936' y='536' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='541' xlink:href='#nn'/><a xlink:href='#mentions_username '><text id='mentions.username ' x='1811' y='551'>username </text><title>username 
+* string
+The part of text recognized as a user mention.</title></a>
+<text x='1936' y='552' text-anchor='end' style='fill:#8B8BA6'>string</text>
+<!-- == Table 'mentions' == -->
+<rect id='depict_mentions' class='entity' style='stroke:#81B976' x='1792' y='776' width='160' height='96' />
+<rect class='entity' x='1792' y='776' width='160' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1792' y1='776' x2='1952' y2='776'/>
+<a xlink:href='#mentions'><text x='1835' y='795' >mentions</text><title>Sub-document mentions
+Contains details about text recognized as a user mention.</title></a>
+  <use id='nn' x='1794' y='813' xlink:href='#nn'/><a xlink:href='#mentions_start'><text id='mentions.start' x='1811' y='823'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user mention within the Tweet. All start indices are inclusive.</title></a>
+<text x='1936' y='824' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='829' xlink:href='#nn'/><a xlink:href='#mentions_end'><text id='mentions.end' x='1811' y='839'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user mention within the Tweet. This end index is exclusive.</title></a>
+<text x='1936' y='840' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='845' xlink:href='#nn'/><a xlink:href='#mentions_username '><text id='mentions.username ' x='1811' y='855'>username </text><title>username 
+* string
+The part of text recognized as a user mention.</title></a>
+<text x='1936' y='856' text-anchor='end' style='fill:#8FA68B'>string</text>
+<!-- == Table 'public_metrics' == -->
+<rect id='depict_public_metrics' class='entity' style='stroke:#B99C76' x='368' y='72' width='160' height='112' />
+<rect class='entity' x='368' y='72' width='160' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='368' y1='72' x2='528' y2='72'/>
+<a xlink:href='#public_metrics'><text x='393' y='91' >public_metrics</text><title>Sub-document public_metrics
+Engagement metrics for the Tweet at the time of the request.</title></a>
+  <use id='nn' x='370' y='109' xlink:href='#nn'/><a xlink:href='#public_metrics_retweet_count'><text id='public_metrics.retweet_count' x='387' y='119'>retweet_count</text><title>retweet_count
+* int
+Number of times this Tweet has been Retweeted.</title></a>
+<text x='512' y='120' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='370' y='125' xlink:href='#nn'/><a xlink:href='#public_metrics_reply_count'><text id='public_metrics.reply_count' x='387' y='135'>reply_count</text><title>reply_count
+* int
+Number of Replies of this Tweet.</title></a>
+<text x='512' y='136' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='370' y='141' xlink:href='#nn'/><a xlink:href='#public_metrics_like_count'><text id='public_metrics.like_count' x='387' y='151'>like_count</text><title>like_count
+* int
+Number of Likes of this Tweet.</title></a>
+<text x='512' y='152' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='370' y='157' xlink:href='#nn'/><a xlink:href='#public_metrics_quote_count'><text id='public_metrics.quote_count' x='387' y='167'>quote_count</text><title>quote_count
+* int
+Number of times this Tweet has been Retweeted with a comment (also known as Quote).</title></a>
+<text x='512' y='168' text-anchor='end' style='fill:#A69A8B'>int</text>
+<!-- == Table 'public_metrics' == -->
+<rect id='depict_public_metrics' class='entity' style='stroke:#7690B9' x='368' y='760' width='160' height='112' />
+<rect class='entity' x='368' y='760' width='160' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='368' y1='760' x2='528' y2='760'/>
+<a xlink:href='#public_metrics'><text x='393' y='779' >public_metrics</text><title>Sub-document public_metrics
+Engagement metrics for the Tweet at the time of the request.</title></a>
+  <use id='nn' x='370' y='797' xlink:href='#nn'/><a xlink:href='#public_metrics_retweet_count'><text id='public_metrics.retweet_count' x='387' y='807'>retweet_count</text><title>retweet_count
+* int
+Number of times this Tweet has been Retweeted.</title></a>
+<text x='512' y='808' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='370' y='813' xlink:href='#nn'/><a xlink:href='#public_metrics_reply_count'><text id='public_metrics.reply_count' x='387' y='823'>reply_count</text><title>reply_count
+* int
+Number of Replies of this Tweet.</title></a>
+<text x='512' y='824' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='370' y='829' xlink:href='#nn'/><a xlink:href='#public_metrics_like_count'><text id='public_metrics.like_count' x='387' y='839'>like_count</text><title>like_count
+* int
+Number of Likes of this Tweet.</title></a>
+<text x='512' y='840' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='370' y='845' xlink:href='#nn'/><a xlink:href='#public_metrics_quote_count'><text id='public_metrics.quote_count' x='387' y='855'>quote_count</text><title>quote_count
+* int
+Number of times this Tweet has been Retweeted with a comment (also known as Quote).</title></a>
+<text x='512' y='856' text-anchor='end' style='fill:#8B95A6'>int</text>
+<!-- == Table 'public_metrics' == -->
+<rect id='depict_public_metrics' class='entity' style='stroke:#81B976' x='1312' y='744' width='176' height='112' />
+<rect class='entity' x='1312' y='744' width='176' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1312' y1='744' x2='1488' y2='744'/>
+<a xlink:href='#public_metrics'><text x='1345' y='763' >public_metrics</text><title>Sub-document public_metrics
+Contains details about activity for this user.</title></a>
+  <use id='nn' x='1314' y='781' xlink:href='#nn'/><a xlink:href='#public_metrics_followers_count'><text id='public_metrics.followers_count' x='1331' y='791'>followers_count</text><title>followers_count
+* int
+Number of users who follow this user.</title></a>
+<text x='1472' y='792' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1314' y='797' xlink:href='#nn'/><a xlink:href='#public_metrics_following_count'><text id='public_metrics.following_count' x='1331' y='807'>following_count</text><title>following_count
+* int
+Number of users this user is following.</title></a>
+<text x='1472' y='808' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1314' y='813' xlink:href='#nn'/><a xlink:href='#public_metrics_tweet_count'><text id='public_metrics.tweet_count' x='1331' y='823'>tweet_count</text><title>tweet_count
+* int
+Number of Tweets (including Retweets) posted by this user.</title></a>
+<text x='1472' y='824' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1314' y='829' xlink:href='#nn'/><a xlink:href='#public_metrics_listed_count'><text id='public_metrics.listed_count' x='1331' y='839'>listed_count</text><title>listed_count
+* int
+Number of lists that include this user.</title></a>
+<text x='1472' y='840' text-anchor='end' style='fill:#8FA68B'>int</text>
+<!-- == Table 'public_metrics' == -->
+<rect id='depict_public_metrics' class='entity' style='stroke:#7676B9' x='1312' y='168' width='176' height='112' />
+<rect class='entity' x='1312' y='168' width='176' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1312' y1='168' x2='1488' y2='168'/>
+<a xlink:href='#public_metrics'><text x='1345' y='187' >public_metrics</text><title>Sub-document public_metrics
+Contains details about activity for this user.</title></a>
+  <use id='nn' x='1314' y='205' xlink:href='#nn'/><a xlink:href='#public_metrics_followers_count'><text id='public_metrics.followers_count' x='1331' y='215'>followers_count</text><title>followers_count
+* int
+Number of users who follow this user.</title></a>
+<text x='1472' y='216' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1314' y='221' xlink:href='#nn'/><a xlink:href='#public_metrics_following_count'><text id='public_metrics.following_count' x='1331' y='231'>following_count</text><title>following_count
+* int
+Number of users this user is following.</title></a>
+<text x='1472' y='232' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1314' y='237' xlink:href='#nn'/><a xlink:href='#public_metrics_tweet_count'><text id='public_metrics.tweet_count' x='1331' y='247'>tweet_count</text><title>tweet_count
+* int
+Number of Tweets (including Retweets) posted by this user.</title></a>
+<text x='1472' y='248' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1314' y='253' xlink:href='#nn'/><a xlink:href='#public_metrics_listed_count'><text id='public_metrics.listed_count' x='1331' y='263'>listed_count</text><title>listed_count
+* int
+Number of lists that include this user.</title></a>
+<text x='1472' y='264' text-anchor='end' style='fill:#8B8BA6'>int</text>
+<!-- == Table 'referenced_tweets' == -->
+<rect id='depict_referenced_tweets' class='entity' style='stroke:#B99C76' x='368' y='392' width='160' height='80' />
+<rect class='entity' x='368' y='392' width='160' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='368' y1='392' x2='528' y2='392'/>
+<a xlink:href='#referenced_tweets'><text x='378' y='411' >referenced_tweets</text><title>Sub-document referenced_tweets
+A list of Tweets this Tweet refers to. For example, if the parent Tweet is a Retweet, a Retweet with comment (also known as Quoted Tweet) or a Reply, it will include the related Tweet referenced to by its parent.</title></a>
+  <use id='nn' x='370' y='429' xlink:href='#nn'/><a xlink:href='#referenced_tweets_type'><text id='referenced_tweets.type' x='387' y='439'>type</text><title>type
+* string
+Indicates the type of relationship between this Tweet and the Tweet returned in the response: retweeted (this Tweet is a Retweet), quoted (a Retweet with comment, also known as Quoted Tweet), or replied_to (this Tweet is a reply).</title></a>
+<text x='512' y='440' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='370' y='445' xlink:href='#nn'/><a xlink:href='#referenced_tweets_id '><text id='referenced_tweets.id ' x='387' y='455'>id </text><title>id 
+* string
+The unique identifier of the referenced Tweet.</title></a>
+<text x='512' y='456' text-anchor='end' style='fill:#A69A8B'>string</text>
+<!-- == Table 'referenced_tweets' == -->
+<rect id='depict_referenced_tweets' class='entity' style='stroke:#7690B9' x='368' y='968' width='160' height='80' />
+<rect class='entity' x='368' y='968' width='160' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='368' y1='968' x2='528' y2='968'/>
+<a xlink:href='#referenced_tweets'><text x='378' y='987' >referenced_tweets</text><title>Sub-document referenced_tweets
+A list of Tweets this Tweet refers to. For example, if the parent Tweet is a Retweet, a Retweet with comment (also known as Quoted Tweet) or a Reply, it will include the related Tweet referenced to by its parent.</title></a>
+  <use id='nn' x='370' y='1005' xlink:href='#nn'/><a xlink:href='#referenced_tweets_type'><text id='referenced_tweets.type' x='387' y='1015'>type</text><title>type
+* string
+Indicates the type of relationship between this Tweet and the Tweet returned in the response: retweeted (this Tweet is a Retweet), quoted (a Retweet with comment, also known as Quoted Tweet), or replied_to (this Tweet is a reply).</title></a>
+<text x='512' y='1016' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='370' y='1021' xlink:href='#nn'/><a xlink:href='#referenced_tweets_id '><text id='referenced_tweets.id ' x='387' y='1031'>id </text><title>id 
+* string
+The unique identifier of the referenced Tweet.</title></a>
+<text x='512' y='1032' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'url' == -->
+<rect id='depict_url' class='entity' style='stroke:#7676B9' x='1536' y='72' width='160' height='64' />
+<rect class='entity' x='1536' y='72' width='160' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1536' y1='72' x2='1696' y2='72'/>
+<a xlink:href='#url'><text x='1603' y='91' >url</text><title>Sub-document url
+Contains details about the user&apos;s profile website.</title></a>
+  <use id='nn' x='1538' y='109' xlink:href='#nn'/><a xlink:href='#url_urls'><text id='url.urls' x='1555' y='119'>urls</text><title>urls
+* array[object]
+Contains details about the user&apos;s profile website.</title></a>
+<text x='1680' y='120' text-anchor='end' style='fill:#8B8BA6'>array[object]</text>
+<!-- == Table 'url' == -->
+<rect id='depict_url' class='entity' style='stroke:#81B976' x='1536' y='776' width='160' height='64' />
+<rect class='entity' x='1536' y='776' width='160' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1536' y1='776' x2='1696' y2='776'/>
+<a xlink:href='#url'><text x='1603' y='795' >url</text><title>Sub-document url
+Contains details about the user&apos;s profile website.</title></a>
+  <use id='nn' x='1538' y='813' xlink:href='#nn'/><a xlink:href='#url_urls'><text id='url.urls' x='1555' y='823'>urls</text><title>urls
+* array[object]
+Contains details about the user&apos;s profile website.</title></a>
+<text x='1680' y='824' text-anchor='end' style='fill:#8FA68B'>array[object]</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#B99C76' x='624' y='200' width='176' height='128' />
+<rect class='entity' x='624' y='200' width='176' height='28' style='stroke:#B99C76; fill:#F3EDE6'/>
+<line class='topLine' style='stroke:#995802;' stroke-linecap='round' x1='624' y1='200' x2='800' y2='200'/>
+<a xlink:href='#urls'><text x='695' y='219' >urls</text><title>Sub-document urls
+Contains details about text recognized as a URL.</title></a>
+  <use id='nn' x='626' y='237' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='643' y='247'>start</text><title>start
+* int
+The start position (zero-based) of the recognized URL within the Tweet. All start indices are inclusive.</title></a>
+<text x='784' y='248' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='253' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='643' y='263'>end</text><title>end
+* int
+The end position (zero-based) of the recognized URL within the Tweet. This end index is exclusive.</title></a>
+<text x='784' y='264' text-anchor='end' style='fill:#A69A8B'>int</text>  <use id='nn' x='626' y='269' xlink:href='#nn'/><a xlink:href='#urls_url'><text id='urls.url' x='643' y='279'>url</text><title>url
+* string
+The URL in the format tweeted by the user.</title></a>
+<text x='784' y='280' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='626' y='285' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='643' y='295'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='784' y='296' text-anchor='end' style='fill:#A69A8B'>string</text>  <use id='nn' x='626' y='301' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='643' y='311'>display_url</text><title>display_url
+* string
+The URL as displayed in the Twitter client.</title></a>
+<text x='784' y='312' text-anchor='end' style='fill:#A69A8B'>string</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#7690B9' x='624' y='648' width='192' height='208' />
+<rect class='entity' x='624' y='648' width='192' height='28' style='stroke:#7690B9; fill:#E6EBF3'/>
+<line class='topLine' style='stroke:#023C99;' stroke-linecap='round' x1='624' y1='648' x2='816' y2='648'/>
+<a xlink:href='#urls'><text x='703' y='667' >urls</text><title>Sub-document urls
+Contains details about text recognized as a URL.</title></a>
+  <use id='nn' x='626' y='685' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='643' y='695'>start</text><title>start
+* int
+The start position (zero-based) of the recognized URL within the Tweet. All start indices are inclusive.</title></a>
+<text x='800' y='696' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='701' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='643' y='711'>end</text><title>end
+* int
+The end position (zero-based) of the recognized URL within the Tweet. This end index is exclusive.</title></a>
+<text x='800' y='712' text-anchor='end' style='fill:#8B95A6'>int</text>  <use id='nn' x='626' y='717' xlink:href='#nn'/><a xlink:href='#urls_url'><text id='urls.url' x='643' y='727'>url</text><title>url
+* string
+The URL in the format tweeted by the user.</title></a>
+<text x='800' y='728' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='626' y='733' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='643' y='743'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='800' y='744' text-anchor='end' style='fill:#8B95A6'>string</text>  <use id='nn' x='626' y='749' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='643' y='759'>display_url</text><title>display_url
+* string
+The URL as displayed in the Twitter client.</title></a>
+<text x='800' y='760' text-anchor='end' style='fill:#8B95A6'>string</text>  <a xlink:href='#urls_images'><text id='urls.images' x='643' y='775'>images</text><title>images
+array[object]
+Array of images associated with the URL contained in that tweet</title></a>
+<text x='800' y='776' text-anchor='end' style='fill:#8B95A6'>array[object]</text>  <a xlink:href='#urls_status'><text id='urls.status' x='643' y='791'>status</text><title>status
+int
+Status of retrieving information from this URL</title></a>
+<text x='800' y='792' text-anchor='end' style='fill:#8B95A6'>int</text>  <a xlink:href='#urls_title'><text id='urls.title' x='643' y='807'>title</text><title>title
+string
+Title of URL referenced content</title></a>
+<text x='800' y='808' text-anchor='end' style='fill:#8B95A6'>string</text>  <a xlink:href='#urls_description'><text id='urls.description' x='643' y='823'>description</text><title>description
+string
+Description of URLs referenced content</title></a>
+<text x='800' y='824' text-anchor='end' style='fill:#8B95A6'>string</text>  <a xlink:href='#urls_unwound_url'><text id='urls.unwound_url' x='643' y='839'>unwound_url</text><title>unwound_url
+string
+The full destination URL.</title></a>
+<text x='800' y='840' text-anchor='end' style='fill:#8B95A6'>string</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#7676B9' x='1792' y='216' width='176' height='128' />
+<rect class='entity' x='1792' y='216' width='176' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1792' y1='216' x2='1968' y2='216'/>
+<a xlink:href='#urls'><text x='1863' y='235' >urls</text><title>Sub-document urls
+Contains details about any URLs included in the user&apos;s descri</title></a>
+  <use id='nn' x='1794' y='253' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='1811' y='263'>start</text><title>start
+* int
+The start position (zero-based) of the recognized URL in the user&apos;s description. All start indices are inclusive.</title></a>
+<text x='1952' y='264' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='269' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='1811' y='279'>end</text><title>end
+* int
+The end position (zero-based) of the recognized URL in the user&apos;s description. This end index is exclusive.</title></a>
+<text x='1952' y='280' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='285' xlink:href='#nn'/><a xlink:href='#urls_url '><text id='urls.url ' x='1811' y='295'>url </text><title>url 
+* string
+The URL in the format entered by the user.</title></a>
+<text x='1952' y='296' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1794' y='301' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='1811' y='311'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='1952' y='312' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1794' y='317' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='1811' y='327'>display_url</text><title>display_url
+* string
+The URL as displayed in the user&apos;s description.</title></a>
+<text x='1952' y='328' text-anchor='end' style='fill:#8B8BA6'>string</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#7676B9' x='1792' y='72' width='176' height='128' />
+<rect class='entity' x='1792' y='72' width='176' height='28' style='stroke:#7676B9; fill:#E6E6F3'/>
+<line class='topLine' style='stroke:#020299;' stroke-linecap='round' x1='1792' y1='72' x2='1968' y2='72'/>
+<a xlink:href='#urls'><text x='1863' y='91' >urls</text><title>Sub-document urls
+Contains details about the user&apos;s profile website.</title></a>
+  <use id='nn' x='1794' y='109' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='1811' y='119'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user&apos;s profile website. All start indices are inclusive.</title></a>
+<text x='1952' y='120' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='125' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='1811' y='135'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user&apos;s profile website. This end index is exclusive.</title></a>
+<text x='1952' y='136' text-anchor='end' style='fill:#8B8BA6'>int</text>  <use id='nn' x='1794' y='141' xlink:href='#nn'/><a xlink:href='#urls_url '><text id='urls.url ' x='1811' y='151'>url </text><title>url 
+* string
+The URL in the format entered by the user.</title></a>
+<text x='1952' y='152' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1794' y='157' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='1811' y='167'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='1952' y='168' text-anchor='end' style='fill:#8B8BA6'>string</text>  <use id='nn' x='1794' y='173' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='1811' y='183'>display_url</text><title>display_url
+* string
+The URL as displayed in the user&apos;s profile.</title></a>
+<text x='1952' y='184' text-anchor='end' style='fill:#8B8BA6'>string</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#81B976' x='1792' y='872' width='176' height='128' />
+<rect class='entity' x='1792' y='872' width='176' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1792' y1='872' x2='1968' y2='872'/>
+<a xlink:href='#urls'><text x='1863' y='891' >urls</text><title>Sub-document urls
+Contains details about any URLs included in the user&apos;s descri</title></a>
+  <use id='nn' x='1794' y='909' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='1811' y='919'>start</text><title>start
+* int
+The start position (zero-based) of the recognized URL in the user&apos;s description. All start indices are inclusive.</title></a>
+<text x='1952' y='920' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='925' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='1811' y='935'>end</text><title>end
+* int
+The end position (zero-based) of the recognized URL in the user&apos;s description. This end index is exclusive.</title></a>
+<text x='1952' y='936' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='941' xlink:href='#nn'/><a xlink:href='#urls_url '><text id='urls.url ' x='1811' y='951'>url </text><title>url 
+* string
+The URL in the format entered by the user.</title></a>
+<text x='1952' y='952' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1794' y='957' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='1811' y='967'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='1952' y='968' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1794' y='973' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='1811' y='983'>display_url</text><title>display_url
+* string
+The URL as displayed in the user&apos;s description.</title></a>
+<text x='1952' y='984' text-anchor='end' style='fill:#8FA68B'>string</text>
+<!-- == Table 'urls' == -->
+<rect id='depict_urls' class='entity' style='stroke:#81B976' x='1792' y='1032' width='176' height='128' />
+<rect class='entity' x='1792' y='1032' width='176' height='28' style='stroke:#81B976; fill:#E8F3E6'/>
+<line class='topLine' style='stroke:#1B9902;' stroke-linecap='round' x1='1792' y1='1032' x2='1968' y2='1032'/>
+<a xlink:href='#urls'><text x='1863' y='1051' >urls</text><title>Sub-document urls
+Contains details about the user&apos;s profile website.</title></a>
+  <use id='nn' x='1794' y='1069' xlink:href='#nn'/><a xlink:href='#urls_start'><text id='urls.start' x='1811' y='1079'>start</text><title>start
+* int
+The start position (zero-based) of the recognized user&apos;s profile website. All start indices are inclusive.</title></a>
+<text x='1952' y='1080' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='1085' xlink:href='#nn'/><a xlink:href='#urls_end'><text id='urls.end' x='1811' y='1095'>end</text><title>end
+* int
+The end position (zero-based) of the recognized user&apos;s profile website. This end index is exclusive.</title></a>
+<text x='1952' y='1096' text-anchor='end' style='fill:#8FA68B'>int</text>  <use id='nn' x='1794' y='1101' xlink:href='#nn'/><a xlink:href='#urls_url '><text id='urls.url ' x='1811' y='1111'>url </text><title>url 
+* string
+The URL in the format entered by the user.</title></a>
+<text x='1952' y='1112' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1794' y='1117' xlink:href='#nn'/><a xlink:href='#urls_expanded_url'><text id='urls.expanded_url' x='1811' y='1127'>expanded_url</text><title>expanded_url
+* string
+The fully resolved URL.</title></a>
+<text x='1952' y='1128' text-anchor='end' style='fill:#8FA68B'>string</text>  <use id='nn' x='1794' y='1133' xlink:href='#nn'/><a xlink:href='#urls_display_url'><text id='urls.display_url' x='1811' y='1143'>display_url</text><title>display_url
+* string
+The URL as displayed in the user&apos;s description.</title></a>
+<text x='1952' y='1144' text-anchor='end' style='fill:#8FA68B'>string</text>
+</g></svg>

@@ -1,9 +1,10 @@
 import configparser
 import logging
 import os
+import smtplib
+import ssl
 import time
 from functools import wraps
-import smtplib, ssl
 
 
 class CustomLogFormatter(logging.Formatter):
@@ -29,7 +30,7 @@ class CustomLogFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-logging.basicConfig(filename="output/crawl.log",
+logging.basicConfig(filename=f"{os.getcwd()}/output/crawl.log",
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
