@@ -1,0 +1,105 @@
+17:06:29,480 Crawler WARNING Collection cc_tweets already exists
+17:06:29,481 Crawler WARNING Collection cc_users already exists
+17:06:29,481 Crawler WARNING Collection cc_timelines already exists
+17:06:29,481 Crawler WARNING Collection cc_follows already exists
+17:06:29,483 Crawler INFO -------------------
+17:06:29,483 Crawler INFO Start crawl routine
+17:06:29,483 Crawler INFO -------------------
+17:06:50,421 Crawler WARNING Collection cc_tweets already exists
+17:06:50,421 Crawler WARNING Collection cc_users already exists
+17:06:50,421 Crawler WARNING Collection cc_timelines already exists
+17:06:50,421 Crawler WARNING Collection cc_follows already exists
+17:06:50,422 Crawler INFO -------------------
+17:06:50,422 Crawler INFO Start crawl routine
+17:06:50,422 Crawler INFO -------------------
+17:07:52,858 Crawler WARNING Collection cc_tweets already exists
+17:07:52,859 Crawler WARNING Collection cc_users already exists
+17:07:52,859 Crawler WARNING Collection cc_timelines already exists
+17:07:52,859 Crawler WARNING Collection cc_follows already exists
+17:07:52,863 Crawler INFO -------------------
+17:07:52,863 Crawler INFO Start crawl routine
+17:07:52,863 Crawler INFO -------------------
+17:07:52,864 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:07:52,864 Crawler INFO Start crawl of event Nr. 0: toni test
+17:07:52,864 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:07:52,864 Crawler INFO Start crawl of event Nr. 2: david shor
+17:07:52,864 Crawler INFO Start crawl of event Nr. 3: j.k. rowling 1
+17:07:52,864 Crawler INFO Start crawl of event Nr. 4: j.k. rowling 2
+17:07:52,864 Crawler INFO Start crawl of event Nr. 5: aaron schlossberg
+17:07:52,864 Crawler INFO Start crawl of event Nr. 6: kelly pocha
+17:07:52,864 Crawler INFO Start crawl of event Nr. 7: gina carano
+17:07:52,864 Crawler INFO Start crawl of event Nr. 8: gina carano
+17:09:42,358 Crawler WARNING Collection cc_tweets already exists
+17:09:42,359 Crawler WARNING Collection cc_users already exists
+17:09:42,359 Crawler WARNING Collection cc_timelines already exists
+17:09:42,360 Crawler WARNING Collection cc_follows already exists
+17:09:42,361 Crawler INFO -------------------
+17:09:42,361 Crawler INFO Start crawl routine
+17:09:42,361 Crawler INFO -------------------
+17:09:42,362 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:09:42,362 Crawler INFO Start crawl of event Nr. 0: toni test
+17:09:42,362 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:10:29,701 Crawler WARNING Collection cc_tweets already exists
+17:10:29,701 Crawler WARNING Collection cc_users already exists
+17:10:29,702 Crawler WARNING Collection cc_timelines already exists
+17:10:29,702 Crawler WARNING Collection cc_follows already exists
+17:10:29,704 Crawler INFO -------------------
+17:10:29,704 Crawler INFO Start crawl routine
+17:10:29,704 Crawler INFO -------------------
+17:10:29,705 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:10:29,705 Crawler INFO Start crawl of event Nr. 0: toni test
+17:10:29,705 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:12:22,353 Crawler WARNING Collection cc_tweets already exists
+17:12:22,353 Crawler WARNING Collection cc_users already exists
+17:12:22,354 Crawler WARNING Collection cc_timelines already exists
+17:12:22,354 Crawler WARNING Collection cc_follows already exists
+17:12:22,355 Crawler INFO -------------------
+17:12:22,355 Crawler INFO Start crawl routine
+17:12:22,355 Crawler INFO -------------------
+17:12:22,355 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:12:22,355 Crawler INFO Start crawl of event Nr. 0: toni test
+17:12:22,355 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:13:11,590 Crawler WARNING Collection cc_tweets already exists
+17:13:11,590 Crawler WARNING Collection cc_users already exists
+17:13:11,591 Crawler WARNING Collection cc_timelines already exists
+17:13:11,591 Crawler WARNING Collection cc_follows already exists
+17:13:11,593 Crawler INFO -------------------
+17:13:11,593 Crawler INFO Start crawl routine
+17:13:11,593 Crawler INFO -------------------
+17:13:11,594 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:13:11,594 Crawler INFO Start crawl of event Nr. 0: toni test
+17:13:11,594 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:14:17,975 Crawler WARNING Collection cc_tweets already exists
+17:14:17,976 Crawler WARNING Collection cc_users already exists
+17:14:17,976 Crawler WARNING Collection cc_timelines already exists
+17:14:17,977 Crawler WARNING Collection cc_follows already exists
+17:14:17,979 Crawler INFO -------------------
+17:14:17,979 Crawler INFO Start crawl routine
+17:14:17,979 Crawler INFO -------------------
+17:14:17,979 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:14:17,980 Crawler INFO Start crawl of event Nr. 0: toni test
+17:14:17,980 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:14:17,981 Crawler INFO Start crawl of event Nr. 2: david shor
+17:14:17,981 Crawler INFO Start crawl of event Nr. 3: j.k. rowling 1
+17:14:17,981 Crawler INFO Start crawl of event Nr. 4: j.k. rowling 2
+17:14:17,981 Crawler INFO Start crawl of event Nr. 5: aaron schlossberg
+17:14:17,982 Crawler INFO Start crawl of event Nr. 6: kelly pocha
+17:14:17,982 Crawler INFO Start crawl of event Nr. 7: gina carano
+17:14:17,982 Crawler INFO Start crawl of event Nr. 8: gina carano
+17:15:58,84 Crawler WARNING Collection cc_tweets already exists
+17:15:58,85 Crawler WARNING Collection cc_users already exists
+17:15:58,85 Crawler WARNING Collection cc_timelines already exists
+17:15:58,86 Crawler WARNING Collection cc_follows already exists
+17:15:58,87 Crawler INFO -------------------
+17:15:58,87 Crawler INFO Start crawl routine
+17:15:58,88 Crawler INFO -------------------
+17:15:58,88 Crawler INFO Start crawl of event Nr. -1: vanderhorst
+17:15:58,88 Crawler INFO Start crawl of event Nr. 0: toni test
+17:15:58,88 Crawler INFO Start crawl of event Nr. 1: neil de grasse tyson
+17:15:58,90 Crawler INFO Start crawl of event Nr. 2: david shor
+17:15:58,90 Crawler INFO Start crawl of event Nr. 3: j.k. rowling 1
+17:15:58,90 Crawler INFO Start crawl of event Nr. 4: j.k. rowling 2
+17:15:58,90 Crawler INFO Start crawl of event Nr. 5: aaron schlossberg
+17:15:58,90 Crawler INFO Start crawl of event Nr. 6: kelly pocha
+17:15:58,90 Crawler INFO Start crawl of event Nr. 7: gina carano
+17:15:58,90 Crawler INFO Start crawl of event Nr. 8: gina carano

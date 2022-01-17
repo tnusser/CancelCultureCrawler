@@ -30,7 +30,7 @@ class CustomLogFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-logging.basicConfig(filename=f"{os.getcwd()}/output/crawl.log",
+logging.basicConfig(filename=f"{os.getcwd()}/../output/crawl.log",
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',

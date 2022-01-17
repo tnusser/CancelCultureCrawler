@@ -4,10 +4,10 @@ from distutils.util import strtobool
 import requests
 import os
 import re
-from helper import logger
+from utils import logger
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("../config.ini")
 
 logger.info("-------------------")
 logger.info("Start crawl routine")

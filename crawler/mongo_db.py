@@ -1,6 +1,6 @@
 import pymongo.errors
 from pymongo import MongoClient
-from helper import logger
+from utils import logger
 from bson.objectid import ObjectId
 import configparser
 
@@ -150,7 +150,7 @@ def delete_duplicates_arr(collection_name, attribute):
 
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("../config.ini")
 mongo_config = config["mongoDB"]
 
 client = MongoClient(f'mongodb://{mongo_config["IP"]}:{mongo_config["Port"]}/')

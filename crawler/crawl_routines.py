@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 import simplejson.errors
 import mongo_db as db
 from api_endpoints import ApiEndpoints
-from helper import *
+from utils import *
 from threading import Thread
 
 api = ApiEndpoints()
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("../config.ini")
 mongo_config = config["mongoDB"]
 
 tweet_func = {"get_seed", "get_replies", "get_quotes"}
@@ -24,6 +24,12 @@ TIMELINE_COLLECTION = mongo_config["TimelineCollection"]
 USER_COLLECTION = mongo_config["UserCollection"]
 TWEET_COLLECTION = mongo_config["TweetCollection"]
 FOLLOWER_COLLECTION = mongo_config["FollowerCollection"]
+
+if not mongo_config["UseMongo"]:
+    out_file = open("output/example.json", "w")
+author_cache = {}
+tweet_cache = []
+hashtag_cache = set()
 
 
 class Tweet:
@@ -124,7 +130,7 @@ def process_result(response, f_name, params=None):
         update_field = "following" if f_name == "get_followers" else "followed_by"
         for res in response:
             res["seed"] = SEED_TWEET_ID
-            res["crawl_timestamp"] = crawl_time_stamp
+            res["crawl_timestamp"] = datetime.now()
             found_user = db.read({"id": res["id"]}, FOLLOWER_COLLECTION)
             if len(list(found_user)) > 0:
                 # logger.info("Found user in DB")
@@ -138,7 +144,7 @@ def process_result(response, f_name, params=None):
         return
     for res in response:
         res["seed"] = SEED_TWEET_ID
-        res["crawl_timestamp"] = crawl_time_stamp
+        res["crawl_timestamp"] = datetime.now()
         if f_name in tweet_func:
             # tweet object
             res["likes_crawled"] = False
@@ -528,64 +534,25 @@ def crawl_worker(job_queue):
 
 
 class EventSearch:
-    def __init__(self, uid, tweet_id, start_date, hashtags, username, comment):
+    def __init__(self, uid, tweet_id, start_date, days, tag_and_mention, username, comment):
+        """
+        Class for events to be crawled
+        @param uid: unique event identifier
+        @param tweet_id: seed tweet id
+        @param start_date: approximate start date of the cancellation event
+        @param days: number of days that the hashtags or mentions should be followed
+        @param tag_and_mention: set of hashtags and mentions that should be crawled
+        @param username: name of the user
+        @param comment: helpful comment to identify event
+        """
         self.uid = uid
         self.tweet_id = tweet_id
         self.start_date = start_date
-        self.hashtags = hashtags
+        self.days = days
+        self.tag_and_mention = tag_and_mention
         self.username = username
         self.comment = comment
 
     def __repr__(self):
-        return f"{self.tweet_id} + {self.username} + {self.uid}"
-
-
-event_list = [
-    EventSearch(-1, "1442243266280370177", start_date=None, hashtags=None, username=None, comment="vanderhorst"),
-    EventSearch(0, "1433361036191612930", start_date=None, hashtags=None, username=None, comment="toni test"),
-    EventSearch(1, "1158074774297468928", start_date="2019-08-04T18:00:00.000Z", hashtags=["#neildegrassetyson"],
-                username="neiltyson", comment="neil de grasse tyson"),
-    EventSearch(2, "1265998625836019712", start_date="2020-06-28T14:00:00.000Z", hashtags=None,
-                username="davidshor", comment="david shor"),
-    EventSearch(3, "1269382518362509313", start_date="2020-06-06T23:00:00.000Z", hashtags=None,
-                username="jk_rowling", comment="j.k. rowling 1"),
-    EventSearch(4, "1269389298664701952", start_date="2020-06-07T12:00:00.000Z", hashtags=None,
-                username="jk_rowling", comment="j.k. rowling 2"),
-    EventSearch(5, None, start_date="2018-05-17T23:00:00.000Z", hashtags=["#AaronMSchlossberg", "#AaronSchlossberg"],
-                username=None, comment="aaron schlossberg"),
-    EventSearch(6, None, start_date="2018-05-08T23:00:00.000Z", hashtags=["#KellyPocha"],
-                username=None, comment="kelly pocha"),
-    EventSearch(7, "1324385598539399168", start_date="2020-11-05T14:00:00.000Z", hashtags=["#FireGinaCarano"],
-                username="ginacarano", comment="gina carano"),
-    EventSearch(8, "1327806477923323904", start_date="2020-11-15T14:00:00.000Z", hashtags=["#FireGinaCarano"],
-                username="ginacarano", comment="gina carano")
-]
-
-if not mongo_config["UseMongo"]:
-    out_file = open("output/example.json", "w")
-author_cache = {}
-tweet_cache = []
-hashtag_cache = set()
-
-if __name__ == "__main__":
-    # for el in temp_event_list:
-    crawl_time_stamp = datetime.now()
-    SEED_TWEET_ID = "1433361036191612930"
-
-    crawl_queue = queue.Queue()
-
-    get_seed(SEED_TWEET_ID)
-    pipeline(SEED_TWEET_ID)
-    # hashtag_or_mention({"@LutzvanderHorst"}, start="2021-09-26T10:59:59.000Z", end="2021-09-27T23:59:59.000Z")
-    # hashtag_or_mention({"#testCC001", "@toniN0_1", "#testCC002"}, start="2020-09-26T10:59:59.000Z", end="2022-01-11T13:11:59.000Z")
-
-    crawl_queue.put(crawl_likes)
-    crawl_queue.put(crawl_retweets)
-    crawl_queue.put(crawl_timelines)
-    crawl_queue.put(crawl_following)
-    crawl_queue.put(crawl_follows)
-
-    for j in range(crawl_queue.qsize()):
-        logger.info(f"Main: create and start thread for crawl queue {j}")
-        Thread(target=crawl_worker, args=(crawl_queue,), daemon=True).start()
-    crawl_queue.join()
+        return f"{self.tweet_id} + {self.username} + {self.uid} + event comment: {self.comment}"
+#TODO seed tweet id

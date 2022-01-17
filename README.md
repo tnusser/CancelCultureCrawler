@@ -1,4 +1,5 @@
-# Cancel-Culture-Crawler - Social Media Data Collection of Cancel Culture Events
+# Cancel-Culture-Crawler
+# Social Media Data Collection of Cancel Culture Events
 
 Twitter Crawler to automatically fetch and store tweets surrounding the topic and network of Cancel Culture on Twitter.
 This crawler uses the official Twitter API v2 to request data from Twitter, processes it and stores it in a MongoDB database.
@@ -6,7 +7,7 @@ This crawler uses the official Twitter API v2 to request data from Twitter, proc
 To use the crawler some packages and configuration steps are needed.
 ### Package installation
 Clone the repository and run the following commands:
-````commandline
+````
 $ cd cancel-culture-crawler
 $ pip install -r requirements.txt
 ````
@@ -19,6 +20,9 @@ on your system. Note: Beware of committing authentication tokens to (public) rep
 
 Furthermore, a MongoDB server is needed to store the data. Installation instructions can be found [here](https://docs.mongodb.com/manual/installation/).
 Inside the [config.ini](config.ini) you can specify the IP, port and database name.
+
+### Methods
+
 
 ## Events
 [Neil de Grasse Tyson](
