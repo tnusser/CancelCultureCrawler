@@ -22,11 +22,14 @@ Furthermore, a MongoDB server is needed to store the data. Installation instruct
 Inside the [config.ini](config.ini) you can specify the IP, port and database name.
 
 ### Methods
+TODO methods that can be used
 
-
-## Events
+### Events
 [Neil de Grasse Tyson](
 https://twitter.com/neiltyson/status/1158074774297468928) - Event-ID 1
+TODO events 
+
+## TODO VEREINFACHTE VERSION DB SCHEMA
 
 ## Database Schema
 
