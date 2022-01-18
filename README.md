@@ -36,7 +36,7 @@ The following list of methods can be used for crawling. See [main.py](https://gi
 
 `` bot.hashtag_or_mention(hashtags_or_mentions, start, end)`` allows to crawl all tweets that contain the specified hashtags ``#exampleHashTag`` or mentions ``@exampleUser``
 #### 2. Collecting likes, retweets, followers, timelines
-``bot.crawl_likes()`` retrieves the likes for all tweets that were crawled in the first step. See the likes_crawled keyword in the db schema
+``bot.crawl_likes()`` retrieves the likes for all tweets that were crawled in the first step according to the likes_crawled attribute in the database collection [cc_tweets](#collection-cc_tweets). Results are stored 
 
 ``bot.crawl_retweets()``
 
