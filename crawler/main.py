@@ -1,8 +1,8 @@
 import datetime
 import queue
 from threading import Thread
-import crawler.crawl_routines as bot
-from crawler.crawl_routines import EventSearch
+import crawl_routines as bot
+from crawl_routines import EventSearch
 from utils import *
 
 event_list = [
