@@ -32,21 +32,34 @@ The following list of methods can be used for crawling. See [main.py](https://gi
 #### 1. Collecting conversation trees
 ``bot.get_seed(tweet_id)`` allows to crawl a single tweet (seed tweet of conversation) with a tweet id as argument
 
-``bot.pipeline(tweet_id)`` allows to crawl all replies and quotes to the tweet with the specified tweet id, as well as all users profiles of the users that wrote those replies/quotes
+``bot.pipeline(tweet_id)`` allows to crawl all replies and quotes to the tweet with the specified tweet id, as well as all user profiles of the users that wrote those replies/quotes
 
-`` bot.hashtag_or_mention(hashtags_or_mentions, start, end)`` allows to crawl all tweets that contain the specified hashtags ``#exampleHashTag`` or mentions ``@exampleUser``
+`` bot.hashtag_or_mention(hashtags_or_mentions, start, end)`` allows to crawl all tweets that contain the specified hashtags or mention. Example:
+``hashtags_or_mentions = {"#exampleHashTag", "@exampleUser"}``. The attributes ``start`` and ``end`` are dates in the format YYYY-MM-DDTHH:mm:ssZ (ISO 8601/RFC 3339)
 #### 2. Collecting likes, retweets, followers, timelines
-``bot.crawl_likes()`` retrieves the likes for all tweets that were crawled in the first step according to the likes_crawled attribute in the database collection [cc_tweets](#collection-cc_tweets). Results are stored 
+``bot.crawl_likes()`` retrieves the (100 most recent) liking users for all tweets that were crawled in the first step according to the ``likes_crawled`` attribute in the database collection [cc_tweets](#collection-cc_tweets). 
+Results are stored in the database collection [cc_users](#collection-cc_users) at the attribute ``liked``.
 
-``bot.crawl_retweets()``
+``bot.crawl_retweets()`` retrieves the (100 most recent) retweeting users for all tweets that were crawled in the first step according to the ``retweets_crawled`` attribute in the database collection [cc_tweets](#collection-cc_tweets). 
+Results are stored in the database collection [cc_users](#collection-cc_users) at the attribute ``retweeted``.
 
-``bot.crawl_timelines()``
+``bot.crawl_timelines()`` retrieves all timeline tweets of users that were crawled in the first step according to the ``timeline_crawled`` attribute in the database collection [cc_users](#collection-cc_users). 
+Results are stored in the database collection [cc_timelines](#collection-cc_timelines).
 
-``bot.crawl_following()``
+``bot.crawl_following()`` retrieves users that are followed by the users crawled in the first step according to the ``following_crawled`` attribute in the database collection [cc_users](#collection-cc_users). 
+Results are stored in the database collection [cc_follows](#collection-cc_follows) at the attribute ``followed_by``.
 
-``bot.crawl_follows()``
+``bot.crawl_follows()`` retrieves users that follow the users that were crawled in the first step according to the ``followers_crawled`` attribute in the database collection [cc_users](#collection-cc_users). 
+Results are stored in the database collection [cc_follows](#collection-cc_follows) at the attribute ``following``.
 
 
+
+### Examples
+
+#### Nr.1
+````yaml
+{"_id":{"$oid":"619b9f8799a4809d6ee03245"},"entities":{"annotations":[{"start":23,"end":25,"probability":0.9602,"type":"Place","normalized_text":"USA"}]},"text":"In the past 48hrs, the USA horrifically lost 34 people to mass shootings.\n\nOn average, across any 48hrs, we also lose…\n\n500 to Medical errors\n300 to the Flu\n250 to Suicide\n200 to Car Accidents\n40 to Homicide via Handgun\n\nOften our emotions respond more to spectacle than to data.","possibly_sensitive":false,"author_id":"19725644","conversation_id":"1158074774297468928","public_metrics":{"retweet_count":71267,"reply_count":70954,"like_count":273941,"quote_count":44650},"reply_settings":"everyone","source":"TweetDeck","created_at":"2019-08-04T17:58:36.000Z","lang":"en","id":"1158074774297468928","seed":"1158074774297468928","crawl_timestamp":{"$date":"2021-11-22T13:47:50.884Z"},"likes_crawled":false,"retweets_crawled":false}
+````
 
 
 

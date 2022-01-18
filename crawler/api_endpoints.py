@@ -115,6 +115,7 @@ class ApiEndpoints:
 
     def get_timeline(self, user_id, except_fields=None, next_token=None):
         """
+        TODO Add Timeline Crawl via Full-Archive-Search
         Retrieves tweets of a users timeline -- X-RATE-LIMIT 1.500 -> 150.000 tweets
         04.10.21 min_results: 5 max_results: 100
         :param user_id id of user to be crawled

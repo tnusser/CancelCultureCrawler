@@ -1,29 +1,37 @@
 import datetime
 import queue
 from threading import Thread
-
 import crawler.crawl_routines as bot
 from crawler.crawl_routines import EventSearch
 from utils import *
 
 event_list = [
-    EventSearch(-1, "1442243266280370177", start_date=None, days=14, tag_and_mention=None, username=None, comment="vanderhorst"),
-    EventSearch(0, "1433361036191612930", start_date=None, days=14, tag_and_mention=None, username=None, comment="toni test"),
-    EventSearch(1, "1158074774297468928", start_date="2019-08-04T18:00:00.000Z", days=14, tag_and_mention={"#neildegrassetyson"},
+    EventSearch(uid=-1, tweet_id="1442243266280370177", start_date=None, days=14, tag_and_mention=None, username=None,
+                comment="vanderhorst"),
+    EventSearch(uid=0, tweet_id="1433361036191612930", start_date=None, days=14, tag_and_mention=None, username=None,
+                comment="toni test"),
+    EventSearch(uid=1, tweet_id="1158074774297468928", start_date="2019-08-04T18:00:00.000Z", days=14,
+                tag_and_mention={"#neildegrassetyson"},
                 username="neiltyson", comment="neil de grasse tyson"),
-    EventSearch(2, "1265998625836019712", start_date="2020-06-28T14:00:00.000Z", days=14, tag_and_mention=None,
+    EventSearch(uid=2, tweet_id="1265998625836019712", start_date="2020-06-28T14:00:00.000Z", days=14,
+                tag_and_mention=None,
                 username="davidshor", comment="david shor"),
-    EventSearch(3, "1269382518362509313", start_date="2020-06-06T23:00:00.000Z", days=14, tag_and_mention=None,
+    EventSearch(uid=3, tweet_id="1269382518362509313", start_date="2020-06-06T23:00:00.000Z", days=14,
+                tag_and_mention=None,
                 username="jk_rowling", comment="j.k. rowling 1"),
-    EventSearch(4, "1269389298664701952", start_date="2020-06-07T12:00:00.000Z", days=14, tag_and_mention=None,
+    EventSearch(uid=4, tweet_id="1269389298664701952", start_date="2020-06-07T12:00:00.000Z", days=14,
+                tag_and_mention=None,
                 username="jk_rowling", comment="j.k. rowling 2"),
-    EventSearch(5, None, start_date="2018-05-17T23:00:00.000Z", days=14, tag_and_mention={"#AaronMSchlossberg", "#AaronSchlossberg"},
+    EventSearch(uid=5, tweet_id=None, start_date="2018-05-17T23:00:00.000Z", days=14,
+                tag_and_mention={"#AaronMSchlossberg", "#AaronSchlossberg"},
                 username=None, comment="aaron schlossberg"),
-    EventSearch(6, None, start_date="2018-05-08T23:00:00.000Z", days=14, tag_and_mention={"#KellyPocha"},
+    EventSearch(uid=6, tweet_id=None, start_date="2018-05-08T23:00:00.000Z", days=14, tag_and_mention={"#KellyPocha"},
                 username=None, comment="kelly pocha"),
-    EventSearch(7, "1324385598539399168", start_date="2020-11-05T14:00:00.000Z", days=14, tag_and_mention={"#FireGinaCarano"},
+    EventSearch(uid=7, tweet_id="1324385598539399168", start_date="2020-11-05T14:00:00.000Z", days=14,
+                tag_and_mention={"#FireGinaCarano"},
                 username="ginacarano", comment="gina carano"),
-    EventSearch(8, "1327806477923323904", start_date="2020-11-15T14:00:00.000Z", days=14, tag_and_mention=None,
+    EventSearch(uid=8, tweet_id="1327806477923323904", start_date="2020-11-15T14:00:00.000Z", days=14,
+                tag_and_mention=None,
                 username="ginacarano", comment="gina carano")
 ]
 
