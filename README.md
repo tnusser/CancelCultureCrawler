@@ -53,10 +53,10 @@ Results are stored in the database collection [cc_follows](#collection-cc_follow
 Results are stored in the database collection [cc_follows](#collection-cc_follows) at the attribute ``following``.
 
 
+## Complete Pipeline
 
-### Examples for documents that are stored in their respective collections
 ![pipeline](docs/pipeline_v3.png)
-
+### Examples for documents that are stored in their respective collections
 #### cc_tweets and cc_timelines
 ````json
 {

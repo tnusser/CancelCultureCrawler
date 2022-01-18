@@ -36,6 +36,8 @@ event_list = [
 ]
 
 if __name__ == "__main__":
+    # TODO Remove following line if you want to iterate through the whole event list
+    event_list = [event_list[0]]
     for event in event_list:
         logger.info(f"Start crawl of {event}")
         if event.tweet_id is not None:
