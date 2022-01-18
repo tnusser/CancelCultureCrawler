@@ -252,7 +252,8 @@ def iterative_crawl(crawl_function, params):
                     if "meta" in response_json:
                         if crawl_function.__name__ in follow_func:
                             # Follower crawl --> Don't use next_token due to rate-limits --> crawling max 1000 followers
-                            return None
+                            if not config["twitter"]["AllFollowers"]:
+                                return None
                         next_token = response_json["meta"]["next_token"]
                         logger.info(f"Next crawl --> Next token {next_token}"
                                     f"{params}")

@@ -3,6 +3,12 @@
 
 Twitter Crawler to automatically fetch and store tweets surrounding the topic and network of Cancel Culture on Twitter.
 This crawler uses the official Twitter API v2 to request data from Twitter, processes it and stores it in a MongoDB database.
+Specifically, it is able to use a seed tweet and crawl it's whole conversation tree including all replies,
+quotes and participating users. Moreover, a complete list of tweets a participating user has published in the past can be crawled,
+as well as all users he follows or which follow him. Furthermore, up to 100 likes and 100 retweets of each of the individual tweets
+from the original conversation tree tweets can be crawled (currently maximum due to Twitter API limitations).
+Lastly, this pipeline can be also used to crawl hashtags and user mentions, and their respective conversation trees and participating users. 
+It is designed in a way to easily expand its functionality on virtually any data the Twitter API allows crawling for.
 ## Getting started
 To use the crawler some packages and configuration steps are needed.
 ### Package installation
@@ -22,7 +28,27 @@ Furthermore, a MongoDB server is needed to store the data. Installation instruct
 Inside the [config.ini](config.ini) you can specify the IP, port and database name.
 
 ### Methods
-TODO methods that can be used
+The following list of methods can be used for crawling. See [main.py](https://gitlab.inf.uni-konstanz.de/tobias.nusser/cancel-culture-crawler/-/blob/main/crawler/main.py) as an entry point to the crawler.
+#### 1. Collecting conversation trees
+``bot.get_seed(tweet_id)`` allows to crawl a single tweet (seed tweet of conversation) with a tweet id as argument
+
+``bot.pipeline(tweet_id)`` allows to crawl all replies and quotes to the tweet with the specified tweet id, as well as all users profiles of the users that wrote those replies/quotes
+
+`` bot.hashtag_or_mention(hashtags_or_mentions, start, end)`` allows to crawl all tweets that contain the specified hashtags ``#exampleHashTag`` or mentions ``@exampleUser``
+#### 2. Collecting likes, retweets, followers, timelines
+``bot.crawl_likes()`` retrieves the likes for all tweets that were crawled in the first step. See the likes_crawled keyword in the db schema
+
+``bot.crawl_retweets()``
+
+``bot.crawl_timelines()``
+
+``bot.crawl_following()``
+
+``bot.crawl_follows()``
+
+
+
+
 
 ### Events
 [Neil de Grasse Tyson](
