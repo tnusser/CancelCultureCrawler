@@ -31,6 +31,8 @@ author_cache = {}
 tweet_cache = []
 hashtag_cache = set()
 
+seed_tweet_id = ""
+
 
 class Tweet:
     def __init__(self, tweet_id, public_metrics):
@@ -143,7 +145,7 @@ def process_result(response, f_name, params=None):
                 db.push_to_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
         return
     for res in response:
-        #res["seed"] = SEED_TWEET_ID
+        res["seed"] = seed_tweet_id
         res["crawl_timestamp"] = datetime.now()
         if f_name in tweet_func:
             # tweet object
