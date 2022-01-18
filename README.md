@@ -57,7 +57,7 @@ Results are stored in the database collection [cc_follows](#collection-cc_follow
 ### Examples
 
 #### Nr.1
-````yaml
+````json
 {"_id":{"$oid":"619b9f8799a4809d6ee03245"},"entities":{"annotations":[{"start":23,"end":25,"probability":0.9602,"type":"Place","normalized_text":"USA"}]},"text":"In the past 48hrs, the USA horrifically lost 34 people to mass shootings.\n\nOn average, across any 48hrs, we also lose…\n\n500 to Medical errors\n300 to the Flu\n250 to Suicide\n200 to Car Accidents\n40 to Homicide via Handgun\n\nOften our emotions respond more to spectacle than to data.","possibly_sensitive":false,"author_id":"19725644","conversation_id":"1158074774297468928","public_metrics":{"retweet_count":71267,"reply_count":70954,"like_count":273941,"quote_count":44650},"reply_settings":"everyone","source":"TweetDeck","created_at":"2019-08-04T17:58:36.000Z","lang":"en","id":"1158074774297468928","seed":"1158074774297468928","crawl_timestamp":{"$date":"2021-11-22T13:47:50.884Z"},"likes_crawled":false,"retweets_crawled":false}
 ````
 
