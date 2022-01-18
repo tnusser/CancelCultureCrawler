@@ -213,14 +213,14 @@ Results are stored in the database collection [cc_follows](#collection-cc_follow
 ````
 
 ### Events
-[Neil de Grasse Tyson](
+* [Neil de Grasse Tyson](
 https://twitter.com/neiltyson/status/1158074774297468928) - Event-ID 1
-[David Shor](https://twitter.com/davidshor/status/1265998625836019712) - Event-ID 2
-[J.K. Rowling](https://twitter.com/jk_rowling/status/1269382518362509313) - Event-ID 3
-[J.K. Rowling (2)](https://twitter.com/jk_rowling/status/1269389298664701952) - Event-ID 4
-[Gina Carano](https://twitter.com/ginacarano/status/1327806477923323904) - Event-ID 8
-[Harald Uhlig](https://twitter.com/haralduhlig/status/1270199700071821312) - Event-ID 9
-TODO TBC see [list](https://docs.google.com/document/d/1f24iSLW4ArxFRbVLTBk7lSh0AIV_kHM03LEJLsyflgE/)
+* [David Shor](https://twitter.com/davidshor/status/1265998625836019712) - Event-ID 2
+* [J.K. Rowling](https://twitter.com/jk_rowling/status/1269382518362509313) - Event-ID 3
+* [J.K. Rowling (2)](https://twitter.com/jk_rowling/status/1269389298664701952) - Event-ID 4
+* [Gina Carano](https://twitter.com/ginacarano/status/1327806477923323904) - Event-ID 8
+* [Harald Uhlig](https://twitter.com/haralduhlig/status/1270199700071821312) - Event-ID 9
+* TODO TBC see [list](https://docs.google.com/document/d/1f24iSLW4ArxFRbVLTBk7lSh0AIV_kHM03LEJLsyflgE/)
 ## Database Schema
 
 ![img](docs/schema.svg)
