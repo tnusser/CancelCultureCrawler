@@ -32,7 +32,9 @@ event_list = [
                 username="ginacarano", comment="gina carano"),
     EventSearch(uid=8, tweet_id="1327806477923323904", start_date="2020-11-15T14:00:00.000Z", days=14,
                 tag_and_mention=None,
-                username="ginacarano", comment="gina carano")
+                username="ginacarano", comment="gina carano"),
+    EventSearch(uid=9, tweet_id="1327806477923323904", start_date="2020-06-09T03:00:00.000Z", days=14,
+                tag_and_mention={"@haralduhlig"}, username="haralduhlig", comment="harald uhlig")
 ]
 
 if __name__ == "__main__":
