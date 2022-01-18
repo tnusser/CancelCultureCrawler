@@ -54,14 +54,163 @@ Results are stored in the database collection [cc_follows](#collection-cc_follow
 
 
 
-### Examples
+### Examples for documents that are stored in their respective collections
+![pipeline](docs/pipeline_v3.png)
 
-#### Nr.1
+#### cc_tweets and cc_timelines
 ````json
-{"_id":{"$oid":"619b9f8799a4809d6ee03245"},"entities":{"annotations":[{"start":23,"end":25,"probability":0.9602,"type":"Place","normalized_text":"USA"}]},"text":"In the past 48hrs, the USA horrifically lost 34 people to mass shootings.\n\nOn average, across any 48hrs, we also lose…\n\n500 to Medical errors\n300 to the Flu\n250 to Suicide\n200 to Car Accidents\n40 to Homicide via Handgun\n\nOften our emotions respond more to spectacle than to data.","possibly_sensitive":false,"author_id":"19725644","conversation_id":"1158074774297468928","public_metrics":{"retweet_count":71267,"reply_count":70954,"like_count":273941,"quote_count":44650},"reply_settings":"everyone","source":"TweetDeck","created_at":"2019-08-04T17:58:36.000Z","lang":"en","id":"1158074774297468928","seed":"1158074774297468928","crawl_timestamp":{"$date":"2021-11-22T13:47:50.884Z"},"likes_crawled":false,"retweets_crawled":false}
+{
+  "_id": {
+    "$oid": "619b9f8799a4809d6ee03245"
+  },
+  "text": "In the past 48hrs, the USA horrifically lost 34 people to mass shootings.\n\nOn average, across any 48hrs, we also lose…\n\n500 to Medical errors\n300 to the Flu\n250 to Suicide\n200 to Car Accidents\n40 to Homicide via Handgun\n\nOften our emotions respond more to spectacle than to data.",
+  "possibly_sensitive": false,
+  "author_id": "19725644",
+  "conversation_id": "1158074774297468928",
+  "public_metrics": {
+    "retweet_count": 71267,
+    "reply_count": 70954,
+    "like_count": 273941,
+    "quote_count": 44650
+  },
+  "reply_settings": "everyone",
+  "source": "TweetDeck",
+  "created_at": "2019-08-04T17:58:36.000Z",
+  "lang": "en",
+  "id": "1158074774297468928",
+  "seed": "1158074774297468928",
+  "crawl_timestamp": {
+    "$date": "2021-11-22T13:47:50.884Z"
+  },
+  "likes_crawled": false,
+  "retweets_crawled": false
+}
+````
+#### cc_users 
+````json
+{
+  "_id": {
+    "$oid": "619ba15899a4809d6ee1be50"
+  },
+  "created_at": "2009-01-29T18:40:26.000Z",
+  "location": "New York City",
+  "url": "http://t.co/FRT5oYtwbX",
+  "name": "Neil deGrasse Tyson",
+  "id": "19725644",
+  "verified": true,
+  "entities": {
+    "url": {
+      "urls": [
+        {
+          "start": 0,
+          "end": 22,
+          "url": "http://t.co/FRT5oYtwbX",
+          "expanded_url": "http://www.haydenplanetarium.org/tyson/",
+          "display_url": "haydenplanetarium.org/tyson/"
+        }
+      ]
+    }
+  },
+  "username": "neiltyson",
+  "profile_image_url": "https://pbs.twimg.com/profile_images/74188698/NeilTysonOriginsA-Crop_normal.jpg",
+  "protected": false,
+  "description": "Astrophysicist",
+  "public_metrics": {
+    "followers_count": 14550932,
+    "following_count": 39,
+    "tweet_count": 7594,
+    "listed_count": 45367
+  },
+  "seed": "1158074774297468928",
+  "crawl_timestamp": {
+    "$date": "2021-11-22T13:47:50.884Z"
+  },
+  "followers_crawled": false,
+  "following_crawled": false,
+  "timeline_crawled": false,
+  "liked": [],
+  "retweeted": []
+}
 ````
 
+#### cc_follows 
 
+````json
+{
+  "_id": {
+    "$oid": "61bc94b7b89585883e4d463e"
+  },
+  "protected": false,
+  "pinned_tweet_id": "1467951890281340931",
+  "profile_image_url": "https://pbs.twimg.com/profile_images/1383565672827944964/qxxY3h_v_normal.jpg",
+  "verified": false,
+  "description": "Fair Minded @foxnews  Contributor, Podcast Host, Civil Rights Attorney, Author, Fmr School Teacher. Leo 2.0 on @KABCRadio 5p M-F https://t.co/OCMYXheLBA",
+  "name": "TheLeoTerrell",
+  "location": "Los Angeles",
+  "created_at": "2020-01-02T18:41:53.000Z",
+  "entities": {
+    "url": {
+      "urls": [
+        {
+          "start": 0,
+          "end": 23,
+          "url": "https://t.co/CPvNe7lVwC",
+          "expanded_url": "https://www.theleoterrell.com",
+          "display_url": "theleoterrell.com"
+        }
+      ]
+    },
+    "description": {
+      "urls": [
+        {
+          "start": 129,
+          "end": 152,
+          "url": "https://t.co/OCMYXheLBA",
+          "expanded_url": "http://leoterrellhats.com",
+          "display_url": "leoterrellhats.com"
+        }
+      ],
+      "mentions": [
+        {
+          "start": 12,
+          "end": 20,
+          "username": "foxnews"
+        },
+        {
+          "start": 111,
+          "end": 121,
+          "username": "KABCRadio"
+        }
+      ]
+    }
+  },
+  "id": "1212806053907185664",
+  "username": "TheLeoTerrell",
+  "public_metrics": {
+    "followers_count": 674998,
+    "following_count": 166,
+    "tweet_count": 10494,
+    "listed_count": 830
+  },
+  "url": "https://t.co/CPvNe7lVwC",
+  "seed": "1466829037645582341",
+  "crawl_timestamp": {
+    "$date": "2021-12-17T13:23:56.000Z"
+  },
+  "following": [],
+  "followed_by": [
+    "933167783931768832",
+    "69891324",
+    "46979679",
+    "4834717955",
+    "2764278646",
+    "768316345385644032",
+    "1222608612817866758",
+    "1337386031188996099",
+    "..."
+  ]
+}
+````
 
 ### Events
 [Neil de Grasse Tyson](
