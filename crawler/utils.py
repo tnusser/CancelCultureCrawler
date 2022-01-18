@@ -78,7 +78,7 @@ def batch(iterable, n=1):
 
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("../config.ini")
 
 if "TWITTER_CRAWLER_SENDER" in os.environ:
     sender = os.environ.get("TWITTER_CRAWLER_SENDER")
