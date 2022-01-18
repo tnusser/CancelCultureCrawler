@@ -129,7 +129,7 @@ def process_result(response, f_name, params=None):
         logger.info(f"Inserting followers/following of users ino db")
         update_field = "following" if f_name == "get_followers" else "followed_by"
         for res in response:
-            res["seed"] = SEED_TWEET_ID
+            #res["seed"] = SEED_TWEET_ID
             res["crawl_timestamp"] = datetime.now()
             found_user = db.read({"id": res["id"]}, FOLLOWER_COLLECTION)
             if len(list(found_user)) > 0:
@@ -143,7 +143,7 @@ def process_result(response, f_name, params=None):
                 db.push_to_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
         return
     for res in response:
-        res["seed"] = SEED_TWEET_ID
+        #res["seed"] = SEED_TWEET_ID
         res["crawl_timestamp"] = datetime.now()
         if f_name in tweet_func:
             # tweet object
@@ -556,4 +556,3 @@ class EventSearch:
 
     def __repr__(self):
         return f"{self.tweet_id} + {self.username} + {self.uid} + event comment: {self.comment}"
-#TODO seed tweet id
