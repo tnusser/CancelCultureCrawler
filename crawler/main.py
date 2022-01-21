@@ -13,20 +13,20 @@ event_list = [
     #EventSearch(uid=1, tweet_id="1158074774297468928", start_date="2019-08-04T18:00:00.000Z", days=14,
     #            tag_and_mention={"#neildegrassetyson"},
     #            username="neiltyson", comment="neil de grasse tyson"),
-    EventSearch(uid=8, tweet_id="1327806477923323904", start_date="2020-11-15T14:00:00.000Z", days=14,
-                tag_and_mention=None,
-                username="ginacarano", comment="gina carano"),
-    EventSearch(uid=2, tweet_id="1265998625836019712", start_date="2020-06-28T14:00:00.000Z", days=14,
-                tag_and_mention=None,
-                username="davidshor", comment="david shor"),
-    EventSearch(uid=3, tweet_id="1269382518362509313", start_date="2020-06-06T23:00:00.000Z", days=14,
-                tag_and_mention=None,
-                username="jk_rowling", comment="j.k. rowling 1"),
-    EventSearch(uid=4, tweet_id="1269389298664701952", start_date="2020-06-07T12:00:00.000Z", days=14,
-                tag_and_mention=None,
-                username="jk_rowling", comment="j.k. rowling 2"),
+    # EventSearch(uid=8, tweet_id="1327806477923323904", start_date="2020-11-15T14:00:00.000Z", days=14,
+    #             tag_and_mention=None,
+    #             username="ginacarano", comment="gina carano"),
+    # EventSearch(uid=2, tweet_id="1265998625836019712", start_date="2020-06-28T14:00:00.000Z", days=14,
+    #             tag_and_mention=None,
+    #             username="davidshor", comment="david shor"),
+    # EventSearch(uid=3, tweet_id="1269382518362509313", start_date="2020-06-06T23:00:00.000Z", days=14,
+    #             tag_and_mention=None,
+    #             username="jk_rowling", comment="j.k. rowling 1"),
+    # EventSearch(uid=4, tweet_id="1269389298664701952", start_date="2020-06-07T12:00:00.000Z", days=14,
+    #             tag_and_mention=None,
+    #             username="jk_rowling", comment="j.k. rowling 2"),
     EventSearch(uid=9, tweet_id="1327806477923323904", start_date="2020-06-09T03:00:00.000Z", days=14,
-                tag_and_mention={"@haralduhlig"}, username="haralduhlig", comment="harald uhlig"),
+                tag_and_mention={"@haralduhlig"}, username="haralduhlig", comment="harald uhlig")
     #EventSearch(uid=5, tweet_id=None, start_date="2018-05-17T23:00:00.000Z", days=14,
     #            tag_and_mention={"#AaronMSchlossberg", "#AaronSchlossberg"},
     #            username=None, comment="aaron schlossberg"),
@@ -46,11 +46,10 @@ if __name__ == "__main__":
             bot.seed_tweet_id = event.tweet_id
             bot.get_seed(event.tweet_id)
             bot.pipeline(event.tweet_id)
-            pass
         if event.tag_and_mention is not None:
             start = datetime.datetime.strptime(event.start_date, '%Y-%m-%dT%H:%M:%S.%fZ')
             end_date = start + datetime.timedelta(days=event.days)
-            bot.hashtag_or_mention(event.tag_and_mention, start=event.start_date, end=end_date)
+            bot.hashtag_or_mention(event.tag_and_mention, start=event.start_date, end=end_date.isoformat("T")+"Z")
     logger.info("Successfully crawled conversation trees")
     crawl_queue = queue.Queue()
     crawl_queue.put(bot.crawl_likes)
