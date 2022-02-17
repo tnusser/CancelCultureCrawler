@@ -172,14 +172,20 @@ class ApiEndpoints:
         response = requests.get(API_BASE_URL + "users/" + user_id + "/following?", params=params, headers=self.HEADER)
         return self.exception_handler(response)
 
-    def get_liking_users(self, tweet_id, except_fields=None):
+    def get_liking_users(self, tweet_id, except_fields=None, next_token=None):
         """
         Retrieves the last 100 users who liked the input tweet - rate limit 3000 tweets per 15 min
         :param tweet_id: id of tweet whose likes should be retrieved
         :param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
+        :param next_token: token used to retrieve results using pagination
         :return: json object containing id, name and username of users that liked that tweet
         """
-        params = {}
+        max_results = "100"
+        params = {
+            'max_results': max_results
+        }
+        if next_token is not None:
+            params["pagination_token"] = next_token
         params = self.except_fields("user.fields", self.USER_FIELDS, params, except_fields)
         response = requests.get(API_BASE_URL + "tweets/" + tweet_id + "/liking_users?", params=params,
                                 headers=self.HEADER)
@@ -205,14 +211,20 @@ class ApiEndpoints:
                                 headers=self.HEADER)
         return self.exception_handler(response)
 
-    def get_retweeting_users(self, tweet_id, except_fields=None):
+    def get_retweeting_users(self, tweet_id, except_fields=None, next_token=None):
         """
         Retrieves the last 100 users who retweeted the input tweet -- rate limit 3000 tweets per 15 min
         :param tweet_id: id of tweet whose retweets should be retrieved
         :param except_fields: optional param for fields which should be excluded. 'default' --> id, name and username
+        :param next_token: token used to retrieve results using pagination
         :return: json object containing id, name and username of users that retweeted that tweet
         """
-        params = {}
+        max_results = "100"
+        params = {
+            'max_results': max_results
+        }
+        if next_token is not None:
+            params["pagination_token"] = next_token
         params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)
         response = requests.get(API_BASE_URL + "tweets/" + tweet_id + "/retweeted_by?", params=params,
                                 headers=self.HEADER)
@@ -298,5 +310,5 @@ class ApiEndpoints:
         :return: returns response object
         """
         if response.status_code != 200:
-            logger.error(f"Request returned an error: {response.status_code} {response.text}")
+            logger.warning(f"Request returned an error: {response.status_code} {response.text}")
         return response

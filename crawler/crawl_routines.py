@@ -1,6 +1,8 @@
 import json
 import queue
 from datetime import datetime, timedelta
+from distutils.util import strtobool
+
 import simplejson.errors
 import mongo_db as db
 from api_endpoints import ApiEndpoints
@@ -25,12 +27,11 @@ USER_COLLECTION = mongo_config["UserCollection"]
 TWEET_COLLECTION = mongo_config["TweetCollection"]
 FOLLOWER_COLLECTION = mongo_config["FollowerCollection"]
 
-if not mongo_config["UseMongo"]:
-    out_file = open("output/example.json", "w")
+if not bool(strtobool(mongo_config["UseMongo"])):
+    out_file = open("../output/example.json", "w")
 author_cache = {}
 tweet_cache = []
 hashtag_cache = set()
-
 seed_tweet_id = ""
 
 
@@ -98,7 +99,7 @@ def process_result(response, f_name, params=None):
         return
     response = response["data"]
     if f_name == hashtag_func:
-        if config["twitter"]["CompleteTree"]:
+        if bool(strtobool(config["twitter"]["CompleteTree"])):
             for res in response:
                 hashtag_cache.add(res["conversation_id"])
                 logger.info(f"Added new conversation_id {res['conversation_id']} to local cache for complete "
@@ -131,7 +132,7 @@ def process_result(response, f_name, params=None):
         logger.info(f"Inserting followers/following of users ino db")
         update_field = "following" if f_name == "get_followers" else "followed_by"
         for res in response:
-            #res["seed"] = SEED_TWEET_ID
+            # res["seed"] = SEED_TWEET_ID
             res["crawl_timestamp"] = datetime.now()
             found_user = db.read({"id": res["id"]}, FOLLOWER_COLLECTION)
             if len(list(found_user)) > 0:
@@ -254,11 +255,16 @@ def iterative_crawl(crawl_function, params):
                     if "meta" in response_json:
                         if crawl_function.__name__ in follow_func:
                             # Follower crawl --> Don't use next_token due to rate-limits --> crawling max 1000 followers
-                            if not config["twitter"]["AllFollowers"]:
+                            if not bool(strtobool(config["twitter"]["AllFollowers"])):
+                                return None
+                        if crawl_function.__name__ == "get_liking_users":
+                            if not bool(strtobool(config["twitter"]["AllLikers"])):
+                                return None
+                        if crawl_function.__name__ == "get_retweeting_users":
+                            if not bool(strtobool(config["twitter"]["AllRetweeters"])):
                                 return None
                         next_token = response_json["meta"]["next_token"]
-                        logger.info(f"Next crawl --> Next token {next_token}"
-                                    f"{params}")
+                        logger.info(f"Next crawl --> Next token {next_token} Params: {params}")
                         params["next_token"] = next_token
                         stack.append((crawl_function, params))
             else:
@@ -417,6 +423,8 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
     job_queue = queue.Queue()
     for elem in search_results:
         job_queue.put(elem)
+    # DEBUG
+    # num_threads = 1
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
         Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
