@@ -15,9 +15,9 @@ config = configparser.ConfigParser()
 config.read("../config.ini")
 mongo_config = config["mongoDB"]
 
-tweet_func = {"get_seed", "get_replies", "get_quotes"}
+tweet_func = {"get_seed", "get_replies", "get_quotes", "get_timeline_archive_search"}
 user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
-timeline_func = "get_timeline"
+timeline_func = {"get_timeline_archive_search", "get_timeline"}
 hashtag_func = "get_tweets_by_hashtag_or_mention"
 follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
@@ -109,7 +109,7 @@ def process_result(response, f_name, params=None):
                 hashtag_cache.add(res["id"])
                 logger.info(f"Added new id {res['id']} to local cache for crawling all children of this tweet")
         return
-    if f_name == timeline_func:
+    if f_name in timeline_func:
         logger.info(f"Inserting timeline tweets to db {TIMELINE_COLLECTION}")
         db.insert(response, TIMELINE_COLLECTION)
         return
@@ -423,8 +423,8 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
     job_queue = queue.Queue()
     for elem in search_results:
         job_queue.put(elem)
-    # DEBUG
-    # num_threads = 1
+    # TODO DEBUG ONLY FOR TIMELINE FOR THE REST MORE THREADS CAN BE USED
+    num_threads = 1
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
         Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
@@ -485,7 +485,7 @@ def crawl_timelines():
     result = db.read({target_field_name: False}, USER_COLLECTION)
     # Beware of ulimit for opening files in os (ubuntu standard is 1024) to open SSL certificates and make https request
     # Thus num_threads needs to be smaller than 1024 to be safe
-    threaded_crawl(api.get_timeline, result, target_field_name, num_threads=250)
+    threaded_crawl(api.get_timeline_archive_search, result, target_field_name, num_threads=250)
 
 
 @timeit

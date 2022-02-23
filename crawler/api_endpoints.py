@@ -115,7 +115,6 @@ class ApiEndpoints:
 
     def get_timeline(self, user_id, except_fields=None, next_token=None):
         """
-        TODO Add Timeline Crawl via Full-Archive-Search
         Retrieves tweets of a users timeline -- X-RATE-LIMIT 1.500 -> 150.000 tweets
         04.10.21 min_results: 5 max_results: 100
         :param user_id id of user to be crawled
@@ -125,12 +124,27 @@ class ApiEndpoints:
         """
         max_results = "100"
         params = {
-            'max_results': max_results
+            'max_results': max_results,
         }
         if next_token is not None:
             params["pagination_token"] = next_token
         params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)
         response = requests.get(API_BASE_URL + "users/" + user_id + "/tweets?", params=params,
+                                headers=self.HEADER)
+        return self.exception_handler(response)
+
+    def get_timeline_archive_search(self, user_id, except_fields=None, next_token=None):
+        max_results = "500"
+        params = {
+            'query': f"from:{user_id}",
+            'max_results': max_results
+            # 'start_time': "2017-06-20T00:00:00.000Z",
+            # 'end_time': "2017-09-23T00:00:00.000Z"
+        }
+        if next_token is not None:
+            params["pagination_token"] = next_token
+        params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)
+        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params,
                                 headers=self.HEADER)
         return self.exception_handler(response)
 

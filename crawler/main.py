@@ -3,6 +3,7 @@ import queue
 from threading import Thread
 import crawl_routines as bot
 from crawl_routines import EventSearch
+from crawler.api_endpoints import ApiEndpoints
 from utils import *
 
 event_list = [
@@ -36,7 +37,7 @@ event_list = [
     #            tag_and_mention={"#FireGinaCarano"},
     #            username="ginacarano", comment="gina carano"),
 ]
-
+api = ApiEndpoints()
 if __name__ == "__main__":
     # TODO Remove following line if you want to iterate through the whole event list
     event_list = []
@@ -60,5 +61,5 @@ if __name__ == "__main__":
 
     for j in range(crawl_queue.qsize()):
         logger.info(f"Main: create and start thread for crawl queue {j}")
-        Thread(target=bot.crawl_worker, args=(crawl_queue,), daemon=True).start()
+    Thread(target=bot.crawl_worker, args=(crawl_queue,), daemon=True).start()
     crawl_queue.join()
