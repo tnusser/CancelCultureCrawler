@@ -16,7 +16,7 @@ config.read("../config.ini")
 mongo_config = config["mongoDB"]
 
 tweet_func = {"get_seed", "get_replies", "get_quotes", "get_timeline_archive_search"}
-user_func = {"get_users_by_id", "get_liking_users", "get_retweeting_users"}
+user_func = {"get_users_by_id"}
 timeline_func = {"get_timeline_archive_search", "get_timeline"}
 hashtag_func = "get_tweets_by_hashtag_or_mention"
 follow_func = {"get_followers", "get_following"}
@@ -32,7 +32,7 @@ if not bool(strtobool(mongo_config["UseMongo"])):
 author_cache = {}
 tweet_cache = []
 hashtag_cache = set()
-seed_tweet_id = ""
+event_id = ""
 
 
 class Tweet:
@@ -117,12 +117,14 @@ def process_result(response, f_name, params=None):
         logger.info(f"Inserting reaction to tweets ino db")
         update_field = "liked" if f_name == "get_liking_users" else "retweeted"
         for res in response:
-            found_user = db.read({"id": res["id"]}, USER_COLLECTION)
-            if len(list(found_user)) > 0:
-                # logger.info("Found user in DB")
+            found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
+            found = add_event_id(res, found_user)
+            if found:
+                # logger.info("Found user in DB, also update tweet ids to liked/retweet fields")
                 db.push_to_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
             else:
                 # logger.info(f"New user {res['id']}--> Create and update")
+                res["event_id"] = [event_id]
                 res["liked"] = []
                 res["retweeted"] = []
                 db.insert([res], USER_COLLECTION)
@@ -146,29 +148,27 @@ def process_result(response, f_name, params=None):
                 db.push_to_array(res["id"], update_field, params["user_id"], FOLLOWER_COLLECTION)
         return
     for res in response:
-        res["seed"] = seed_tweet_id
         res["crawl_timestamp"] = datetime.now()
         if f_name in tweet_func:
             # tweet object
+            res["event_id"] = event_id
             res["likes_crawled"] = False
             res["retweets_crawled"] = False
 
             if f_name == "get_quotes":
-                # quote
                 tweet_cache.append(Tweet(res["id"], res["public_metrics"]))
-            if f_name == "get_seed" or f_name == "get_replies":
-                # seed or reply
-                if res["author_id"] not in author_cache:
-                    # new user --> add to cache
-                    new_user = User(res["author_id"])
-                    new_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
-                    author_cache[res["author_id"]] = new_user
-                else:
-                    # user existing in cache
-                    existing_user = author_cache[res["author_id"]]
-                    existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
+            if res["author_id"] not in author_cache:
+                # new user --> add to cache
+                new_user = User(res["author_id"])
+                new_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
+                author_cache[res["author_id"]] = new_user
+            else:
+                # user existing in cache
+                existing_user = author_cache[res["author_id"]]
+                existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
         if f_name in user_func:
             # user object
+            res["event_id"] = [event_id]
             res["followers_crawled"] = False
             res["following_crawled"] = False
             res["timeline_crawled"] = False
@@ -179,6 +179,10 @@ def process_result(response, f_name, params=None):
             author_cache[res["id"]].set_username(res["username"])
             author_cache[res["id"]].user_retrieved = True
 
+            # Check if user is already in db and if yes, add current event id
+            found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
+            add_event_id(res, found_user)
+
     if f_name in tweet_func:
         collection = TWEET_COLLECTION
     elif f_name in user_func:
@@ -188,6 +192,24 @@ def process_result(response, f_name, params=None):
         collection = "default"
     # insert to db
     db.insert(response, collection)
+
+
+def add_event_id(response, found_user):
+    """
+    Check if user is already in db and if yes, add current event id (if non-existent in array)
+    @param found_user: user that was found in database matching id
+    @param response: object returned from request with user
+    @return True if a user was actually found, false if no user found in db
+    """
+    if found_user.count() > 0:
+        for elem in found_user:
+            events_stored = (elem["event_id"])
+            if event_id not in events_stored:
+                logger.info(f"User with id {response['id']} already in DB. Add current event id {event_id} to user")
+                db.push_to_array(response["id"], field="event_id", value=event_id, collection_name=USER_COLLECTION)
+                break
+        return True
+    return False
 
 
 def iterative_crawl(crawl_function, params):
@@ -370,7 +392,7 @@ def quotes():
     """
     Wrapper function to retrieve all users (in batches) specified in the local author cache
     """
-    logger.info("Retrieve all quotes, likes and retweets")
+    logger.info("Retrieve all quotes")
     for author in list(author_cache.values()):
         for tweet in author.tweets:
             if tweet.quote_count > 0 and not tweet.quotes_retrieved:
@@ -381,9 +403,7 @@ def quotes():
                     "next_token": None
                 }
                 crawl(crawl_function=api.get_quotes, params=quote_params)
-                tweet.quotes_retrieved = True
-            else:
-                tweet.quotes_retrieved = True
+            tweet.quotes_retrieved = True
 
 
 @timeit
@@ -399,9 +419,11 @@ def pipeline(tweet_id):
             curr_tweet_id = stack.pop(0)
             time.sleep(0.8)
             reply_tree(curr_tweet_id)
+            # crawl users gathered from reply tree
             user()
             quotes()
-            # db.modify({"id": curr_tweet_id}, {"$set": {"replies_crawled": True}}, TWEET_COLLECTION)
+            # crawl users gathered from quote crawl
+            user()
             while len(tweet_cache) > 0:
                 twt_obj = tweet_cache.pop(0)
                 if twt_obj.sum_metric_count() > 0:
@@ -424,7 +446,7 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
     for elem in search_results:
         job_queue.put(elem)
     # TODO DEBUG ONLY FOR TIMELINE FOR THE REST MORE THREADS CAN BE USED
-    num_threads = 1
+    #num_threads = 1
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
         Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
