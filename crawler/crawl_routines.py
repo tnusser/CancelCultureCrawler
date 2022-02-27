@@ -129,7 +129,7 @@ def process_result(response, f_name, params=None):
                 db.push_to_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
         return
     if f_name in follow_func:
-        logger.info(f"Inserting followers/following of users ino db")
+        logger.info(f"Inserting followers/following of users into db")
         update_field = "following" if f_name == "get_followers" else "followed_by"
         for res in response:
             # res["seed"] = SEED_TWEET_ID
