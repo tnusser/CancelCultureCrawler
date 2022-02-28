@@ -71,15 +71,15 @@ class User:
         self.username = username
 
 
-def write_file(response, out_file):
+def write_file(response, output_file):
     """
     Writes response to specified text file
     @param response: to be written to text file
-    @param out_file: location of outfile
+    @param output_file: location of outfile
     """
     try:
         # response = response["data"]
-        out_file.write(json.dumps(response, indent=4, sort_keys=True))
+        output_file.write(json.dumps(response, indent=4, sort_keys=True))
     except simplejson.errors.JSONDecodeError:
         logger.info("Failed to write response to file")
 
@@ -446,7 +446,7 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
     for elem in search_results:
         job_queue.put(elem)
     # TODO DEBUG ONLY FOR TIMELINE FOR THE REST MORE THREADS CAN BE USED
-    #num_threads = 1
+    # num_threads = 1
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
         Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
@@ -567,7 +567,7 @@ def crawl_worker(job_queue):
 
 
 class EventSearch:
-    def __init__(self, uid, tweet_id, start_date, days, tag_and_mention, username, comment):
+    def __init__(self, uid, tweet_id, start_date, tag_and_mention, username, comment, days=14):
         """
         Class for events to be crawled
         @param uid: unique event identifier
