@@ -36,10 +36,12 @@ event_list = [
     EventSearch(uid="e10", tweet_id="1311225957492183041", start_date="2020-09-30T09:00:00.000Z",
                 tag_and_mention={'@QuinnSimmons9'},
                 username="QuinnSimmons9", comment="Quinn Simmons Cyclist"),
-
-    # EventSearch(uid="e11-", tweet_id="1497927631693664258", start_date="2020-11-05T14:00:00.000Z", days=14,
-    #             tag_and_mention=None,
-    #             username="toniN0_1", comment="gina carano"),
+    EventSearch(uid="e11", tweet_id="1267297328949387265", start_date="2020-06-01T04:00:00.000Z",
+                tag_and_mention={"@GrantNapearshow"},
+                username="GrantNapearshow", comment="grant napear"),
+    EventSearch(uid="e12", tweet_id=None, start_date="2018-08-11T01:00:00.000Z",
+                tag_and_mention={"#rhondapolon", "#coffeecathy"},
+                username=None, comment="Rhonda Polon"),
 ]
 api = ApiEndpoints()
 if __name__ == "__main__":
