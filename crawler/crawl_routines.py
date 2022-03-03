@@ -229,8 +229,7 @@ def iterative_crawl(crawl_function, params):
             remaining = int(response.headers["x-rate-limit-remaining"])
             max_remaining = int(response.headers["x-rate-limit-limit"])
             limit_reset_time = int(response.headers["x-rate-limit-reset"])
-            logger.info(f"Remaining: {remaining}")
-            logger.info(f"Max requests: {max_remaining}")
+            logger.info(f"CURRENT EVENT: {event_id} - Remaining: {remaining} - Max requests {max_remaining}")
             response_time = float(response.headers["x-response-time"]) * 0.001
             if crawl_function.__name__ in tweet_func:  # according to doc sleep only needed for full archive search
                 # only 1 request per second allowed (response time + sleep > 1)
