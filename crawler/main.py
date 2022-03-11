@@ -3,7 +3,7 @@ import queue
 from threading import Thread
 import crawl_routines as bot
 from crawl_routines import EventSearch
-from crawler.api_endpoints import ApiEndpoints
+from api_endpoints import ApiEndpoints
 from utils import *
 
 debug_list = [EventSearch(uid="e99-", tweet_id="1442243266280370177", start_date=None, tag_and_mention=None,
