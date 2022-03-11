@@ -121,7 +121,7 @@ Results are stored in the database collection [cc_follows](#collection-cc_follow
     "tweet_count": 7594,
     "listed_count": 45367
   },
-  "event_id": ["1158074774297468928"],
+  "seed": "1158074774297468928",
   "crawl_timestamp": {
     "$date": "2021-11-22T13:47:50.884Z"
   },
@@ -319,7 +319,7 @@ https://twitter.com/neiltyson/status/1158074774297468928) - Event-ID 1
 | *| <a name='twitter_db.cc_users_public_metrics.tweet_count'>public&#95;metrics&#46;tweet&#95;count</a>| int  | Number of Tweets &#40;including Retweets&#41; posted by this user&#46; |
 | *| <a name='twitter_db.cc_users_public_metrics.listed_count'>public&#95;metrics&#46;listed&#95;count</a>| int  | Number of lists that include this user&#46; |
 | *| <a name='twitter_db.cc_users_retweeted'>retweeted</a>| array&#91;object&#93;  | Array of tweets this user retweeted |
-| *| <a name='twitter_db.cc_users_event_id'>event_id</a>| public&#95;metrics&#46;  | Array of event ids uniquely identifying cc events |
+| *| <a name='twitter_db.cc_users_seed'>seed</a>| string  | Seed tweet id of the event that was used to crawl tweets&#46; &#40;Corresponds to conversation&#95;id if hashtags or mentions are not crawled&#41; |
 | *| <a name='twitter_db.cc_users_timeline_crawled'>timeline&#95;crawled</a>| boolean  | Indicates if the timeline of this user have been crawled |
 | *| <a name='twitter_db.cc_users_url'>url</a>| string  | The URL specified in the user&#39;s profile&#44; if present&#46; |
 | *| <a name='twitter_db.cc_users_username'>username</a>| string  | The Twitter handle &#40;screen name&#41; of this user&#46; |
