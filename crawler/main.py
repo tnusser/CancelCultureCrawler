@@ -14,8 +14,7 @@ debug_list = [EventSearch(uid="e99-", tweet_id="1442243266280370177", start_date
                           comment="toni test")]
 
 event_list = [
-    EventSearch(uid="e1", tweet_id="1158074774297468928", start_date="2019-08-04T18:00:00.000Z",
-                tag_and_mention={"#neildegrassetyson"},
+    EventSearch(uid="e1", tweet_id="1158074774297468928", start_date="2019-08-04T18:00:00.000Z", tag_and_mention=None,
                 username="neiltyson", comment="neil de grasse tyson"),
     EventSearch(uid="e2", tweet_id=None, start_date="2018-05-08T23:00:00.000Z",
                 tag_and_mention={"#KellyPocha"}, username=None, comment="kelly pocha"),
@@ -98,6 +97,8 @@ if __name__ == "__main__":
             start = datetime.datetime.strptime(event.start_date, '%Y-%m-%dT%H:%M:%S.%fZ')
             end_date = start + datetime.timedelta(days=event.days)
             bot.hashtag_or_mention(event.tag_and_mention, start=event.start_date, end=end_date.isoformat("T") + "Z")
+            # reset author cache
+            bot.author_cache = {}
     logger.info("Successfully crawled conversation trees")
     crawl_queue = queue.Queue()
     crawl_queue.put(bot.crawl_likes)

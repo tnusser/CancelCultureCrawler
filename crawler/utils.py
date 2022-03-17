@@ -33,7 +33,7 @@ class CustomLogFormatter(logging.Formatter):
 logging.basicConfig(filename=f"{os.getcwd()}/../output/crawl.log",
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                    datefmt='%H:%M:%S',
+                    datefmt='%Y-%m-%d %H:%M:%S',
                     level=logging.DEBUG)
 
 logger = logging.getLogger("Crawler")
