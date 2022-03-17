@@ -274,7 +274,7 @@ class ApiEndpoints:
         max_results = "100" if self.NER else "500",
         url = "https://twitter.com/" + username + "/status/" + tweet_id
         params = {
-            'query': 'url:' + '"' + url + '" is:quote',
+            'query': 'url:' + '"' + url + '" is:quote -is:retweet',
             # 'expansions': 'author_id',
             'start_time': self.START_DATE,
             'max_results': max_results,

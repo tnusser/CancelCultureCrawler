@@ -118,7 +118,7 @@ def process_result(response, f_name, params=None):
         update_field = "liked" if f_name == "get_liking_users" else "retweeted"
         for res in response:
             found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
-            found = add_event_id(res, found_user)
+            found = add_event_id(TWEET_COLLECTION, res, found_user)
             if found:
                 # logger.info("Found user in DB, also update tweet ids to liked/retweet fields")
                 db.push_to_array(res["id"], update_field, params["tweet_id"], USER_COLLECTION)
@@ -151,7 +151,7 @@ def process_result(response, f_name, params=None):
         res["crawl_timestamp"] = datetime.now()
         if f_name in tweet_func:
             # tweet object
-            res["event_id"] = event_id
+            res["event_id"] = [event_id]
             res["likes_crawled"] = False
             res["retweets_crawled"] = False
 
@@ -165,7 +165,17 @@ def process_result(response, f_name, params=None):
             else:
                 # user existing in cache
                 existing_user = author_cache[res["author_id"]]
-                existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
+                self_quoting = False
+                for existing_tweet in existing_user.tweets:
+                    if existing_tweet.id == res["id"]:
+                        # Tweet already in cache, don't add self-quoting tweet again see
+                        # https://twittercommunity.com/t/self-quoting-tweet-bug/168436
+                        self_quoting = True
+                if not self_quoting:
+                    existing_user.add_tweet(Tweet(res["id"], res["public_metrics"]))
+            # Check if tweet is already in db and if yes, add current event id
+            found_tweet = db.read({"id": res["id"]}, TWEET_COLLECTION, {"id": 1, "event_id": 1})
+            add_event_id(TWEET_COLLECTION, res, found_tweet)
         if f_name in user_func:
             # user object
             res["event_id"] = [event_id]
@@ -181,7 +191,7 @@ def process_result(response, f_name, params=None):
 
             # Check if user is already in db and if yes, add current event id
             found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
-            add_event_id(res, found_user)
+            add_event_id(USER_COLLECTION, res, found_user)
 
     if f_name in tweet_func:
         collection = TWEET_COLLECTION
@@ -194,19 +204,20 @@ def process_result(response, f_name, params=None):
     db.insert(response, collection)
 
 
-def add_event_id(response, found_user):
+def add_event_id(collection, response, found_elem):
     """
     Check if user is already in db and if yes, add current event id (if non-existent in array)
-    @param found_user: user that was found in database matching id
+    @param collection: db collection to which the event id should be added
     @param response: object returned from request with user
+    @param found_elem: user that was found in database matching id
     @return True if a user was actually found, false if no user found in db
     """
-    if found_user.count() > 0:
-        for elem in found_user:
+    if found_elem.count() > 0:
+        for elem in found_elem:
             events_stored = (elem["event_id"])
             if event_id not in events_stored:
-                logger.info(f"User with id {response['id']} already in DB. Add current event id {event_id} to user")
-                db.push_to_array(response["id"], field="event_id", value=event_id, collection_name=USER_COLLECTION)
+                logger.info(f"{collection} with id {response['id']} already in DB. Add current event id {event_id} to user/tweet")
+                db.push_to_array(response["id"], field="event_id", value=event_id, collection_name=collection)
                 break
         return True
     return False
@@ -368,7 +379,11 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
     for tweet_id in list(hashtag_cache):
         if len(list(db.read({"id": tweet_id}, TWEET_COLLECTION))) > 0:
             hashtag_cache.remove(tweet_id)
+    logger.info(f"Hashtag Cache length = {len(list(hashtag_cache))}")
+    counter = 0
     while len(hashtag_cache) > 0:
+        logger.info(f"Hashtag cache counter {counter}")
+        counter += 1
         curr_conversation_id = hashtag_cache.pop()
         get_seed(curr_conversation_id)
         pipeline(curr_conversation_id)
@@ -393,8 +408,10 @@ def quotes():
     """
     logger.info("Retrieve all quotes")
     for author in list(author_cache.values()):
+        logger.info(f"Crawling all quotes for author {author}")
         for tweet in author.tweets:
             if tweet.quote_count > 0 and not tweet.quotes_retrieved:
+                logger.info(f"Crawl quotes of tweet {tweet}")
                 quote_params = {
                     "username": author.username,
                     "tweet_id": tweet.id,
