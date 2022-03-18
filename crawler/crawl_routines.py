@@ -382,7 +382,6 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
     logger.info(f"Hashtag Cache length = {len(list(hashtag_cache))}")
     counter = 0
     while len(hashtag_cache) > 0:
-        logger.info(f"Hashtag cache counter {counter}")
         counter += 1
         curr_conversation_id = hashtag_cache.pop()
         get_seed(curr_conversation_id)
@@ -408,10 +407,8 @@ def quotes():
     """
     logger.info("Retrieve all quotes")
     for author in list(author_cache.values()):
-        logger.info(f"Crawling all quotes for author {author}")
         for tweet in author.tweets:
             if tweet.quote_count > 0 and not tweet.quotes_retrieved:
-                logger.info(f"Crawl quotes of tweet {tweet}")
                 quote_params = {
                     "username": author.username,
                     "tweet_id": tweet.id,
