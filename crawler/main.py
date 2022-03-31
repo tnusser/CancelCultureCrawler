@@ -96,7 +96,7 @@ event_list = [
                 username=None, comment="Stephen Colbert", days=14),
     EventSearch(uid="e38", tweet_id=None, start_date="2018-05-29T01:00:00.000Z",
                 tag_and_mention={"#CancelRoseanne", "#BoycottRoseanne", "#FireRoseanne", "@therealroseanne"},
-                username=None, comment="Roseanne Barr", days=14),
+                username=None, comment="Roseanne Barr", days=14)
 ]
 api = ApiEndpoints()
 if __name__ == "__main__":
