@@ -344,6 +344,7 @@ def get_seed(tweet_id):
     process_result(response, get_seed.__name__)
 
 
+
 @timeit
 def reply_tree(tweet_id):
     """
@@ -384,9 +385,11 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
     while len(hashtag_cache) > 0:
         counter += 1
         curr_conversation_id = hashtag_cache.pop()
-        get_seed(curr_conversation_id)
-        pipeline(curr_conversation_id)
-
+        try:
+            get_seed(curr_conversation_id)
+            pipeline(curr_conversation_id)
+        except Exception:
+            logger.exception(f"Could not retrieve conversation tree of tweet with id {curr_conversation_id} --> Skip")
 
 @timeit
 def user():
