@@ -376,14 +376,13 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
         "except_fields": None,
         "next_token": None
     }
+    hashtag_cache.clear()
     crawl(crawl_function=api.get_tweets_by_hashtag_or_mention, params=params)
     for tweet_id in list(hashtag_cache):
         if len(list(db.read({"id": tweet_id}, TWEET_COLLECTION))) > 0:
             hashtag_cache.remove(tweet_id)
     logger.info(f"Hashtag Cache length = {len(list(hashtag_cache))}")
-    counter = 0
     while len(hashtag_cache) > 0:
-        counter += 1
         curr_conversation_id = hashtag_cache.pop()
         try:
             get_seed(curr_conversation_id)
