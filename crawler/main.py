@@ -88,13 +88,13 @@ event_list = [
                 username=None, comment="Goya Foods", days=14),
     EventSearch(uid="e34", tweet_id=None, start_date="2021-10-04T23:00:00.000Z", tag_and_mention={"#DaveChappelle", "#CancelDaveChappelle", "#CancelNetflix", "@DaveChappelle"},
                 username=None, comment="Goya Foods", days=14),
-    #EventSearch(uid="e35", tweet_id=None, start_date="2021-10-04T23:00:00.000Z",
-    #            tag_and_mention={"#DaveChappelle", "#CancelDaveChappelle", "#CancelNetflix", "@DaveChappelle"},
-    #            username=None, comment="Goya Foods", days=14),
     EventSearch(uid="e35", tweet_id=None, start_date="2014-03-28T01:00:00.000Z",
                 tag_and_mention={"#CancelColbert", "#FireColbert", "#FireStephenColbert"},
                 username=None, comment="Stephen Colbert", days=14),
-    EventSearch(uid="e36", tweet_id=None, start_date="2018-05-29T01:00:00.000Z",
+    EventSearch(uid="e36", tweet_id=None, start_date="2014-03-28T01:00:00.000Z",
+                tag_and_mention={"#CancelColbert", "#FireColbert", "#FireStephenColbert"},
+                username=None, comment="Stephen Colbert", days=14),
+    EventSearch(uid="e38", tweet_id=None, start_date="2018-05-29T01:00:00.000Z",
                 tag_and_mention={"#CancelRoseanne", "#BoycottRoseanne", "#FireRoseanne", "@therealroseanne"},
                 username=None, comment="Roseanne Barr", days=14)
 ]
