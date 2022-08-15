@@ -186,8 +186,8 @@ def process_result(response, f_name, params=None):
             res["retweeted"] = []
 
             # regular user response
-            author_cache[res["id"]].set_username(res["username"])
-            author_cache[res["id"]].user_retrieved = True
+            #author_cache[res["id"]].set_username(res["username"])
+            #author_cache[res["id"]].user_retrieved = True
 
             # Check if user is already in db and if yes, add current event id
             found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
@@ -399,6 +399,26 @@ def user():
     logger.info("Retrieving user information")
     author_ids = [author.id for author in author_cache.values() if not author.user_retrieved]
     for author_id_batch in batch(author_ids, 100):
+        crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
+
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+user_ids = []
+with open("temp_data.txt") as file:
+    for line in file.readlines():
+        splitted = line.split(",")
+        user_ids.append(splitted[1].rstrip("\n"))
+
+@timeit
+def user_temp():
+    """
+    Wrapper function to retrieve all users (in batches) specified in the local author cache
+    TODO Change user crawl to not rely on cache but rather using db fields such as likes,follows,timeline
+    """
+    logger.info("Retrieving user information")
+    for author_id_batch in batch(user_ids, 100):
         crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
 
 

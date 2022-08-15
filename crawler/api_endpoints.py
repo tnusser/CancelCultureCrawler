@@ -67,7 +67,7 @@ class ApiEndpoints:
         :return: json object containing requested fields of the tweet
         """
         if len(ids) > 100:
-            logger.error("get_users_by_id called with more than 100 users")
+            logger.error("get_tweets_by_id called with more than 100 users")
             return
         params = {"ids": ",".join(ids)}
         params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)
