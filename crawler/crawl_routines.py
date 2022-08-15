@@ -401,27 +401,6 @@ def user():
     for author_id_batch in batch(author_ids, 100):
         crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
 
-def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-user_ids = []
-with open("temp_data.txt") as file:
-    for line in file.readlines():
-        splitted = line.split(",")
-        user_ids.append(splitted[1].rstrip("\n"))
-
-@timeit
-def user_temp():
-    """
-    Wrapper function to retrieve all users (in batches) specified in the local author cache
-    TODO Change user crawl to not rely on cache but rather using db fields such as likes,follows,timeline
-    """
-    logger.info("Retrieving user information")
-    for author_id_batch in batch(user_ids, 100):
-        crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
-
-
 @timeit
 def quotes():
     """
