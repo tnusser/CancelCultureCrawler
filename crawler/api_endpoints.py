@@ -137,9 +137,9 @@ class ApiEndpoints:
         max_results = "500"
         params = {
             'query': f"from:{user_id}",
-            'max_results': max_results
-            # 'start_time': "2017-06-20T00:00:00.000Z",
-            # 'end_time': "2017-09-23T00:00:00.000Z"
+            'max_results': max_results,
+            'start_time': "2017-01-01T00:00:00.000Z",
+            'end_time': "2021-01-01T00:00:00.000Z"
         }
         if next_token is not None:
             params["pagination_token"] = next_token

@@ -101,30 +101,31 @@ api = ApiEndpoints()
 if __name__ == "__main__":
     # TODO Remove following line if you want to iterate through the whole event list
     # event_list = []
-    for event in event_list:
-        logger.info(f"Start crawl of {event}")
-        bot.event_id = event.uid
-        try:
-            if event.tweet_id is not None:
-                bot.get_seed(event.tweet_id)
-                bot.pipeline(event.tweet_id)
-            if event.tag_and_mention is not None:
-                start = datetime.datetime.strptime(event.start_date, '%Y-%m-%dT%H:%M:%S.%fZ')
-                end_date = start + datetime.timedelta(days=event.days)
-                bot.hashtag_or_mention(event.tag_and_mention, start=event.start_date, end=end_date.isoformat("T") + "Z")
-        except Exception:
-            logger.exception(f"Unrecoverable error for event {event.uid}")
-        # reset author cache
-        bot.author_cache = {}
+    # for event in event_list:
+    #     logger.info(f"Start crawl of {event}")
+    #     bot.event_id = event.uid
+    #     try:
+    #         if event.tweet_id is not None:
+    #             bot.get_seed(event.tweet_id)
+    #             bot.pipeline(event.tweet_id)
+    #         if event.tag_and_mention is not None:
+    #             start = datetime.datetime.strptime(event.start_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    #             end_date = start + datetime.timedelta(days=event.days)
+    #             bot.hashtag_or_mention(event.tag_and_mention, start=event.start_date, end=end_date.isoformat("T") + "Z")
+    #     except Exception:
+    #         logger.exception(f"Unrecoverable error for event {event.uid}")
+    #     # reset author cache
+    #     bot.author_cache = {}
     # logger.info("Successfully crawled conversation trees")
-    # crawl_queue = queue.Queue()
+    crawl_queue = queue.Queue()
     # crawl_queue.put(bot.crawl_likes)
     # crawl_queue.put(bot.crawl_retweets)
-    # # crawl_queue.put(bot.crawl_timelines)
+    crawl_queue.put(bot.crawl_timelines)
     # crawl_queue.put(bot.crawl_following)
     # crawl_queue.put(bot.crawl_follows)
     #
-    # for j in range(crawl_queue.qsize()):
-    #     logger.info(f"Main: create and start thread for crawl queue {j}")
-    # Thread(target=bot.crawl_worker, args=(crawl_queue,), daemon=True).start()
-    # crawl_queue.join()
+    for j in range(crawl_queue.qsize()):
+        logger.info(f"Main: create and start thread for crawl queue {j}")
+    Thread(target=bot.crawl_worker, args=(crawl_queue,), daemon=True).start()
+    crawl_queue.join()
+    bot.user_temp()
