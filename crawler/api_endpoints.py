@@ -139,7 +139,22 @@ class ApiEndpoints:
             'query': f"from:{user_id}",
             'max_results': max_results,
             'start_time': "2017-01-01T00:00:00.000Z",
-            'end_time': "2021-01-01T00:00:00.000Z"
+            'end_time': "2023-04-08T00:00:00.000Z"
+        }
+        if next_token is not None:
+            params["pagination_token"] = next_token
+        params = self.except_fields("tweet.fields", self.TWEET_FIELDS, params, except_fields)
+        response = requests.get(API_BASE_URL + "tweets/search/all?", params=params,
+                                headers=self.HEADER)
+        return self.exception_handler(response)
+
+    def get_keyword_archive_search(self, keyword, except_fields=None, next_token=None):
+        max_results = "500"
+        params = {
+            'query': f'"{keyword}"',
+            'max_results': max_results,
+            'start_time': "2017-01-01T00:00:00.000Z",
+            'end_time': "2023-04-07T00:00:00.000Z"
         }
         if next_token is not None:
             params["pagination_token"] = next_token

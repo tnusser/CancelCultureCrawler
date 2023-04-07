@@ -15,9 +15,9 @@ config = configparser.ConfigParser()
 config.read("../config.ini")
 mongo_config = config["mongoDB"]
 
-tweet_func = {"get_seed", "get_replies", "get_quotes", "get_timeline_archive_search"}
+tweet_func = {"get_seed", "get_replies", "get_quotes", "get_timeline_archive_search", "get_keyword_archive_search"}
 user_func = {"get_users_by_id"}
-timeline_func = {"get_timeline_archive_search", "get_timeline"}
+timeline_func = {"get_timeline_archive_search", "get_timeline", "get_keyword_archive_search"}
 hashtag_func = "get_tweets_by_hashtag_or_mention"
 follow_func = {"get_followers", "get_following"}
 reaction_func = {"get_liking_users", "get_retweeting_users"}
@@ -186,8 +186,8 @@ def process_result(response, f_name, params=None):
             res["retweeted"] = []
 
             # regular user response
-            #author_cache[res["id"]].set_username(res["username"])
-            #author_cache[res["id"]].user_retrieved = True
+            # author_cache[res["id"]].set_username(res["username"])
+            # author_cache[res["id"]].user_retrieved = True
 
             # Check if user is already in db and if yes, add current event id
             found_user = db.read({"id": res["id"]}, USER_COLLECTION, {"id": 1, "event_id": 1})
@@ -216,7 +216,8 @@ def add_event_id(collection, response, found_elem):
         for elem in found_elem:
             events_stored = (elem["event_id"])
             if event_id not in events_stored:
-                logger.info(f"{collection} with id {response['id']} already in DB. Add current event id {event_id} to user/tweet")
+                logger.info(
+                    f"{collection} with id {response['id']} already in DB. Add current event id {event_id} to user/tweet")
                 db.push_to_array(response["id"], field="event_id", value=event_id, collection_name=collection)
                 break
         return True
@@ -344,7 +345,6 @@ def get_seed(tweet_id):
     process_result(response, get_seed.__name__)
 
 
-
 @timeit
 def reply_tree(tweet_id):
     """
@@ -390,6 +390,7 @@ def hashtag_or_mention(hashtags_or_mentions, start, end):
         except Exception:
             logger.exception(f"Could not retrieve conversation tree of tweet with id {curr_conversation_id} --> Skip")
 
+
 @timeit
 def user():
     """
@@ -400,6 +401,7 @@ def user():
     author_ids = [author.id for author in author_cache.values() if not author.user_retrieved]
     for author_id_batch in batch(author_ids, 100):
         crawl(crawl_function=api.get_users_by_id, params={"ids": author_id_batch})
+
 
 @timeit
 def quotes():
@@ -460,7 +462,7 @@ def threaded_crawl(crawl_function, search_results, target_field_name, num_thread
     for elem in search_results:
         job_queue.put(elem)
     # TODO DEBUG ONLY FOR TIMELINE FOR THE REST MORE THREADS CAN BE USED
-    # num_threads = 1
+    num_threads = 1
     for i in range(num_threads):
         logger.info(f"Main: create and start thread {i} for {crawl_function.__name__}")
         Thread(target=worker, args=(job_queue, crawl_function, target_field_name, i), daemon=True).start()
@@ -525,6 +527,18 @@ def crawl_timelines():
 
 
 @timeit
+def crawl_keyword():
+    """
+    Wrapper function that starts the threaded crawl for the timeline tweets and modifies db accordingly
+    """
+    target_field_name = "keyword"
+    result = "uranium"
+    # Beware of ulimit for opening files in os (ubuntu standard is 1024) to open SSL certificates and make https request
+    # Thus num_threads needs to be smaller than 1024 to be safe
+    threaded_crawl(api.get_keyword_archive_search, result, target_field_name, num_threads=1)
+
+
+@timeit
 def crawl_follows():
     """
     Wrapper function that starts the threaded crawl for followers and modifies db accordingly
@@ -559,6 +573,12 @@ def execute_and_modify(crawl_function, db_response, field_name):
         params["user_id"] = db_response["id"]
         params["next_token"] = None
         collection = USER_COLLECTION
+    elif field_name in {"keyword"}:
+        params["keyword"] = db_response
+        status = crawl(crawl_function, params)
+        if status == "USAGE_CAP":
+            return "USAGE_CAP"
+        return
     else:
         logger.error("Field name for db modification unknown")
         raise Exception
